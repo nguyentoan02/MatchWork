@@ -54,7 +54,7 @@ interface CalendarEvent extends Event {
     location?: string;
     materials?: string[];
     quizIds?: string[];
-    createdBy: any; // Nên thay bằng type User cụ thể nếu có
+    createdBy: any;
 }
 
 const localizer = momentLocalizer(moment);
@@ -70,9 +70,12 @@ function splitDateTime(date: Date) {
 export function AppointmentCalendar() {
     const { sessions, isLoading, isError } = useScheduleSessions();
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [sessionToEdit, setSessionToEdit] = useState<CalendarEvent | null>(
-        null
-    );
+
+    // viewSession: mở popup read-only khi nhấn vào event
+    const [viewSession, setViewSession] = useState<CalendarEvent | null>(null);
+    // editSession: mở form edit khi drag/drop (hoặc chuyển từ view -> edit)
+    const [editSession, setEditSession] = useState<CalendarEvent | null>(null);
+
     const [events, setEvents] = useState<CalendarEvent[]>([]);
 
     const allUserIds = Array.from(
@@ -97,36 +100,9 @@ export function AppointmentCalendar() {
                 start: new Date(session.startTime),
                 end: new Date(session.endTime),
                 title:
-                    (session.teachingRequest.subject
+                    (session.teachingRequest?.subject
                         ? session.teachingRequest.subject + " - "
-                        : "") + (session.notes || session.teachingRequest._id),
-            })
-        );
-        setEvents(calendarEvents);
-    }, [sessions, selectedUserIds]);
-
-    // const [selectedRequestIds, setSelectedRequestIds] = useState<string[]>([]);
-
-    useEffect(() => {
-        const filteredSessions = sessions.filter((session: any) => {
-            const userMatch =
-                selectedUserIds.length === 0 ||
-                selectedUserIds.includes(session.createdBy);
-            // const requestMatch =
-            //     selectedRequestIds.length === 0 ||
-            //     selectedRequestIds.includes(session.teachingRequest._id);
-            return userMatch;
-        });
-
-        const calendarEvents: CalendarEvent[] = filteredSessions.map(
-            (session: any) => ({
-                ...session,
-                start: new Date(session.startTime),
-                end: new Date(session.endTime),
-                title:
-                    (session.teachingRequest.subject
-                        ? session.teachingRequest.subject + " - "
-                        : "") + (session.notes || session.teachingRequest._id),
+                        : "") + (session.notes || session.teachingRequest?._id),
             })
         );
         setEvents(calendarEvents);
@@ -141,19 +117,19 @@ export function AppointmentCalendar() {
             prev.map((e) => (e._id === event._id ? { ...e, start, end } : e))
         );
 
-        // Mở dialog để chỉnh sửa nếu cần
-        setSessionToEdit(updatedEvent);
+        // Mở dialog edit để người dùng chỉnh sửa thông tin session sau khi kéo thả
+        setEditSession(updatedEvent);
     }, []);
 
     const handleUpdateSession = (data: ScheduleSessionFormValues) => {
-        if (!sessionToEdit) return;
+        if (!editSession) return;
 
         // TODO: Gọi API để cập nhật session với `data`
-        console.log("Updating session:", sessionToEdit._id, data);
+        console.log("Updating session:", editSession._id, data);
 
         setEvents((prev) =>
             prev.map((e) =>
-                e._id === sessionToEdit._id
+                e._id === editSession._id
                     ? {
                           ...e,
                           ...data,
@@ -164,7 +140,7 @@ export function AppointmentCalendar() {
                     : e
             )
         );
-        setSessionToEdit(null); // Đóng dialog
+        setEditSession(null); // Đóng dialog edit
     };
 
     if (isLoading) return <div>Đang tải lịch học...</div>;
@@ -252,9 +228,8 @@ export function AppointmentCalendar() {
                     localizer={localizer}
                     events={events}
                     onEventDrop={handleEventDrop}
-                    onSelectEvent={(ev) =>
-                        setSessionToEdit(ev as CalendarEvent)
-                    }
+                    // Nhấn vào event => mở view (readonly)
+                    onSelectEvent={(ev) => setViewSession(ev as CalendarEvent)}
                     startAccessor="start"
                     endAccessor="end"
                     views={["month", "week", "day", "agenda"]}
@@ -283,10 +258,78 @@ export function AppointmentCalendar() {
                 </DialogContent>
             </Dialog>
 
-            {/* Dialog for Editing Session */}
+            {/* Dialog for Viewing Session (read-only) */}
             <Dialog
-                open={!!sessionToEdit}
-                onOpenChange={() => setSessionToEdit(null)}
+                open={!!viewSession}
+                onOpenChange={() => setViewSession(null)}
+            >
+                <DialogContent className="min-w-[350px]">
+                    <DialogHeader>
+                        <DialogTitle>Chi tiết buổi học</DialogTitle>
+                        <DialogDescription>
+                            Thông tin buổi học
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {viewSession && (
+                        <div className="space-y-3">
+                            <div>
+                                <strong>Môn:</strong>{" "}
+                                {viewSession.teachingRequest?.subject || "-"}
+                            </div>
+                            <div>
+                                <strong>Thời gian:</strong>{" "}
+                                {new Date(viewSession.start).toLocaleString(
+                                    "vi-VN"
+                                )}{" "}
+                                -{" "}
+                                {new Date(viewSession.end).toLocaleTimeString(
+                                    "vi-VN",
+                                    { hour: "2-digit", minute: "2-digit" }
+                                )}
+                            </div>
+                            <div>
+                                <strong>Địa điểm / Link:</strong>{" "}
+                                {viewSession.location || "-"}
+                            </div>
+                            <div>
+                                <strong>Ghi chú:</strong>{" "}
+                                {viewSession.notes || "-"}
+                            </div>
+                            <div>
+                                <strong>Tài liệu:</strong>{" "}
+                                {(viewSession.materials || []).join(", ") ||
+                                    "-"}
+                            </div>
+                            <div>
+                                <strong>Quiz:</strong>{" "}
+                                {(viewSession.quizIds || []).join(", ") || "-"}
+                            </div>
+
+                            <div className="flex justify-end gap-2 mt-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        // Chuyển sang dialog edit nếu muốn chỉnh sửa
+                                        setEditSession(viewSession);
+                                        setViewSession(null);
+                                    }}
+                                >
+                                    Chỉnh sửa
+                                </Button>
+                                <Button onClick={() => setViewSession(null)}>
+                                    Đóng
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Dialog for Editing Session (opened after drag/drop or từ view -> chỉnh sửa) */}
+            <Dialog
+                open={!!editSession}
+                onOpenChange={() => setEditSession(null)}
             >
                 <DialogContent className="min-w-[350px]">
                     <DialogHeader>
@@ -295,24 +338,24 @@ export function AppointmentCalendar() {
                             Chỉnh sửa thông tin và nhấn cập nhật.
                         </DialogDescription>
                     </DialogHeader>
-                    {sessionToEdit && (
+                    {editSession && (
                         <ScheduleForm
                             onSubmit={handleUpdateSession}
                             initialValues={{
                                 teachingRequestId:
-                                    sessionToEdit.teachingRequest._id,
-                                startDate: splitDateTime(sessionToEdit.start)
+                                    editSession.teachingRequest._id,
+                                startDate: splitDateTime(editSession.start)
                                     .date,
-                                startHour: splitDateTime(sessionToEdit.start)
+                                startHour: splitDateTime(editSession.start)
                                     .hour,
-                                endDate: splitDateTime(sessionToEdit.end).date,
-                                endHour: splitDateTime(sessionToEdit.end).hour,
-                                notes: sessionToEdit.notes,
-                                status: sessionToEdit.status,
-                                isTrial: sessionToEdit.isTrial,
-                                location: sessionToEdit.location,
-                                materials: sessionToEdit.materials,
-                                quizIds: sessionToEdit.quizIds,
+                                endDate: splitDateTime(editSession.end).date,
+                                endHour: splitDateTime(editSession.end).hour,
+                                notes: editSession.notes,
+                                status: editSession.status,
+                                isTrial: editSession.isTrial,
+                                location: editSession.location,
+                                materials: editSession.materials,
+                                quizIds: editSession.quizIds,
                             }}
                             isCreated={true}
                         />
