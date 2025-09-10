@@ -15,6 +15,7 @@ const TutorDetail: React.FC = () => {
         "StudentPlace",
         "TutorPlace",
     ] as const;
+    const validClassTypes = ["OneToOne", "Group"] as const;
     const tutor: Tutor | undefined = rawTutor
         ? {
             ...rawTutor,
@@ -37,6 +38,21 @@ const TutorDetail: React.FC = () => {
                             service as (typeof validTeachingServices)[number]
                         )
                 )
+                : [],
+            classType: validClassTypes.includes(rawTutor.classType as (typeof validClassTypes)[number])
+                ? (rawTutor.classType as (typeof validClassTypes)[number])
+                : "OneToOne", // fallback or handle as needed
+            education: Array.isArray(rawTutor.education)
+                ? rawTutor.education.map((e: any) => ({
+                    ...e,
+                    dateRange:
+                        typeof e.dateRange === "string"
+                            ? (() => {
+                                const [startDate, endDate] = e.dateRange.split(" - ");
+                                return { startDate: startDate?.trim() || "", endDate: endDate?.trim() || "" };
+                            })()
+                            : e.dateRange,
+                }))
                 : [],
         }
         : undefined;
@@ -98,6 +114,25 @@ const TutorDetail: React.FC = () => {
                             (service: string): service is (typeof validTeachingServices)[number] =>
                                 validTeachingServices.includes(service as (typeof validTeachingServices)[number])
                         )
+                        : [],
+                    certifications: Array.isArray(t.certifications)
+                        ? t.certifications.map((c: any) =>
+                            typeof c === "string"
+                                ? { name: c }
+                                : c
+                        )
+                        : [],
+                    education: Array.isArray(t.education)
+                        ? t.education.map((e: any) => ({
+                            ...e,
+                            dateRange:
+                                typeof e.dateRange === "string"
+                                    ? (() => {
+                                        const [startDate, endDate] = e.dateRange.split(" - ");
+                                        return { startDate: startDate?.trim() || "", endDate: endDate?.trim() || "" };
+                                    })()
+                                    : e.dateRange,
+                        }))
                         : [],
                 };
             }) as Tutor[];

@@ -14,16 +14,22 @@ export interface Tutor {
         street?: string
         country?: string
     }
-    certifications: string[]
+    certifications: {
+        name: string
+        imageUrl?: string
+    }[]
     experienceYears: number
     hourlyRate: number
     languages: string[]
-    keyPoints: string[]
+    keyPoints?: string[]
     education: {
         degree: string
         institution: string
         location: string
-        dateRange: string
+        dateRange: {
+            startDate: string
+            endDate: string
+        }
         description: string
     }[]
     subjects: {
@@ -48,4 +54,5 @@ export interface Tutor {
     updatedAt: string
     teachingServices: ("Online" | "Offline" | "StudentPlace" | "TutorPlace")[]
     bio: string
+    classType: "OneToOne" | "Group"
 }

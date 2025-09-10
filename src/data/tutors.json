@@ -16,9 +16,18 @@
       "country": "USA"
     },
     "certifications": [
-      "TESOL Certification",
-      "Cambridge CELTA",
-      "IELTS Trainer Certificate"
+      {
+        "name": "TESOL Certification",
+        "imageUrl": "/certifications/tesol.jpg"
+      },
+      {
+        "name": "Cambridge CELTA",
+        "imageUrl": "/certifications/celta.jpg"
+      },
+      {
+        "name": "IELTS Trainer Certificate",
+        "imageUrl": "/certifications/ielts.jpg"
+      }
     ],
     "experienceYears": 10,
     "hourlyRate": 45,
@@ -33,7 +42,7 @@
         "degree": "Ph.D. in Physics",
         "institution": "Stanford University",
         "location": "Stanford, CA",
-        "dateRange": "2008 - 2012",
+        "dateRange": { "startDate": "2010-09", "endDate": "2014-06" },
         "description": "Doctorate focusing on applied physics and teaching"
       }
     ],
@@ -56,6 +65,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online", "Offline", "StudentPlace"],
+    "classType": "OneToOne",
     "bio": "Experienced educator passionate about inspiring young minds in STEM."
   },
   {
@@ -75,9 +85,18 @@
       "country": "USA"
     },
     "certifications": [
-      "Certified Mathematics Instructor",
-      "Advanced Calculus Teaching Credential",
-      "Statistics Education Professional"
+      {
+        "name": "Certified Writing Instructor",
+        "imageUrl": "/certifications/writing.jpg"
+      },
+      {
+        "name": "Creative Writing Specialist",
+        "imageUrl": "/certifications/creative-writing.jpg"
+      },
+      {
+        "name": "Literature Teaching Credential",
+        "imageUrl": "/certifications/literature.jpg"
+      }
     ],
     "experienceYears": 8,
     "hourlyRate": 40,
@@ -92,7 +111,7 @@
         "degree": "MFA in Creative Writing",
         "institution": "Columbia University",
         "location": "New York, NY",
-        "dateRange": "2012 - 2014",
+        "dateRange": { "startDate": "2011-09", "endDate": "2015-05" },
         "description": "Specialized in fiction and poetry"
       }
     ],
@@ -121,6 +140,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online", "TutorPlace"],
+    "classType": "Group",
     "bio": "Helping aspiring writers bring their stories to life."
   },
   {
@@ -140,9 +160,18 @@
       "country": "USA"
     },
     "certifications": [
-      "Google Certified Educator Level 1",
-      "Google Certified Educator Level 2",
-      "Microsoft Certified Trainer"
+      {
+        "name": "Arabic Language Teaching Certificate",
+        "imageUrl": "/certifications/arabic.jpg"
+      },
+      {
+        "name": "English as a Foreign Language (EFL)",
+        "imageUrl": "/certifications/efl.jpg"
+      },
+      {
+        "name": "Bilingual Education Specialist",
+        "imageUrl": "/certifications/bilingual.jpg"
+      }
     ],
     "experienceYears": 12,
     "hourlyRate": 50,
@@ -157,7 +186,7 @@
         "degree": "BA in Linguistics",
         "institution": "University of Illinois",
         "location": "Chicago, IL",
-        "dateRange": "2006 - 2010",
+        "dateRange": { "startDate": "2010-09", "endDate": "2014-06" },
         "description": "Focused on applied linguistics and language pedagogy"
       }
     ],
@@ -173,6 +202,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online", "Offline"],
+    "classType": "Group",
     "bio": "Helping students achieve fluency in Arabic and English."
   },
   {
@@ -192,9 +222,18 @@
       "country": "USA"
     },
     "certifications": [
-      "Project Management Professional (PMP)",
-      "Certified ScrumMaster (CSM)",
-      "Agile Certified Practitioner (PMI-ACP)"
+      {
+        "name": "Certified Music Instructor",
+        "imageUrl": "/certifications/music.jpg"
+      },
+      {
+        "name": "Guitar Performance Certificate",
+        "imageUrl": "/certifications/guitar.jpg"
+      },
+      {
+        "name": "Music Theory Specialist",
+        "imageUrl": "/certifications/music-theory.jpg"
+      }
     ],
     "experienceYears": 15,
     "hourlyRate": 60,
@@ -205,7 +244,7 @@
         "degree": "Bachelor of Music",
         "institution": "Berklee College of Music",
         "location": "Boston, MA",
-        "dateRange": "2000 - 2004",
+        "dateRange": { "startDate": "2005-09", "endDate": "2009-06" },
         "description": "Specialized in guitar performance and theory"
       }
     ],
@@ -226,6 +265,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Offline", "TutorPlace"],
+    "classType": "OneToOne",
     "bio": "Professional guitarist with over 15 years of teaching experience."
   },
   {
@@ -245,9 +285,18 @@
       "country": "USA"
     },
     "certifications": [
-      "Project Management Professional (PMP)",
-      "Certified ScrumMaster (CSM)",
-      "Agile Certified Practitioner (PMI-ACP)"
+      {
+        "name": "Certified Mathematics Instructor",
+        "imageUrl": "/certifications/math.jpg"
+      },
+      {
+        "name": "SAT Prep Specialist",
+        "imageUrl": "/certifications/sat.jpg"
+      },
+      {
+        "name": "Advanced Mathematics Credential",
+        "imageUrl": "/certifications/advanced-math.jpg"
+      }
     ],
     "experienceYears": 7,
     "hourlyRate": 55,
@@ -258,7 +307,7 @@
         "degree": "BS in Mathematics",
         "institution": "University of Washington",
         "location": "Seattle, WA",
-        "dateRange": "2013 - 2017",
+        "dateRange": { "startDate": "2013-09", "endDate": "2017-06" },
         "description": "Focused on applied mathematics and test preparation"
       }
     ],
@@ -276,6 +325,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online"],
+    "classType": "OneToOne",
     "bio": "Dedicated to helping students excel in math and standardized tests."
   },
   {
@@ -295,9 +345,18 @@
       "country": "USA"
     },
     "certifications": [
-      "Certified Science Teacher",
-      "Physics Teaching Excellence Award",
-      "Chemistry Education Specialist"
+      {
+        "name": "Certified History Teacher",
+        "imageUrl": "/certifications/history.jpg"
+      },
+      {
+        "name": "Social Studies Education Credential",
+        "imageUrl": "/certifications/social-studies.jpg"
+      },
+      {
+        "name": "Historical Research Certificate",
+        "imageUrl": "/certifications/historical-research.jpg"
+      }
     ],
     "experienceYears": 18,
     "hourlyRate": 50,
@@ -312,7 +371,7 @@
         "degree": "MA in History",
         "institution": "Harvard University",
         "location": "Cambridge, MA",
-        "dateRange": "2002 - 2004",
+        "dateRange": { "startDate": "2012-08", "endDate": "2016-05" },
         "description": "Specialized in American and European history"
       }
     ],
@@ -330,6 +389,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Offline", "TutorPlace"],
+    "classType": "Group",
     "bio": "Bringing history to life for students of all ages."
   },
   {
@@ -349,11 +409,19 @@
       "country": "USA"
     },
     "certifications": [
-      "International Baccalaureate (IB) Educator Certificate",
-      "IB Diploma Programme Coordinator Training",
-      "IB Middle Years Programme Training"
+      {
+        "name": "Certified Chemistry Teacher",
+        "imageUrl": "/certifications/chemistry.jpg"
+      },
+      {
+        "name": "Biology Education Credential",
+        "imageUrl": "/certifications/biology.jpg"
+      },
+      {
+        "name": "Laboratory Safety Certification",
+        "imageUrl": "/certifications/lab-safety.jpg"
+      }
     ],
-
     "experienceYears": 9,
     "hourlyRate": 48,
     "languages": ["English", "Vietnamese"],
@@ -363,7 +431,7 @@
         "degree": "MS in Biochemistry",
         "institution": "UCLA",
         "location": "Los Angeles, CA",
-        "dateRange": "2014 - 2016",
+        "dateRange": { "startDate": "2013-09", "endDate": "2017-06" },
         "description": "Focused on molecular biology and teaching"
       }
     ],
@@ -379,6 +447,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online", "Offline"],
+    "classType": "Group",
     "bio": "Passionate about making science fun and understandable."
   },
   {
@@ -398,11 +467,19 @@
       "country": "USA"
     },
     "certifications": [
-      "International Baccalaureate (IB) Educator Certificate",
-      "IB Diploma Programme Coordinator Training",
-      "IB Middle Years Programme Training"
+      {
+        "name": "Certified Business Educator",
+        "imageUrl": "/certifications/business.jpg"
+      },
+      {
+        "name": "Economics Teaching Credential",
+        "imageUrl": "/certifications/economics.jpg"
+      },
+      {
+        "name": "Financial Literacy Certification",
+        "imageUrl": "/certifications/financial-literacy.jpg"
+      }
     ],
-
     "experienceYears": 11,
     "hourlyRate": 52,
     "languages": ["English", "Gujarati"],
@@ -412,7 +489,7 @@
         "degree": "MBA",
         "institution": "UC San Diego",
         "location": "San Diego, CA",
-        "dateRange": "2010 - 2012",
+        "dateRange": { "startDate": "2016-09", "endDate": "2020-05" },
         "description": "Specialized in finance and management"
       }
     ],
@@ -430,6 +507,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online", "TutorPlace"],
+    "classType": "OneToOne",
     "bio": "Helping students excel in business and economics."
   },
   {
@@ -449,11 +527,19 @@
       "country": "USA"
     },
     "certifications": [
-      "International Baccalaureate (IB) Educator Certificate",
-      "IB Diploma Programme Coordinator Training",
-      "IB Middle Years Programme Training"
+      {
+        "name": "Certified Italian Language Instructor",
+        "imageUrl": "/certifications/italian.jpg"
+      },
+      {
+        "name": "Cultural Studies Certificate",
+        "imageUrl": "/certifications/cultural-studies.jpg"
+      },
+      {
+        "name": "Language Immersion Specialist",
+        "imageUrl": "/certifications/language-immersion.jpg"
+      }
     ],
-
     "experienceYears": 6,
     "hourlyRate": 47,
     "languages": ["Italian", "English"],
@@ -467,7 +553,7 @@
         "degree": "BA in Italian Studies",
         "institution": "University of Miami",
         "location": "Miami, FL",
-        "dateRange": "2011 - 2015",
+        "dateRange": { "startDate": "2016-09", "endDate": "2020-05" },
         "description": "Focused on Italian language, history, and culture"
       }
     ],
@@ -483,6 +569,7 @@
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online", "Offline"],
+    "classType": "Group",
     "bio": "Making Italian language learning engaging and cultural."
   },
   {
@@ -502,9 +589,18 @@
       "country": "USA"
     },
     "certifications": [
-      "Certified Business Educator",
-      "Certified Economics Teacher",
-      "Certified Online Instructor"
+      {
+        "name": "Certified Business Educator",
+        "imageUrl": "/certifications/business.jpg"
+      },
+      {
+        "name": "Certified Economics Teacher",
+        "imageUrl": "/certifications/economics.jpg"
+      },
+      {
+        "name": "Certified Online Instructor",
+        "imageUrl": "/certifications/online-teaching.jpg"
+      }
     ],
     "experienceYears": 11,
     "hourlyRate": 52,
@@ -515,7 +611,7 @@
         "degree": "MBA",
         "institution": "UC San Diego",
         "location": "San Diego, CA",
-        "dateRange": "2010 - 2012",
+        "dateRange": { "startDate": "2010-09", "endDate": "2012-06" },
         "description": "Specialized in finance and management"
       }
     ],
@@ -526,14 +622,937 @@
     "contact": {
       "phone": "555-4444",
       "email": "liam.patel@example.com",
-      "facebook": "https://facebook.com/liampatel",
-      "linkedin": "https://linkedin.com/in/liampatel"
+      "facebook": "https://facebook.com/liampatel"
     },
     "isApproved": true,
     "ratings": { "average": 4.9, "totalReviews": 142 },
     "createdAt": "2025-08-14T00:00:00.000Z",
     "updatedAt": "2025-08-14T00:00:00.000Z",
     "teachingServices": ["Online", "StudentPlace"],
+    "classType": "Group",
     "bio": "Helping students excel in business and economics."
+  },
+  {
+    "_id": "11",
+    "userId": "user11",
+    "fullName": "David Wilson",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Computer Science & Programming Expert",
+    "dateOfBirth": "1989-08-12T00:00:00.000Z",
+    "gender": "Male",
+    "address": {
+      "city": "San Jose",
+      "state": "CA",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "AWS Certified Developer",
+        "imageUrl": "/certifications/aws.jpg"
+      },
+      {
+        "name": "Java Programming Certificate",
+        "imageUrl": "/certifications/java.jpg"
+      },
+      {
+        "name": "Python Developer Certification",
+        "imageUrl": "/certifications/python.jpg"
+      }
+    ],
+    "experienceYears": 8,
+    "hourlyRate": 65,
+    "languages": ["English"],
+    "keyPoints": [
+      "Industry experience",
+      "Project-based learning",
+      "Code review expertise"
+    ],
+    "education": [
+      {
+        "degree": "MS in Computer Science",
+        "institution": "San Jose State University",
+        "location": "San Jose, CA",
+        "dateRange": { "startDate": "2017-08", "endDate": "2021-05" },
+        "description": "Specialized in software engineering and algorithms"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Computer Science",
+        "items": [
+          "Python",
+          "Java",
+          "JavaScript",
+          "Web Development",
+          "Algorithms"
+        ]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 1, "timeSlots": ["afternoon", "evening"] }],
+    "contact": {
+      "phone": "555-1111",
+      "email": "david.wilson@example.com",
+      "linkedin": "https://linkedin.com/in/davidwilson"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.87, "totalReviews": 95 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "TutorPlace"],
+    "classType": "OneToOne",
+    "bio": "Software engineer with passion for teaching programming concepts."
+  },
+  {
+    "_id": "12",
+    "userId": "user12",
+    "fullName": "Elena Rodriguez",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Spanish Language Specialist",
+    "dateOfBirth": "1991-05-19T00:00:00.000Z",
+    "gender": "Female",
+    "address": {
+      "city": "Miami",
+      "state": "FL",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "DELE Examiner Certification",
+        "imageUrl": "/certifications/dele.jpg"
+      },
+      {
+        "name": "Spanish Teaching Credential",
+        "imageUrl": "/certifications/spanish.jpg"
+      },
+      {
+        "name": "Bilingual Education Certificate",
+        "imageUrl": "/certifications/bilingual.jpg"
+      }
+    ],
+    "experienceYears": 7,
+    "hourlyRate": 48,
+    "languages": ["Spanish", "English"],
+    "keyPoints": [
+      "Native speaker",
+      "Conversation practice",
+      "Cultural context"
+    ],
+    "education": [
+      {
+        "degree": "BA in Spanish Literature",
+        "institution": "University of Miami",
+        "location": "Miami, FL",
+        "dateRange": { "startDate": "2020-09", "endDate": "2024-06" },
+        "description": "Focused on Hispanic literature and language teaching"
+      }
+    ],
+    "subjects": [{ "category": "Languages", "items": ["Spanish"] }],
+    "availability": [{ "dayOfWeek": 2, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-2222",
+      "email": "elena.rodriguez@example.com",
+      "facebook": "https://facebook.com/elenarodriguez"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.92, "totalReviews": 132 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "Offline"],
+    "classType": "Group",
+    "bio": "Native Spanish speaker making language learning fun and effective."
+  },
+  {
+    "_id": "13",
+    "userId": "user13",
+    "fullName": "Benjamin Taylor",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Physics & Advanced Mathematics Tutor",
+    "dateOfBirth": "1986-11-03T00:00:00.000Z",
+    "gender": "Male",
+    "address": {
+      "city": "Boston",
+      "state": "MA",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Advanced Placement Physics Certified",
+        "imageUrl": "/certifications/ap-physics.jpg"
+      },
+      {
+        "name": "Mathematics Teaching Credential",
+        "imageUrl": "/certifications/math.jpg"
+      },
+      {
+        "name": "STEM Education Specialist",
+        "imageUrl": "/certifications/stem.jpg"
+      }
+    ],
+    "experienceYears": 10,
+    "hourlyRate": 68,
+    "languages": ["English"],
+    "keyPoints": [
+      "Conceptual understanding",
+      "Problem-solving strategies",
+      "Test preparation"
+    ],
+    "education": [
+      {
+        "degree": "PhD in Physics",
+        "institution": "MIT",
+        "location": "Cambridge, MA",
+        "dateRange": { "startDate": "2021-09", "endDate": "2025-05" },
+        "description": "Research in quantum mechanics and physics education"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Science",
+        "items": ["Physics", "Advanced Mathematics", "Calculus"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 3, "timeSlots": ["afternoon", "evening"] }],
+    "contact": {
+      "phone": "555-3333",
+      "email": "benjamin.taylor@example.com",
+      "linkedin": "https://linkedin.com/in/benjamintaylor"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.95, "totalReviews": 178 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "StudentPlace"],
+    "classType": "OneToOne",
+    "bio": "Making complex physics and math concepts accessible to all students."
+  },
+  {
+    "_id": "14",
+    "userId": "user14",
+    "fullName": "Natalie Kim",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Art & Design Instructor",
+    "dateOfBirth": "1993-02-28T00:00:00.000Z",
+    "gender": "Female",
+    "address": {
+      "city": "Los Angeles",
+      "state": "CA",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Digital Arts Certification",
+        "imageUrl": "/certifications/digital-arts.jpg"
+      },
+      {
+        "name": "Portfolio Development Specialist",
+        "imageUrl": "/certifications/portfolio.jpg"
+      },
+      {
+        "name": "Art Education Credential",
+        "imageUrl": "/certifications/art-education.jpg"
+      }
+    ],
+    "experienceYears": 6,
+    "hourlyRate": 55,
+    "languages": ["English", "Korean"],
+    "keyPoints": [
+      "Portfolio development",
+      "Creative techniques",
+      "Digital tools"
+    ],
+    "education": [
+      {
+        "degree": "BFA in Fine Arts",
+        "institution": "CalArts",
+        "location": "Valencia, CA",
+        "dateRange": { "startDate": "2008-09", "endDate": "2012-06" },
+        "description": "Specialized in digital media and traditional techniques"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Arts",
+        "items": ["Drawing", "Painting", "Digital Art", "Design Principles"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 4, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-4444",
+      "email": "natalie.kim@example.com",
+      "instagram": "https://instagram.com/nataliekimart"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.88, "totalReviews": 87 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Offline", "TutorPlace"],
+    "classType": "Group",
+    "bio": "Helping students discover their creative potential through art."
+  },
+  {
+    "_id": "15",
+    "userId": "user15",
+    "fullName": "Marcus Johnson",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Test Prep & Admissions Coach",
+    "dateOfBirth": "1984-07-22T00:00:00.000Z",
+    "gender": "Male",
+    "address": {
+      "city": "Washington",
+      "state": "DC",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "SAT/ACT Prep Specialist",
+        "imageUrl": "/certifications/test-prep.jpg"
+      },
+      {
+        "name": "College Admissions Consultant",
+        "imageUrl": "/certifications/admissions.jpg"
+      },
+      {
+        "name": "Academic Coaching Certificate",
+        "imageUrl": "/certifications/academic-coaching.jpg"
+      }
+    ],
+    "experienceYears": 12,
+    "hourlyRate": 85,
+    "languages": ["English"],
+    "keyPoints": [
+      "Admissions strategy",
+      "Test-taking techniques",
+      "Essay coaching"
+    ],
+    "education": [
+      {
+        "degree": "JD Law Degree",
+        "institution": "Georgetown University",
+        "location": "Washington, DC",
+        "dateRange": { "startDate": "2007-08", "endDate": "2011-05" },
+        "description": "Background in analytical writing and test preparation"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Test Preparation",
+        "items": ["SAT", "ACT", "College Admissions", "Essay Writing"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 5, "timeSlots": ["afternoon", "evening"] }],
+    "contact": {
+      "phone": "555-5555",
+      "email": "marcus.johnson@example.com",
+      "linkedin": "https://linkedin.com/in/marcusjohnson"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.96, "totalReviews": 204 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "StudentPlace"],
+    "classType": "OneToOne",
+    "bio": "Helping students achieve their college dreams through strategic test prep."
+  },
+  {
+    "_id": "16",
+    "userId": "user16",
+    "fullName": "Isabelle Moreau",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "French Language & Literature Expert",
+    "dateOfBirth": "1988-04-17T00:00:00.000Z",
+    "gender": "Female",
+    "address": {
+      "city": "New Orleans",
+      "state": "LA",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "DELF/DALF Examiner",
+        "imageUrl": "/certifications/delf.jpg"
+      },
+      {
+        "name": "French Literature Specialist",
+        "imageUrl": "/certifications/french-literature.jpg"
+      },
+      {
+        "name": "Language Immersion Certificate",
+        "imageUrl": "/certifications/immersion.jpg"
+      }
+    ],
+    "experienceYears": 9,
+    "hourlyRate": 58,
+    "languages": ["French", "English"],
+    "keyPoints": ["Native fluency", "Literary analysis", "Cultural immersion"],
+    "education": [
+      {
+        "degree": "MA in French Literature",
+        "institution": "Tulane University",
+        "location": "New Orleans, LA",
+        "dateRange": { "startDate": "2010-01", "endDate": "2012-12" },
+        "description": "Specialized in 19th century French literature and pedagogy"
+      }
+    ],
+    "subjects": [
+      { "category": "Languages", "items": ["French", "French Literature"] }
+    ],
+    "availability": [{ "dayOfWeek": 6, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-6666",
+      "email": "isabelle.moreau@example.com",
+      "facebook": "https://facebook.com/isabellemoreau"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.91, "totalReviews": 116 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "Offline"],
+    "classType": "Group",
+    "bio": "Bringing the beauty of French language and culture to students."
+  },
+  {
+    "_id": "17",
+    "userId": "user17",
+    "fullName": "Daniel Brown",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Statistics & Data Science Mentor",
+    "dateOfBirth": "1987-09-08T00:00:00.000Z",
+    "gender": "Male",
+    "address": {
+      "city": "Chicago",
+      "state": "IL",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Data Science Certification",
+        "imageUrl": "/certifications/data-science.jpg"
+      },
+      {
+        "name": "Statistical Analysis Specialist",
+        "imageUrl": "/certifications/statistics.jpg"
+      },
+      {
+        "name": "R Programming Certificate",
+        "imageUrl": "/certifications/r-programming.jpg"
+      }
+    ],
+    "experienceYears": 8,
+    "hourlyRate": 72,
+    "languages": ["English"],
+    "keyPoints": [
+      "Real-world applications",
+      "Software training",
+      "Research methods"
+    ],
+    "education": [
+      {
+        "degree": "MS in Statistics",
+        "institution": "University of Chicago",
+        "location": "Chicago, IL",
+        "dateRange": { "startDate": "2016-01", "endDate": "2018-12" },
+        "description": "Focused on statistical modeling and data analysis techniques"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Mathematics",
+        "items": ["Statistics", "Data Science", "Probability", "R Programming"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 0, "timeSlots": ["afternoon", "evening"] }],
+    "contact": {
+      "phone": "555-7777",
+      "email": "daniel.brown@example.com",
+      "linkedin": "https://linkedin.com/in/danielbrown"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.89, "totalReviews": 134 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "TutorPlace"],
+    "classType": "OneToOne",
+    "bio": "Making statistics and data science accessible and applicable."
+  },
+  {
+    "_id": "18",
+    "userId": "user18",
+    "fullName": "Aisha Patel",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Elementary Education Specialist",
+    "dateOfBirth": "1990-12-14T00:00:00.000Z",
+    "gender": "Female",
+    "address": {
+      "city": "Phoenix",
+      "state": "AZ",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Elementary Teaching Credential",
+        "imageUrl": "/certifications/elementary.jpg"
+      },
+      {
+        "name": "Reading Specialist Certificate",
+        "imageUrl": "/certifications/reading.jpg"
+      },
+      {
+        "name": "Child Development Certification",
+        "imageUrl": "/certifications/child-development.jpg"
+      }
+    ],
+    "experienceYears": 7,
+    "hourlyRate": 45,
+    "languages": ["English", "Hindi"],
+    "keyPoints": [
+      "Multisensory learning",
+      "Individualized approach",
+      "Foundational skills"
+    ],
+    "education": [
+      {
+        "degree": "MEd in Elementary Education",
+        "institution": "Arizona State University",
+        "location": "Tempe, AZ",
+        "dateRange": { "startDate": "2017-02", "endDate": "2019-11" },
+        "description": "Specialized in early childhood education and literacy"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Elementary",
+        "items": ["Reading", "Math", "Writing", "Science", "Social Studies"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 1, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-8888",
+      "email": "aisha.patel@example.com",
+      "facebook": "https://facebook.com/aishapatel"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.93, "totalReviews": 157 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Offline", "StudentPlace"],
+    "classType": "OneToOne",
+    "bio": "Building strong academic foundations for young learners."
+  },
+  {
+    "_id": "19",
+    "userId": "user19",
+    "fullName": "Ryan O'Malley",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Geography & Environmental Science Teacher",
+    "dateOfBirth": "1985-03-30T00:00:00.000Z",
+    "gender": "Male",
+    "address": {
+      "city": "Denver",
+      "state": "CO",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Environmental Education Certificate",
+        "imageUrl": "/certifications/environmental.jpg"
+      },
+      {
+        "name": "GIS Specialist Certification",
+        "imageUrl": "/certifications/gis.jpg"
+      },
+      {
+        "name": "Geography Teaching Credential",
+        "imageUrl": "/certifications/geography.jpg"
+      }
+    ],
+    "experienceYears": 11,
+    "hourlyRate": 52,
+    "languages": ["English"],
+    "keyPoints": ["Field experience", "Interactive mapping", "Current issues"],
+    "education": [
+      {
+        "degree": "MS in Geography",
+        "institution": "University of Colorado",
+        "location": "Boulder, CO",
+        "dateRange": { "startDate": "2019-04", "endDate": "2021-12" },
+        "description": "Specialized in physical geography and environmental systems"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Social Studies",
+        "items": ["Geography", "Environmental Science", "Earth Science"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 2, "timeSlots": ["afternoon", "evening"] }],
+    "contact": {
+      "phone": "555-9999",
+      "email": "ryan.omalley@example.com",
+      "linkedin": "https://linkedin.com/in/ryanomalley"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.85, "totalReviews": 98 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "Offline"],
+    "classType": "Group",
+    "bio": "Exploring our world through geography and environmental science."
+  },
+  {
+    "_id": "20",
+    "userId": "user20",
+    "fullName": "Chloe Williams",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Psychology & Study Skills Coach",
+    "dateOfBirth": "1992-06-25T00:00:00.000Z",
+    "gender": "Female",
+    "address": {
+      "city": "Atlanta",
+      "state": "GA",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Educational Psychology Certificate",
+        "imageUrl": "/certifications/educational-psych.jpg"
+      },
+      {
+        "name": "Learning Strategies Specialist",
+        "imageUrl": "/certifications/learning-strategies.jpg"
+      },
+      {
+        "name": "Academic Success Coach",
+        "imageUrl": "/certifications/academic-success.jpg"
+      }
+    ],
+    "experienceYears": 6,
+    "hourlyRate": 50,
+    "languages": ["English"],
+    "keyPoints": ["Learning assessment", "Study techniques", "Time management"],
+    "education": [
+      {
+        "degree": "MA in Educational Psychology",
+        "institution": "Emory University",
+        "location": "Atlanta, GA",
+        "dateRange": { "startDate": "2014-01", "endDate": "2016-12" },
+        "description": "Focused on learning theories and academic intervention strategies"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Social Sciences",
+        "items": ["Psychology", "Study Skills", "Test Anxiety Management"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 3, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-0000",
+      "email": "chloe.williams@example.com",
+      "linkedin": "https://linkedin.com/in/chloewilliams"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.87, "totalReviews": 112 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "StudentPlace"],
+    "classType": "OneToOne",
+    "bio": "Helping students develop effective learning strategies for academic success."
+  },
+  {
+    "_id": "21",
+    "userId": "user21",
+    "fullName": "Miguel Hernandez",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Calculus & Advanced Math Tutor",
+    "dateOfBirth": "1983-01-18T00:00:00.000Z",
+    "gender": "Male",
+    "address": {
+      "city": "Austin",
+      "state": "TX",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Advanced Mathematics Credential",
+        "imageUrl": "/certifications/advanced-math.jpg"
+      },
+      {
+        "name": "Calculus Teaching Specialist",
+        "imageUrl": "/certifications/calculus.jpg"
+      },
+      {
+        "name": "STEM Education Certificate",
+        "imageUrl": "/certifications/stem.jpg"
+      }
+    ],
+    "experienceYears": 14,
+    "hourlyRate": 70,
+    "languages": ["English", "Spanish"],
+    "keyPoints": [
+      "Concept visualization",
+      "Step-by-step approach",
+      "College-level preparation"
+    ],
+    "education": [
+      {
+        "degree": "PhD in Mathematics",
+        "institution": "University of Texas",
+        "location": "Austin, TX",
+        "dateRange": { "startDate": "2005-01", "endDate": "2010-12" },
+        "description": "Research in mathematical modeling and education techniques"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Mathematics",
+        "items": ["Calculus", "Differential Equations", "Linear Algebra"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 4, "timeSlots": ["afternoon", "evening"] }],
+    "contact": {
+      "phone": "555-1212",
+      "email": "miguel.hernandez@example.com",
+      "linkedin": "https://linkedin.com/in/miguelhernandez"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.94, "totalReviews": 189 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "TutorPlace"],
+    "classType": "OneToOne",
+    "bio": "Making advanced mathematics understandable and approachable for all students."
+  },
+  {
+    "_id": "22",
+    "userId": "user22",
+    "fullName": "Sophie Turner",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Vocal Music & Performance Coach",
+    "dateOfBirth": "1994-08-09T00:00:00.000Z",
+    "gender": "Female",
+    "address": {
+      "city": "Nashville",
+      "state": "TN",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Vocal Pedagogy Certificate",
+        "imageUrl": "/certifications/vocal-pedagogy.jpg"
+      },
+      {
+        "name": "Music Performance Degree",
+        "imageUrl": "/certifications/music-performance.jpg"
+      },
+      {
+        "name": "Sight-Singing Specialist",
+        "imageUrl": "/certifications/sight-singing.jpg"
+      }
+    ],
+    "experienceYears": 5,
+    "hourlyRate": 60,
+    "languages": ["English"],
+    "keyPoints": [
+      "Breath control techniques",
+      "Performance confidence",
+      "Audition preparation"
+    ],
+    "education": [
+      {
+        "degree": "BM in Vocal Performance",
+        "institution": "Belmont University",
+        "location": "Nashville, TN",
+        "dateRange": { "startDate": "2019-04", "endDate": "2021-12" },
+        "description": "Specialized in classical and contemporary vocal techniques"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Music",
+        "items": ["Voice", "Sight Singing", "Music Theory", "Performance"]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 5, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-2323",
+      "email": "sophie.turner@example.com",
+      "instagram": "https://instagram.com/sophieturnervoice"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.89, "totalReviews": 76 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Offline", "TutorPlace"],
+    "classType": "OneToOne",
+    "bio": "Helping students discover and develop their unique vocal abilities."
+  },
+  {
+    "_id": "23",
+    "userId": "user23",
+    "fullName": "Kevin Zhang",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Mandarin Chinese Language Instructor",
+    "dateOfBirth": "1989-11-12T00:00:00.000Z",
+    "gender": "Male",
+    "address": {
+      "city": "San Francisco",
+      "state": "CA",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "HSK Test Preparation Certified",
+        "imageUrl": "/certifications/hsk.jpg"
+      },
+      {
+        "name": "Mandarin Teaching Credential",
+        "imageUrl": "/certifications/mandarin.jpg"
+      },
+      {
+        "name": "Business Chinese Specialist",
+        "imageUrl": "/certifications/business-chinese.jpg"
+      }
+    ],
+    "experienceYears": 7,
+    "hourlyRate": 55,
+    "languages": ["Mandarin", "English"],
+    "keyPoints": [
+      "Character writing",
+      "Conversational practice",
+      "Cultural context"
+    ],
+    "education": [
+      {
+        "degree": "MA in Chinese Language",
+        "institution": "San Francisco State University",
+        "location": "San Francisco, CA",
+        "dateRange": { "startDate": "2019-04", "endDate": "2021-12" },
+        "description": "Focused on Mandarin pedagogy and cross-cultural communication"
+      }
+    ],
+    "subjects": [{ "category": "Languages", "items": ["Mandarin Chinese"] }],
+    "availability": [{ "dayOfWeek": 6, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-3434",
+      "email": "kevin.zhang@example.com",
+      "wechat": "kevinzhang_sf"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.9, "totalReviews": 124 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Online", "Offline"],
+    "classType": "Group",
+    "bio": "Native Mandarin speaker making Chinese language learning engaging and effective."
+  },
+  {
+    "_id": "24",
+    "userId": "user24",
+    "fullName": "Rachel Goldberg",
+    "avatarUrl": "/placeholder.svg?height=80&width=80",
+    "tagline": "Special Education & Learning Differences",
+    "dateOfBirth": "1986-05-05T00:00:00.000Z",
+    "gender": "Female",
+    "address": {
+      "city": "Philadelphia",
+      "state": "PA",
+      "district": "",
+      "ward": "",
+      "street": "",
+      "country": "USA"
+    },
+    "certifications": [
+      {
+        "name": "Special Education Credential",
+        "imageUrl": "/certifications/special-ed.jpg"
+      },
+      {
+        "name": "Dyslexia Specialist",
+        "imageUrl": "/certifications/dyslexia.jpg"
+      },
+      {
+        "name": "ADHD Coaching Certificate",
+        "imageUrl": "/certifications/adhd.jpg"
+      }
+    ],
+    "experienceYears": 10,
+    "hourlyRate": 75,
+    "languages": ["English"],
+    "keyPoints": [
+      "Individualized approach",
+      "Multisensory techniques",
+      "Advocacy skills"
+    ],
+    "education": [
+      {
+        "degree": "MEd in Special Education",
+        "institution": "Temple University",
+        "location": "Philadelphia, PA",
+        "dateRange": { "startDate": "2008-01", "endDate": "2010-12" },
+        "description": "Specialized in learning differences and intervention strategies"
+      }
+    ],
+    "subjects": [
+      {
+        "category": "Special Education",
+        "items": [
+          "Learning Differences",
+          "Study Skills",
+          "Executive Functioning"
+        ]
+      }
+    ],
+    "availability": [{ "dayOfWeek": 0, "timeSlots": ["morning", "afternoon"] }],
+    "contact": {
+      "phone": "555-4545",
+      "email": "rachel.goldberg@example.com",
+      "linkedin": "https://linkedin.com/in/rachelgoldberg"
+    },
+    "isApproved": true,
+    "ratings": { "average": 4.97, "totalReviews": 167 },
+    "createdAt": "2025-08-14T00:00:00.000Z",
+    "updatedAt": "2025-08-14T00:00:00.000Z",
+    "teachingServices": ["Offline", "StudentPlace"],
+    "classType": "OneToOne",
+    "bio": "Empowering students with learning differences to achieve academic success."
   }
 ]

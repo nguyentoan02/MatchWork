@@ -177,6 +177,12 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                         >
                             {t("tutor detail")}
                         </Link>
+                        <Link
+                            to="/tutor-profile/create"
+                            className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                        >
+                            {t("tutor profile create")}
+                        </Link>
 
                     </>
                 )}

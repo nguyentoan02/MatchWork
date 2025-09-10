@@ -19,7 +19,7 @@ export function TutorIntroduction({ tutor }: TutorIntroductionProps) {
                 </p>
 
                 <ul className="space-y-2">
-                    {tutor.keyPoints.map((point, index) => (
+                    {tutor.keyPoints?.map((point, index) => (
                         <li
                             key={index}
                             className="flex items-start gap-2"
