@@ -1,9 +1,9 @@
 import {
-    fetchStudentProfile,
-    updateStudentProfile,
+   fetchStudentProfile,
+   updateStudentProfile,
 } from "@/api/studentProfile";
 import { Student } from "@/types/student";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // export const useFetchStudentProfile = () => {
 //     const {
@@ -20,15 +20,19 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 // };
 
 export const useFetchStudentProfile = () => {
-    return useQuery<Student>({
-        queryKey: ["studentProfile"],
-        queryFn: fetchStudentProfile,
-    });
+   return useQuery<Student>({
+      queryKey: ["studentProfile"],
+      queryFn: fetchStudentProfile,
+   });
 };
 
 // Cập nhật profile
 export const useUpdateStudentProfile = () => {
-    return useMutation({
-        mutationFn: updateStudentProfile,
-    });
+   const queryClient = useQueryClient();
+   return useMutation({
+      mutationFn: updateStudentProfile,
+      onSuccess: () => {
+         queryClient.invalidateQueries({ queryKey: ["studentProfile"] });
+      },
+   });
 };

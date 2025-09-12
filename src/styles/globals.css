@@ -174,3 +174,94 @@
 .dark .rbc-show-more {
     @apply text-primary hover:text-primary/80;
 }
+
+/* ================================================
+   React Quill Editor Styles
+   ================================================ */
+
+/* General container */
+.ql-container {
+    @apply rounded-b-md;
+    background-color: hsl(var(--background));
+    border-color: hsl(var(--border)) !important;
+}
+
+/* Toolbar */
+.ql-toolbar {
+    @apply rounded-t-md;
+    background-color: hsl(var(--muted));
+    border-color: hsl(var(--border)) !important;
+}
+
+/* Editor content area */
+.ql-editor {
+    min-height: 150px;
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--background));
+}
+
+.ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground));
+    font-style: normal;
+    left: 1rem;
+}
+
+/* Toolbar icons */
+.ql-snow .ql-stroke {
+    stroke: hsl(var(--foreground));
+}
+.ql-snow .ql-fill {
+    fill: hsl(var(--foreground));
+}
+
+/* Toolbar buttons on hover */
+.ql-snow .ql-picker:not(.ql-color-picker):not(.ql-icon-picker) svg,
+.ql-snow .ql-toolbar .ql-picker-label:hover,
+.ql-snow .ql-toolbar button:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke {
+    stroke: hsl(var(--accent-foreground));
+}
+
+/* Active/selected toolbar buttons */
+.ql-snow .ql-toolbar button.ql-active,
+.ql-snow .ql-toolbar .ql-picker-label.ql-active {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}
+
+.ql-snow .ql-toolbar button.ql-active .ql-stroke,
+.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke {
+    stroke: hsl(var(--primary-foreground));
+}
+
+/* Dropdown pickers */
+.ql-snow .ql-picker-options {
+    background-color: hsl(var(--popover));
+    border-color: hsl(var(--border)) !important;
+    color: hsl(var(--popover-foreground));
+}
+
+.ql-snow .ql-picker-options .ql-picker-item:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+/* Read-only mode styles */
+.ql-read-only .ql-toolbar {
+    display: none !important;
+}
+
+.ql-read-only .ql-container {
+    border-top: 1px solid hsl(var(--border)) !important;
+}
+
+.ql-read-only .ql-editor {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    min-height: auto;
+}
