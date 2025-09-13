@@ -1,7 +1,7 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home } from "lucide-react";
+import { LogOut, Home, User, LayoutDashboard, BookOpen } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export type SidebarItem = {
@@ -11,55 +11,55 @@ export type SidebarItem = {
    icon?: React.ReactNode;
 };
 
-// Thêm item mới chỉ cần thêm object { to, label, icon? }
 export const studentSidebarConfig: SidebarItem[] = [
-   { to: "/student/dashboard", label: "Dashboard" },
-   { to: "/student/applications", label: "My Applications" },
-   { to: "/student/profile", label: "My profile" },
-   { to: "/profile/change-password", label: "change pass" },
-   // Ví dụ thêm: { to: "/student/settings", label: "Settings", icon: <SettingsIcon /> }
+   {
+      to: "/student/dashboard",
+      label: "Bảng điều khiển",
+      icon: <LayoutDashboard className="h-4 w-4" />,
+   },
+   {
+      to: "/student/student-profile",
+      label: "Hồ sơ của tôi",
+      icon: <User className="h-4 w-4" />,
+   },
+   {
+      to: "/student/applications",
+      label: "Lớp học của tôi",
+      icon: <BookOpen className="h-4 w-4" />,
+   },
+   {
+      to: "/student/applications",
+      label: "Lớp học của họ ",
+      icon: <BookOpen className="h-4 w-4" />,
+   },
+   // Thêm các mục khác ở đây
 ];
 
 const StudentSidebarItems: React.FC<{
    onLinkClick?: () => void;
    collapsed?: boolean;
 }> = (props = {}) => {
-   // đảm bảo props không undefined trước khi destructure
-   const { onLinkClick, collapsed = false } = props as {
-      onLinkClick?: () => void;
-      collapsed?: boolean;
-   };
-
+   const { onLinkClick, collapsed = false } = props;
    const location = useLocation();
+   const navigate = useNavigate();
    const { logout } = useAuth();
 
-   // active state cho nút trang chủ
    const isActive = (path: string, exact = false) =>
       exact ? location.pathname === path : location.pathname.startsWith(path);
-   const homeActive = isActive("/", true);
 
    const handleLogout = () => {
-      try {
-         logout();
-      } finally {
-         onLinkClick?.();
-      }
+      logout();
+      navigate("/login");
+      onLinkClick?.();
    };
 
    return (
       <div className="flex flex-col h-full">
-         <div className="space-y-1">
-            {/* Trở về trang chủ */}
+         <div className="space-y-1 flex-grow">
             <Link
                to="/"
                onClick={() => onLinkClick?.()}
-               className={`flex items-center gap-2 p-2 rounded-md text-sm font-medium transition-colors duration-200
-                  ${
-                     homeActive
-                        ? "bg-green-500/20 text-gray-900 dark:text-white border-l-4 border-green-500"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }
-               `}
+               className={`flex items-center gap-3 p-2 rounded-md text-sm font-medium transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800`}
                title="Trang chủ"
             >
                <Home className="h-4 w-4 flex-none" />
@@ -75,11 +75,11 @@ const StudentSidebarItems: React.FC<{
                      key={item.to}
                      to={item.to}
                      onClick={() => onLinkClick?.()}
-                     className={`flex items-center gap-2 p-2 rounded-md text-sm font-medium transition-colors duration-200
+                     className={`flex items-center gap-3 p-2 rounded-md text-sm font-medium transition-colors duration-200
                         ${
                            active
-                              ? "bg-green-500/20 text-gray-900 dark:text-white border-l-4 border-green-500"
-                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                              ? "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300"
+                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                         }
                      `}
                      title={item.label}
@@ -97,15 +97,14 @@ const StudentSidebarItems: React.FC<{
             })}
          </div>
 
-         {/* Footer area with logout button kept at bottom */}
-         <div className="mt-auto pt-3 border-t border-transparent dark:border-slate-800">
+         <div className="mt-auto pt-2 border-t border-gray-200 dark:border-gray-800">
             <Button
                variant="ghost"
-               className="w-full justify-start text-sm text-red-600 hover:bg-red-50 dark:hover:bg-slate-800"
+               className="w-full justify-start text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30"
                onClick={handleLogout}
                title="Đăng xuất"
             >
-               <LogOut className="h-4 w-4 mr-2" />
+               <LogOut className="h-4 w-4 mr-3" />
                <span className={`${collapsed ? "sr-only" : "inline-block"}`}>
                   Đăng xuất
                </span>
