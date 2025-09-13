@@ -46,9 +46,9 @@ const DAYS_OF_WEEK = [
 ];
 
 const TIMESLOTS = [
-   { value: TimeSlot.PRE_12, label: "Sáng" },
-   { value: TimeSlot.MID_12_17, label: "Chiều" },
-   { value: TimeSlot.AFTER_17, label: "Tối" },
+   { value: TimeSlot.PRE_12, label: "Trước 12 giờ" },
+   { value: TimeSlot.MID_12_17, label: "Từ 12 đến 17 giờ" },
+   { value: TimeSlot.AFTER_17, label: "Sau 17 giờ" },
 ];
 
 type StudentProfileFormValues = z.infer<typeof studentProfileSchema>;
