@@ -16,7 +16,7 @@ export const tutorSidebarConfig: SidebarItem[] = [
    { to: "/tutor/dashboard", label: "Dashboard" },
    { to: "/tutor/jobs", label: "My Profile" },
    { to: "/tutor/profile", label: "My profile" },
-   { to: "/tutor/profile-page", label: "My profile" },
+   { to: "/tutor-profile/page", label: "Profile page" },
 
    // ví dụ: { to: "/tutor/new", label: "New Feature", icon: <YourIcon /> }
 ];

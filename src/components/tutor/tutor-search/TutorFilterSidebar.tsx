@@ -236,7 +236,7 @@ export function TutorFilterBar({
                                 <div className="space-y-4">
                                     <h4 className="font-medium text-sm">Filter by Location</h4>
                                     <Input
-                                        placeholder="Search by city or state"
+                                        placeholder="Search by city"
                                         value={currentFilters.selectedLocation}
                                         onChange={(e) => onFilterChange({ selectedLocation: e.target.value })}
                                     />

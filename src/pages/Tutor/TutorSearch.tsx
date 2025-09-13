@@ -2,17 +2,17 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Tutor } from "@/types/Tutor"
-import tutorsData from "@/data/tutors.json"
 import { TutorCard } from "@/components/tutor/tutor-search/TutorCard"
 import { TutorFilterBar } from "@/components/tutor/tutor-search/TutorFilterSidebar"
 import { Pagination } from "@/components/common/Pagination"
+import { useTutors } from "@/hooks/useTutor"
+import { TimeSlot } from "@/enums/timeSlot.enum"
 
 export default function TutorSearch() {
     const [showFilters, setShowFilters] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
+    const { data: tutors, isLoading } = useTutors();
 
-    const [tutors, setTutors] = useState<Tutor[]>([])
     const [currentFilters, setCurrentFilters] = useState({
         searchQuery: "",
         priceRange: [0, 200] as [number, number],
@@ -30,11 +30,7 @@ export default function TutorSearch() {
     })
     const [appliedFilters, setAppliedFilters] = useState(currentFilters)
 
-    useEffect(() => {
-        setTutors(tutorsData as Tutor[])
-    }, [])
-
-    const filteredTutors = tutors.filter((tutor) => {
+    const filteredTutors = (tutors ?? []).filter((tutor) => {
         // Search query filter
         if (appliedFilters.searchQuery) {
             const query = appliedFilters.searchQuery.toLowerCase()
@@ -81,11 +77,10 @@ export default function TutorSearch() {
 
         //Time slots filter
         if (appliedFilters.selectedTimeSlots.length > 0) {
-            const availableSlots = tutor.availability.flatMap((a) => a.timeSlots)
+            const availableSlots = tutor.availability.flatMap((a) => a.slots).flat()
             if (
                 !appliedFilters.selectedTimeSlots
-                    .map((slot) => slot.toLowerCase())
-                    .some((slot) => availableSlots.includes(slot as "morning" | "afternoon" | "evening"))
+                    .some((slot) => availableSlots.includes(slot as TimeSlot))
             )
                 return false
         }
@@ -153,6 +148,8 @@ export default function TutorSearch() {
         setCurrentPage(1)
     }
 
+    if (isLoading) return <div>Loading tutors...</div>
+
     return (
         <div className="min-h-screen bg-background">
             <div className="container mx-auto px-4 py-6">
@@ -172,7 +169,7 @@ export default function TutorSearch() {
                             onFilterChange={(newFilters) => setCurrentFilters(prev => ({ ...prev, ...newFilters }))}
                             onApplyFilters={applyFilters}
                             onClearFilters={clearAllFilters}
-                            tutors={tutors}
+                            tutors={tutors ?? []}
                         />
                     </div>
 

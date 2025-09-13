@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Award, Globe, Plus, Trash2, ImageIcon, Check, ChevronDown, X, Briefcase, Upload } from "lucide-react"
 import { Controller, UseFormReturn } from "react-hook-form"
-import { LANGUAGES, TutorFormData } from "./types"
+import { TutorFormData } from "./types"
 import { MultiSelectInput } from "./MultiSelectInput"
+import { LEVEL_LABELS, LEVEL_VALUES } from "@/enums/level.enum"
+import { Textarea } from "@/components/ui/textarea"
 
 interface ProfessionalDetailsStepProps {
     form: UseFormReturn<TutorFormData>
@@ -14,9 +16,8 @@ interface ProfessionalDetailsStepProps {
     appendCertification: any
     removeCertification: any
     uploadingImages: { [key: string]: boolean }
-    handleImageUpload: (file: File, certificationIndex: number) => void
+    onImageUpload: (file: File, certificationIndex: number) => void // ← Changed from handleImageUpload to onImageUpload
 }
-
 
 export default function ProfessionalDetailsStep({
     form,
@@ -24,7 +25,7 @@ export default function ProfessionalDetailsStep({
     appendCertification,
     removeCertification,
     uploadingImages,
-    handleImageUpload,
+    onImageUpload, // ← Changed prop name here
 }: ProfessionalDetailsStepProps) {
     return (
         <Card className="shadow-lg border-0 bg-white rounded-2xl overflow-hidden">
@@ -70,15 +71,15 @@ export default function ProfessionalDetailsStep({
                     <Label>Class Type</Label>
                     <RadioGroup
                         value={form.watch("classType")}
-                        onValueChange={(value) => form.setValue("classType", value as "Online" | "In_Person")}
+                        onValueChange={(value) => form.setValue("classType", value as "ONLINE" | "IN_PERSON")}
                         className="flex gap-6"
                     >
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="Online" id="online" />
+                            <RadioGroupItem value="ONLINE" id="online" />
                             <Label htmlFor="online">Online</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="In_Person" id="in_person" />
+                            <RadioGroupItem value="IN_PERSON" id="in_person" />
                             <Label htmlFor="in_person">In Person</Label>
                         </div>
                     </RadioGroup>
@@ -95,30 +96,41 @@ export default function ProfessionalDetailsStep({
 
                         <div className="space-y-4">
                             {certificationFields.map((field: any, index: number) => (
-                                <div key={field.id} className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-4">
-                                    <div className="flex gap-3">
-                                        <div className="flex-1">
-                                            <Label className="text-sm font-medium text-slate-600 mb-2 block">Certification Name *</Label>
-                                            <Input
-                                                placeholder="e.g., TESOL Certificate, Teaching License"
-                                                className="h-11"
-                                                {...form.register(`certifications.${index}.name` as const, { required: true })}
-                                            />
-                                            {form.formState.errors.certifications?.[index]?.name && (
-                                                <p className="text-red-500 text-xs mt-1">Certification name is required</p>
-                                            )}
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => removeCertification(index)}
-                                            className="mt-7 h-11 w-11 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                <div
+                                    key={field.id}
+                                    className="p-6 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-4"
+                                >
+                                    {/* Certification Name */}
+                                    <div>
+                                        <Label className="text-sm font-medium text-slate-600 mb-2 block">
+                                            Certification Name *
+                                        </Label>
+                                        <Input
+                                            placeholder="e.g., TESOL Certificate, Teaching License"
+                                            className="h-11"
+                                            {...form.register(`certifications.${index}.name` as const, { required: true })}
+                                        />
+                                        {form.formState.errors.certifications?.[index]?.name && (
+                                            <p className="text-red-500 text-xs mt-1">Certification name is required</p>
+                                        )}
                                     </div>
 
+                                    {/* Certification Description */}
+                                    <div>
+                                        <Label className="text-sm font-medium text-slate-600 mb-2 block">
+                                            Description *
+                                        </Label>
+                                        <Textarea
+                                            placeholder="e.g., Description of the certification"
+                                            className="h-24"
+                                            {...form.register(`certifications.${index}.description` as const, { required: true })}
+                                        />
+                                        {form.formState.errors.certifications?.[index]?.description && (
+                                            <p className="text-red-500 text-xs mt-1">Description is required</p>
+                                        )}
+                                    </div>
+
+                                    {/* Certification Image */}
                                     <div className="space-y-3">
                                         <Label className="text-sm font-medium text-slate-600">Certificate Image *</Label>
                                         <div className="flex items-center gap-4">
@@ -144,6 +156,8 @@ export default function ProfessionalDetailsStep({
                                                     <ImageIcon className="h-8 w-8 text-slate-400" />
                                                 </div>
                                             )}
+
+                                            {/* Image URL / Upload */}
                                             <div className="flex-1">
                                                 <div className="flex gap-2">
                                                     <Input
@@ -169,7 +183,7 @@ export default function ProfessionalDetailsStep({
                                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                                                 onChange={(e) => {
                                                                     const file = e.target.files?.[0]
-                                                                    if (file) handleImageUpload(file, index)
+                                                                    if (file) onImageUpload(file, index)
                                                                 }}
                                                                 required={!form.watch(`certifications.${index}.imageUrl`)}
                                                             />
@@ -202,19 +216,20 @@ export default function ProfessionalDetailsStep({
                     <div className="space-y-2">
                         <Label className="text-base font-semibold flex items-center gap-2">
                             <Globe className="h-4 w-4" />
-                            Languages
+                            Levels You Teach *
                         </Label>
                         <Controller
-                            name="languages"
+                            name="levels"
                             control={form.control}
                             render={({ field }) => (
                                 <MultiSelectInput
                                     value={field.value || []}
                                     onChange={field.onChange}
-                                    options={LANGUAGES}
-                                    placeholder="Select languages..."
-                                    searchPlaceholder="Search languages..."
-                                    emptyMessage="No language found."
+                                    options={LEVEL_VALUES}
+                                    placeholder="Select levels..."
+                                    searchPlaceholder="Search levels..."
+                                    emptyMessage="No levels found."
+                                    labels={LEVEL_LABELS}
                                 />
                             )}
                         />

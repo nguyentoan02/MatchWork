@@ -1,47 +1,24 @@
 import type React from "react";
 import type { Tutor } from "@/types/Tutor";
-import tutorsData from "@/data/tutors.json";
 import { useParams, useNavigate } from "react-router-dom";
 import { RelatedTutors, TutorAvailability, TutorCertification, TutorContactCard, TutorEducation, TutorHeader, TutorIntroduction, TutorSubject } from "@/components/tutor/tutor-detail";
+import { useTutor, useTutors } from "@/hooks/useTutor";
+import { TimeSlot } from "@/enums/timeSlot.enum";
 
 const TutorDetail: React.FC = () => {
     const { id } = useParams();
+    const { data: tutor, isLoading } = useTutor(id!);
+    const { data: tutors } = useTutors();
     const navigate = useNavigate();
-    const rawTutor = tutorsData.find((t) => t._id === id);
-    const validTimeSlots = ["morning", "afternoon", "evening"] as const;
-    const mapClassType = (type: string): "Online" | "In_Person" => {
-        if (type === "Online") return "Online";
-        if (type === "In_Person") return "In_Person";
-        return "Online"; // fallback
-    };
-    const tutor: Tutor | undefined = rawTutor
-        ? {
-            ...rawTutor,
-            availability: rawTutor.availability.map((a: any) => ({
-                ...a,
-                timeSlots: Array.isArray(a.timeSlots)
-                    ? a.timeSlots.filter((slot: string) =>
-                        validTimeSlots.includes(
-                            slot as (typeof validTimeSlots)[number]
-                        )
-                    )
-                    : [],
-            })),
-            classType: mapClassType(rawTutor.classType),
-            education: Array.isArray(rawTutor.education)
-                ? rawTutor.education.map((e: any) => ({
-                    ...e,
-                    dateRange:
-                        typeof e.dateRange === "string"
-                            ? (() => {
-                                const [startDate, endDate] = e.dateRange.split(" - ");
-                                return { startDate: startDate?.trim() || "", endDate: endDate?.trim() || "" };
-                            })()
-                            : e.dateRange,
-                }))
-                : [],
-        }
-        : undefined;
+    const validTimeSlots: TimeSlot[] = [
+        TimeSlot.PRE_12,
+        TimeSlot.MID_12_17,
+        TimeSlot.AFTER_17,
+    ];
+
+    if (isLoading) {
+        return <div className="text-center text-blue-500">Loading...</div>;
+    }
 
     if (!tutor) {
         return <div className="text-center text-red-500">Tutor not found</div>;
@@ -51,7 +28,8 @@ const TutorDetail: React.FC = () => {
         const currentTutorSubjects = tutor.subjects
         const currentTutorLocation = `${tutor.address.city}`;
 
-        return tutorsData
+        if (!tutors) return [];
+        return tutors
             .filter((t) => t._id !== tutor._id) // Exclude current tutor
             .map((t) => {
                 let score = 0;
@@ -85,8 +63,8 @@ const TutorDetail: React.FC = () => {
                     ...rest,
                     availability: t.availability.map((a: any) => ({
                         ...a,
-                        timeSlots: Array.isArray(a.timeSlots)
-                            ? a.timeSlots.filter((slot: string) =>
+                        slots: Array.isArray(a.slots)
+                            ? a.slots.filter((slot: string) =>
                                 validTimeSlots.includes(slot as (typeof validTimeSlots)[number])
                             )
                             : [],
@@ -146,7 +124,7 @@ const TutorDetail: React.FC = () => {
                     {/* Availability */}
                     <TutorAvailability tutor={tutor} />
 
-                    {relatedTutors.length > 0 && (
+                    {relatedTutors?.length > 0 && (
                         <RelatedTutors
                             relatedTutors={relatedTutors}
                             onViewProfile={onViewProfile}
