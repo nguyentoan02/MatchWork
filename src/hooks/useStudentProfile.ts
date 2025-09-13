@@ -1,28 +1,23 @@
 import {
+   createStudentProfile,
    fetchStudentProfile,
    updateStudentProfile,
 } from "@/api/studentProfile";
 import { Student } from "@/types/student";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-// export const useFetchStudentProfile = () => {
-//     const {
-//         data: studentProfile,
-//         isLoading,
-//         isError,
-//         error,
-//     } = useQuery({
-//         queryKey: ["studentProfile"],
-//         queryFn: fetchStudentProfile,
-//     });
-
-//     return { studentProfile, isLoading, isError, error };
-// };
+import { useToast } from "./useToast";
+import { useNavigate } from "react-router-dom";
 
 export const useFetchStudentProfile = () => {
    return useQuery<Student>({
       queryKey: ["studentProfile"],
       queryFn: fetchStudentProfile,
+      retry: (failureCount, error: any) => {
+         if (error?.response?.status === 404) {
+            return false;
+         }
+         return failureCount < 2;
+      },
    });
 };
 
@@ -33,6 +28,25 @@ export const useUpdateStudentProfile = () => {
       mutationFn: updateStudentProfile,
       onSuccess: () => {
          queryClient.invalidateQueries({ queryKey: ["studentProfile"] });
+      },
+   });
+};
+
+// Tạo mới profile
+export const useCreateStudentProfile = () => {
+   const queryClient = useQueryClient();
+   const addToast = useToast();
+   const navigate = useNavigate();
+
+   return useMutation({
+      mutationFn: createStudentProfile,
+      onSuccess: () => {
+         queryClient.invalidateQueries({ queryKey: ["studentProfile"] });
+         addToast("success", "Tạo hồ sơ thành công!");
+         navigate("/student/profile");
+      },
+      onError: (error: any) => {
+         addToast("error", error.message || "Tạo hồ sơ thất bại!");
       },
    });
 };

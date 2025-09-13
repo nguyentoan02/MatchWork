@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Level } from "@/enums/level.enum";
 import { Subject } from "@/enums/subject.enum";
-import { useUpdateStudentProfile } from "@/hooks/useStudentProfile";
+import { useCreateStudentProfile } from "@/hooks/useStudentProfile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { Loader2 } from "lucide-react";
@@ -27,9 +27,7 @@ import {
    SelectValue,
 } from "@/components/ui/select";
 import { TimeSlot } from "@/enums/timeSlot.enum";
-import { useToast } from "@/hooks/useToast";
 import { City } from "@/enums/city.enum";
-import { useNavigate } from "react-router-dom";
 import { useUser } from "@/hooks/useUser";
 
 const studentProfileSchema = z.object({
@@ -82,9 +80,9 @@ const CITIES = Object.values(City);
 
 const CreateStudentProfile = () => {
    const { user } = useUser();
-   const navigate = useNavigate();
    const { mutate: createStudentProfile, isPending } =
-      useUpdateStudentProfile();
+      useCreateStudentProfile();
+
    const {
       register,
       control,
@@ -111,7 +109,6 @@ const CreateStudentProfile = () => {
    const [avatarPreview, setAvatarPreview] = useState<string | null>(
       user?.avatarUrl || null
    );
-   const addToast = useToast();
 
    const onSubmit = (formData: StudentProfileFormValues) => {
       const data = new FormData();
@@ -132,15 +129,7 @@ const CreateStudentProfile = () => {
          data.append("avatar", formData.avatar);
       }
 
-      createStudentProfile(data, {
-         onSuccess: () => {
-            addToast("success", "Tạo hồ sơ thành công!");
-            navigate("/student/profile"); // Navigate to view profile after creation
-         },
-         onError: () => {
-            addToast("error", "Tạo hồ sơ thất bại!");
-         },
-      });
+      createStudentProfile(data);
    };
 
    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
