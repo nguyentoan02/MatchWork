@@ -14,19 +14,19 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 
 export const guestRoutes = {
-        element: <GuestLayout />,
-        children: [
-                { path: "/", element: <LandingPage /> },
-                { path: "/login", element: <LoginPage /> },
-                { path: "/register", element: <RegisterPage /> },
-                { path: "/application", element: <Application /> }, // Thêm route cho Application
-                { path: "/verify-email", element: <VerifyEmailPage /> },
-                { path: "/forgot-password", element: <ForgotPasswordPage /> },
-                { path: "/reset-password", element: <ResetPasswordPage /> },
-                { path: "/map", element: <MapOverView /> },
-                { path: "/editSession", element: <EditSession /> },
-                { path: "/tutor-list", element: <TutorSearch /> },
-                { path: "/tutor-detail/:id", element: <TutorDetail /> },
-                { path: "/viewQuizz", element: <ViewQuiz /> },
-        ],
+   element: <GuestLayout />,
+   children: [
+      { path: "/", element: <LandingPage /> },
+      { path: "/login", element: <LoginPage /> },
+      { path: "/register", element: <RegisterPage /> },
+      { path: "/application", element: <Application /> }, // Thêm route cho Application
+      { path: "/verify-email", element: <VerifyEmailPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordPage /> },
+      { path: "/reset-password", element: <ResetPasswordPage /> },
+      { path: "/map", element: <MapOverView /> },
+      { path: "/editSession", element: <EditSession /> },
+      { path: "/tutor-list", element: <TutorSearch /> },
+      { path: "/tutor-detail/:id", element: <TutorDetail /> },
+      { path: "/viewQuizz", element: <ViewQuiz /> },
+   ],
 };

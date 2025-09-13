@@ -4,6 +4,10 @@ import Application from "@/pages/Jobseeker/Application";
 import ChangePasswordPage from "@/pages/auth/ChangePasswordPage";
 import StudentLayout from "@/layouts/StudentLayout";
 import ProfileForm from "@/components/user/ProfileForm";
+import StudentProfile from "@/pages/Student/StudentProfile";
+import CreateStudentProfile from "@/pages/Student/CreateStudentProfile";
+import IsCreatedProfileRoute from "./isCreatedProfileRoute";
+
 export const studentRoutes = {
    element: (
       <ProtectedRoute allowedRoles={["STUDENT"]}>
@@ -11,18 +15,51 @@ export const studentRoutes = {
       </ProtectedRoute>
    ),
    children: [
-      { path: "/student/dashboard", element: <OverviewPage /> },
+      // Các route cần kiểm tra profile thì wrap bằng IsCreatedProfileRoute
+      {
+         path: "/student/dashboard",
+         element: (
+            <IsCreatedProfileRoute>
+               <OverviewPage />
+            </IsCreatedProfileRoute>
+         ),
+      },
       {
          path: "/student/applications",
-         element: <Application />,
+         element: (
+            <IsCreatedProfileRoute>
+               <Application />
+            </IsCreatedProfileRoute>
+         ),
       },
       {
          path: "/profile/change-password",
-         element: <ChangePasswordPage />,
+         element: (
+            <IsCreatedProfileRoute>
+               <ChangePasswordPage />
+            </IsCreatedProfileRoute>
+         ),
       },
       {
          path: "/student/profile",
-         element: <ProfileForm />,
+         element: (
+            <IsCreatedProfileRoute>
+               <ProfileForm />
+            </IsCreatedProfileRoute>
+         ),
+      },
+      {
+         path: "/student/student-profile",
+         element: (
+            <IsCreatedProfileRoute>
+               <StudentProfile />
+            </IsCreatedProfileRoute>
+         ),
+      },
+      // Route tạo profile KHÔNG được wrap!
+      {
+         path: "/student/create-student-profile",
+         element: <CreateStudentProfile />,
       },
    ],
 };
