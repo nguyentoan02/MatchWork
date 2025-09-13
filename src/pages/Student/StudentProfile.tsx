@@ -33,32 +33,7 @@ import { TimeSlot } from "@/enums/timeSlot.enum";
 import { useToast } from "@/hooks/useToast";
 import { Badge } from "@/components/ui/badge";
 import { City } from "@/enums/city.enum";
-
-const studentProfileSchema = z.object({
-   name: z.string().min(1, "Vui lòng nhập tên"),
-   email: z.string().email(),
-   phone: z.string().min(1, "Vui lòng nhập số điện thoại"),
-   gender: z.enum(["MALE", "FEMALE", "OTHER"], "Vui lòng chọn giới tính"),
-   address: z.object({
-      city: z.string().min(1, "Vui lòng chọn thành phố"),
-      street: z.string().min(1, "Vui lòng nhập địa chỉ"),
-   }),
-   avatar: z.any().optional(), // Avatar can be optional
-   gradeLevel: z.string().min(1, "Vui lòng chọn lớp"),
-   subjectsInterested: z
-      .array(z.string())
-      .min(1, "Vui lòng chọn ít nhất một môn học"),
-   bio: z.string().min(1, "Vui lòng nhập giới thiệu bản thân"),
-   learningGoals: z.string().min(1, "Vui lòng nhập mục tiêu học tập"),
-   availability: z
-      .array(
-         z.object({
-            dayOfWeek: z.number(),
-            slots: z.array(z.string()),
-         })
-      )
-      .min(1, "Vui lòng chọn ít nhất một lịch rảnh"),
-});
+import { studentProfileSchema } from "@/validation/studentProfileSchema";
 
 const DAYS_OF_WEEK = [
    { value: 1, label: "Thứ 2" },
@@ -435,7 +410,7 @@ const StudentProfile = () => {
                   <CardHeader>
                      <CardTitle>Thông tin học vấn</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-2]">
                      <div className="grid gap-2">
                         <Label htmlFor="gradeLevel">Lớp</Label>
                         <Controller
@@ -534,7 +509,7 @@ const StudentProfile = () => {
                            </p>
                         )}
                      </div>
-                     <div className="grid gap-2">
+                     <div className="grid gap-2 mb-14 mt-10">
                         <Label htmlFor="bio">Giới thiệu bản thân</Label>
                         {isEditMode ? (
                            <Controller
@@ -561,12 +536,12 @@ const StudentProfile = () => {
                            />
                         )}
                         {errors.bio && (
-                           <p className="text-sm text-red-500">
+                           <p className="text-sm text-red-500 mt-10">
                               {errors.bio.message}
                            </p>
                         )}
                      </div>
-                     <div className="grid gap-2">
+                     <div className="grid gap-2 pb-10">
                         <Label htmlFor="learningGoals">Mục tiêu học tập</Label>
                         {isEditMode ? (
                            <Controller
@@ -593,7 +568,7 @@ const StudentProfile = () => {
                            />
                         )}
                         {errors.learningGoals && (
-                           <p className="text-sm text-red-500">
+                           <p className="text-sm text-red-500 mt-10">
                               {errors.learningGoals.message}
                            </p>
                         )}

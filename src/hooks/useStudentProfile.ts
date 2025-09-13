@@ -46,7 +46,7 @@ export const useCreateStudentProfile = () => {
          navigate("/student/profile");
       },
       onError: (error: any) => {
-         addToast("error", error.message || "Tạo hồ sơ thất bại!");
+         addToast("error", error.data.message || "Tạo hồ sơ thất bại!");
       },
    });
 };

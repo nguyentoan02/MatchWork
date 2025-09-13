@@ -29,32 +29,7 @@ import {
 import { TimeSlot } from "@/enums/timeSlot.enum";
 import { City } from "@/enums/city.enum";
 import { useUser } from "@/hooks/useUser";
-
-const studentProfileSchema = z.object({
-   name: z.string().min(1, "Vui lòng nhập tên"),
-   email: z.string().email(),
-   phone: z.string().min(1, "Vui lòng nhập số điện thoại"),
-   gender: z.enum(["MALE", "FEMALE", "OTHER"], "Vui lòng chọn giới tính"),
-   address: z.object({
-      city: z.string().min(1, "Vui lòng chọn thành phố"),
-      street: z.string().min(1, "Vui lòng nhập địa chỉ"),
-   }),
-   avatar: z.any().optional(),
-   gradeLevel: z.string().min(1, "Vui lòng chọn lớp"),
-   subjectsInterested: z
-      .array(z.string())
-      .min(1, "Vui lòng chọn ít nhất một môn học"),
-   bio: z.string().min(1, "Vui lòng nhập giới thiệu bản thân"),
-   learningGoals: z.string().min(1, "Vui lòng nhập mục tiêu học tập"),
-   availability: z
-      .array(
-         z.object({
-            dayOfWeek: z.number(),
-            slots: z.array(z.string()),
-         })
-      )
-      .min(1, "Vui lòng chọn ít nhất một lịch rảnh"),
-});
+import { studentProfileSchema } from "@/validation/studentProfileSchema";
 
 const DAYS_OF_WEEK = [
    { value: 1, label: "Thứ 2" },
@@ -67,9 +42,9 @@ const DAYS_OF_WEEK = [
 ];
 
 const TIMESLOTS = [
-   { value: TimeSlot.PRE_12, label: "Sáng" },
-   { value: TimeSlot.MID_12_17, label: "Chiều" },
-   { value: TimeSlot.AFTER_17, label: "Tối" },
+   { value: TimeSlot.PRE_12, label: "Trước 12 giờ" },
+   { value: TimeSlot.MID_12_17, label: "Từ 12 đến 17 giờ" },
+   { value: TimeSlot.AFTER_17, label: "Sau 17 giờ" },
 ];
 
 type StudentProfileFormValues = z.infer<typeof studentProfileSchema>;
@@ -368,7 +343,7 @@ const CreateStudentProfile = () => {
                            </p>
                         )}
                      </div>
-                     <div className="grid gap-2">
+                     <div className="grid gap-2 pb-10">
                         <Label htmlFor="bio">Giới thiệu bản thân</Label>
                         <Controller
                            name="bio"
@@ -382,12 +357,12 @@ const CreateStudentProfile = () => {
                            )}
                         />
                         {errors.bio && (
-                           <p className="text-sm text-red-500">
+                           <p className="text-sm text-red-500 mt-10">
                               {errors.bio.message}
                            </p>
                         )}
                      </div>
-                     <div className="grid gap-2">
+                     <div className="grid gap-2 pb-10">
                         <Label htmlFor="learningGoals">Mục tiêu học tập</Label>
                         <Controller
                            name="learningGoals"
@@ -401,7 +376,7 @@ const CreateStudentProfile = () => {
                            )}
                         />
                         {errors.learningGoals && (
-                           <p className="text-sm text-red-500">
+                           <p className="text-sm text-red-500 mt-10">
                               {errors.learningGoals.message}
                            </p>
                         )}
