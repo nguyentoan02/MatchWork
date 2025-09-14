@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Tutor } from "@/types/Tutor";
 import { Check, Minus } from "lucide-react";
-import { TIME_SLOT_LABELS } from "../tutor-profile-form";
 
 interface TutorAvailabilityProps {
     tutor: Tutor;
@@ -11,11 +10,16 @@ interface TutorAvailabilityProps {
 export function TutorAvailability({ tutor }: TutorAvailabilityProps) {
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+    const timeSlotLabels = {
+        morning: "PRE 12PM",
+        afternoon: "12PM-5PM",
+        evening: "AFTER 5PM",
+    };
 
     const availabilityGrid = () => {
         const grid: { [key: string]: boolean } = {};
-        tutor.availability.forEach(({ dayOfWeek, slots }) => {
-            slots?.forEach((slot) => {
+        tutor.availability.forEach(({ dayOfWeek, timeSlots }) => {
+            timeSlots.forEach((slot) => {
                 grid[`${dayOfWeek}-${slot}`] = true;
             });
         });
@@ -48,7 +52,7 @@ export function TutorAvailability({ tutor }: TutorAvailabilityProps) {
                             </tr>
                         </thead>
                         <tbody>
-                            {Object.entries(TIME_SLOT_LABELS).map(
+                            {Object.entries(timeSlotLabels).map(
                                 ([slot, label]) => (
                                     <TableRow key={slot}>
                                         <TableCell className="p-2 border-b text-sm font-medium">

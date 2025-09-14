@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { DAY_NAMES, TIME_SLOT_LABELS, TIME_SLOTS, TutorFormData } from "./types";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ReviewSubmitStepProps {
     form: UseFormReturn<TutorFormData>
@@ -48,15 +47,6 @@ export default function ReviewSubmitStep({ form, goToStep }: ReviewSubmitStepPro
                     </div>
                     <Card className="bg-slate-50 border-slate-200">
                         <CardContent className="p-6">
-                            {/* avatar */}
-                            <div className="flex items-center mb-6">
-                                <Avatar className="h-20 w-20 ring-4 ring-white shadow-lg">
-                                    <AvatarImage src={form.watch("avatarUrl") || "/placeholder.svg"} />
-                                    <AvatarFallback className="bg-blue-100 text-blue-600 text-xl font-semibold">
-                                        <User className="h-10 w-10" />
-                                    </AvatarFallback>
-                                </Avatar>
-                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                                 <div className="space-y-2">
                                     <span className="font-semibold text-slate-700">Full Name:</span>
@@ -80,10 +70,7 @@ export default function ReviewSubmitStep({ form, goToStep }: ReviewSubmitStepPro
                             </div>
                             <div className="mt-6 space-y-2">
                                 <span className="font-semibold text-slate-700">Bio:</span>
-                                <div
-                                    className="prose prose-slate max-w-none text-slate-900 leading-relaxed"
-                                    dangerouslySetInnerHTML={{ __html: form.watch("bio") }}
-                                />
+                                <p className="text-slate-900 leading-relaxed">{form.watch("bio")}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -124,22 +111,27 @@ export default function ReviewSubmitStep({ form, goToStep }: ReviewSubmitStepPro
                                     <span className="font-semibold text-slate-700">Class Type:</span>
                                     <p className="text-slate-900 font-medium">{form.watch("classType")}</p>
                                 </div>
-                                <div className="space-y-2">
-                                    <span className="font-semibold text-slate-700">Levels:</span>
-                                    <div className="flex flex-wrap gap-2">
-                                        {(form.watch("levels") ?? []).map((level) => (
-                                            <Badge
-                                                key={level}
-                                                variant="outline"
-                                                className="bg-green-100 border-green-300 text-green-700"
-                                            >
-                                                {level}
-                                            </Badge>
-                                        ))}
-                                    </div>
-                                </div>
                             </div>
 
+                            <div className="space-y-4">
+                                {(form.watch("languages")?.length ?? 0) > 0 && (
+                                    <div>
+                                        <span className="font-semibold text-slate-700 block mb-2">Languages:</span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {form.watch("languages")?.map((lang) => (
+                                                <Badge
+                                                    key={lang}
+                                                    variant="outline"
+                                                    className="bg-white border-green-300 text-green-700"
+                                                >
+                                                    <Globe className="h-3 w-3 mr-1" />
+                                                    {lang}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
@@ -337,7 +329,7 @@ export default function ReviewSubmitStep({ form, goToStep }: ReviewSubmitStepPro
                                                             (a) => a.dayOfWeek === dayIndex
                                                         );
                                                         // Check if this time slot is selected for this day
-                                                        const isAvailable = dayAvailability?.slots?.includes(timeSlot);
+                                                        const isAvailable = dayAvailability?.timeSlots.includes(timeSlot);
 
                                                         return (
                                                             <div

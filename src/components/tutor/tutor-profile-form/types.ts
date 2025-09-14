@@ -1,21 +1,16 @@
-import { GENDER_VALUES } from "@/enums/gender.enum"
-import { TimeSlot } from "@/enums/timeSlot.enum"
 import * as z from "zod"
 
 export const certificationSchema = z.object({
     name: z.string().min(1, "Certification name is required"),
     imageUrl: z.string().optional(),
-    imageFile: z.instanceof(File).optional(),
-    description: z.string().optional(),
 })
 
 export const tutorSchema = z.object({
     fullName: z.string().min(2, "Full name is required"),
     avatarUrl: z.string().optional(),
-    avatarFile: z.instanceof(File).optional(),
     tagline: z.string().optional(),
     dateOfBirth: z.string().optional(),
-    gender: z.enum(GENDER_VALUES).optional(),
+    gender: z.enum(["Male", "Female", "Other"]).optional(),
     bio: z.string().min(10, "Bio must be at least 10 characters"),
     address: z.object({
         street: z.string().optional(),
@@ -26,7 +21,8 @@ export const tutorSchema = z.object({
     hourlyRate: z.number().min(1, "Hourly rate is required"),
     experienceYears: z.number().min(0, "Experience years is required"),
     certifications: z.array(certificationSchema),
-    classType: z.enum(["ONLINE", "IN_PERSON"]),
+    languages: z.array(z.string()).optional(),
+    classType: z.enum(["Online", "In_Person"]),
     education: z.array(
         z.object({
             degree: z.string().min(1, "Degree is required"),
@@ -43,7 +39,7 @@ export const tutorSchema = z.object({
     availability: z.array(
         z.object({
             dayOfWeek: z.number().min(0).max(6),
-            slots: z.array(z.enum([TimeSlot.PRE_12, TimeSlot.MID_12_17, TimeSlot.AFTER_17])).min(1, "Select at least one time slot"),
+            timeSlots: z.array(z.enum(["morning", "afternoon", "evening"])),
         }),
     ),
     contact: z.object({
@@ -51,7 +47,6 @@ export const tutorSchema = z.object({
         email: z.string().optional(),
         facebook: z.string().optional(),
     }),
-    levels: z.array(z.string()).optional(),
 })
 
 export type TutorFormData = z.infer<typeof tutorSchema>
@@ -61,13 +56,33 @@ export interface TutorProfileFormProps {
 }
 
 export const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-export const TIME_SLOTS = [TimeSlot.PRE_12, TimeSlot.MID_12_17, TimeSlot.AFTER_17] as const
-
+export const TIME_SLOTS = ["morning", "afternoon", "evening"] as const
 export const TIME_SLOT_LABELS = {
-    [TimeSlot.PRE_12]: "PRE 12PM",
-    [TimeSlot.MID_12_17]: "12PM-5PM",
-    [TimeSlot.AFTER_17]: "AFTER 5PM",
+    morning: "PRE 12PM",
+    afternoon: "12PM-5PM",
+    evening: "AFTER 5PM",
 }
+
+export const LANGUAGES = [
+    "English",
+    "Spanish",
+    "French",
+    "Mandarin",
+    "Hindi",
+    "Arabic",
+    "Portuguese",
+    "Bengali",
+    "Russian",
+    "Japanese",
+    "German",
+    "Italian",
+    "Turkish",
+    "Korean",
+    "Vietnamese",
+    "Thai",
+    "Filipino",
+    "Indonesian"
+]
 
 // Common subject categories
 export const SUBJECT_CATEGORIES = [

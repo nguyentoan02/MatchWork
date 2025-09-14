@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,6 @@ import {
     ChevronLeft,
     ChevronRight,
     Clock,
-    Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
@@ -19,10 +18,6 @@ import AvailabilityContactStep from "../../components/tutor/tutor-profile-form/A
 import EducationSubjectsStep from "../../components/tutor/tutor-profile-form/EducationSubjectsStep"
 import ProfessionalDetailsStep from "../../components/tutor/tutor-profile-form/ProfessionalDetailsStep"
 import ReviewSubmitStep from "../../components/tutor/tutor-profile-form/ReviewSubmitStep"
-import { useCreateTutorProfile, useTutorProfile } from "@/hooks/useTutorProfile"
-import { useToast } from "@/hooks/useToast"
-import { Gender, GENDER_VALUES } from "@/enums/gender.enum"
-import { useUserProfile } from "@/hooks/useUserProfile"
 
 const steps = [
     { id: 1, title: "Personal Info", icon: User, description: "Enter your personal information" },
@@ -36,33 +31,24 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
     const [currentStep, setCurrentStep] = useState(1)
     const [uploadingImages, setUploadingImages] = useState<{ [key: string]: boolean }>({})
     const [newSubject, setNewSubject] = useState("")
-    const [isReviewComplete, setIsReviewComplete] = useState(false);
 
-    const toast = useToast()
-
-    // React Query mutation for creating tutor profile
-    const createTutorMutation = useCreateTutorProfile()
-    const { data: user } = useUserProfile()
     const form = useForm<TutorFormData>({
         resolver: zodResolver(tutorSchema),
         defaultValues: {
-            fullName: initialData?.fullName || user?.name || "",
+            fullName: initialData?.fullName || "",
             avatarUrl: initialData?.avatarUrl || "",
-            gender: (GENDER_VALUES.includes(initialData?.gender as Gender)
-                ? (initialData?.gender as Gender)
-                : user?.gender && GENDER_VALUES.includes(user.gender as Gender)
-                    ? (user.gender as Gender)
-                    : undefined),
-
+            dateOfBirth: initialData?.dateOfBirth || "",
+            gender: initialData?.gender || undefined,
             bio: initialData?.bio || "",
             address: {
-                street: initialData?.address?.street || user?.address?.street || "",
-                city: initialData?.address?.city || user?.address?.city || "",
+                street: initialData?.address?.street || "",
+                city: initialData?.address?.city || "",
             },
             hourlyRate: initialData?.hourlyRate || 0,
             experienceYears: initialData?.experienceYears || 0,
             certifications: initialData?.certifications || [],
-            classType: initialData?.classType || "ONLINE",
+            languages: initialData?.languages || [],
+            classType: initialData?.classType || "Online",
             education: initialData?.education || [
                 {
                     degree: "", institution: "", fieldOfStudy: "",
@@ -71,24 +57,18 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
                 },
             ],
             subjects: initialData?.subjects || [],
-            availability: initialData?.availability ||
+            availability:
+                initialData?.availability ||
                 DAY_NAMES.map((_, index) => ({
                     dayOfWeek: index,
-                    slots: [],
+                    timeSlots: [],
                 })),
             contact: {
-                phone: initialData?.contact?.phone || user?.phone || "",
-                email: user?.email || initialData?.contact?.email || "",
+                phone: initialData?.contact?.phone || "",
+                email: initialData?.contact?.email || "",
             },
-            levels: initialData?.levels || []
         },
     })
-
-    useEffect(() => {
-        if (user?.email) {
-            form.setValue("contact.email", user.email)
-        }
-    }, [user])
 
     const {
         fields: certificationFields,
@@ -98,6 +78,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
         control: form.control,
         name: "certifications",
     })
+
 
     const {
         fields: educationFields,
@@ -127,14 +108,14 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
     const getFieldsForStep = (step: number): (keyof TutorFormData)[] => {
         switch (step) {
             case 1:
-                return ["fullName", "bio", "gender", "address", "avatarUrl"]
+                return ["fullName", "bio", "gender", "dateOfBirth", "tagline", "address"]
             case 2:
                 return [
                     "hourlyRate",
                     "experienceYears",
                     "certifications",
+                    "languages",
                     "classType",
-                    "levels",
                 ]
             case 3:
                 return ["education", "subjects"]
@@ -145,76 +126,10 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
         }
     }
 
-    const debugFormData = (formData: FormData) => {
-        console.log("=== FORM DATA CONTENTS ===");
-        for (let [key, value] of formData.entries()) {
-            if (value instanceof File) {
-                console.log(`${key}: [File] ${value.name} (${value.size} bytes)`);
-            } else {
-                console.log(`${key}: ${value}`);
-            }
-        }
-        console.log("==========================");
-    };
-
-    const handleSubmit = async (data: TutorFormData) => {
-        try {
-            const formData = new FormData();
-
-            // ✅ Append avatar file
-            if (data.avatarFile) {
-                formData.append("avatar", data.avatarFile);
-            }
-
-            // ✅ Append certification files
-            data.certifications?.forEach((cert, index) => {
-                if (cert.imageFile) {
-                    formData.append("certificationImages", cert.imageFile);
-                }
-            });
-
-            const education = (data.education || []).map((edu: any) => ({
-                degree: edu.degree,
-                institution: edu.institution,
-                fieldOfStudy: edu.fieldOfStudy,
-                startDate: edu.dateRange?.startDate,
-                endDate: edu.dateRange?.endDate,
-                description: edu.description,
-            }));
-
-            // ✅ Append ALL individual fields (not as JSON)
-            formData.append("fullName", data.fullName);
-            formData.append("bio", data.bio);
-            if (data.gender) formData.append("gender", data.gender);
-            formData.append("hourlyRate", data.hourlyRate.toString());
-            formData.append("experienceYears", data.experienceYears.toString());
-            formData.append("classType", data.classType);
-
-            // Append arrays as JSON strings
-            formData.append("subjects", JSON.stringify(data.subjects || []));
-            formData.append("levels", JSON.stringify(data.levels || []));
-            formData.append("education", JSON.stringify(education || []));
-            formData.append("availability", JSON.stringify(data.availability || []));
-            formData.append("contact", JSON.stringify(data.contact || {}));
-            formData.append("address", JSON.stringify(data.address || {}));
-
-            // Append certifications without imageFiles (backend will handle images separately)
-            const certificationsWithoutFiles = data.certifications?.map(cert => ({
-                name: cert.name,
-                description: cert.description
-            })) || [];
-            formData.append("certifications", JSON.stringify(certificationsWithoutFiles));
-            // Debug: Log formData contents
-            debugFormData(formData);
-
-            // Submit the form data
-            await createTutorMutation.mutateAsync(formData);
-
-
-        } catch (error: any) {
-            console.error("Error creating tutor profile:", error)
-        }
-    };
+    const handleSubmit = (data: TutorFormData) => {
+        console.log("Submitted Data:", data)
+        // Handle form submission, e.g., send data to backend
+    }
 
     const goToStep = (step: number) => {
         setCurrentStep(step)
@@ -225,39 +140,33 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
         setUploadingImages((prev) => ({ ...prev, [uploadKey]: true }))
 
         try {
-            // Store the file for backend upload
-            form.setValue(`certifications.${certificationIndex}.imageFile`, file)
+            // Simulate image upload - replace with actual upload logic
+            const formData = new FormData()
+            formData.append("file", file)
 
-            // Create preview URL for immediate display
-            const previewUrl = URL.createObjectURL(file)
-            form.setValue(`certifications.${certificationIndex}.imageUrl`, previewUrl)
+            // Mock upload delay
+            await new Promise((resolve) => setTimeout(resolve, 1500))
+
+            // Mock response - replace with actual upload response
+            const imageUrl = URL.createObjectURL(file)
+
+            form.setValue(`certifications.${certificationIndex}.imageUrl`, imageUrl)
         } catch (error) {
             console.error("Upload failed:", error)
-            toast("error", "Image upload failed. Please try again.")
         } finally {
             setUploadingImages((prev) => ({ ...prev, [uploadKey]: false }))
         }
     }
 
-    const handleAvatarUpload = (file: File) => {
-        // Store the file for backend upload
-        form.setValue("avatarFile", file)
-
-        // Create preview URL for immediate display
-        const previewUrl = URL.createObjectURL(file)
-        form.setValue("avatarUrl", previewUrl)
-    }
-
     const progress = (currentStep / steps.length) * 100
 
     const handleNext = async () => {
-        const fieldsToValidate = getFieldsForStep(currentStep);
-        const isValid = await form.trigger(fieldsToValidate);
-
+        const fieldsToValidate = getFieldsForStep(currentStep)
+        const isValid = await form.trigger(fieldsToValidate)
         if (isValid && currentStep < steps.length) {
-            setCurrentStep(currentStep + 1);
+            setCurrentStep(currentStep + 1)
         }
-    };
+    }
 
     const handlePrevious = () => {
         if (currentStep > 1) {
@@ -265,17 +174,13 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
         }
     }
 
-    const isLoading = createTutorMutation.isPending
-
     return (
         <div className="min-h-screen ">
             <div className="max-w-5xl mx-auto p-6 space-y-8">
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-900 mb-1">
-                                Create Your Tutor Profile
-                            </h1>
+                            <h1 className="text-2xl font-bold text-slate-900 mb-1">Create Your Tutor Profile</h1>
                             <p className="text-slate-600 text-sm">Share your expertise and connect with students</p>
                         </div>
                         <div className="text-right">
@@ -335,12 +240,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
 
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
                     {/* Step 1: Personal Information */}
-                    {currentStep === 1 && (
-                        <PersonalInfoStep
-                            form={form}
-                            onAvatarUpload={handleAvatarUpload}
-                        />
-                    )}
+                    {currentStep === 1 && <PersonalInfoStep form={form} />}
 
                     {/* Step 2: Professional Details */}
                     {currentStep === 2 && (
@@ -350,7 +250,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
                             appendCertification={appendCertification}
                             removeCertification={removeCertification}
                             uploadingImages={uploadingImages}
-                            onImageUpload={handleImageUpload}
+                            handleImageUpload={handleImageUpload}
                         />
                     )}
 
@@ -371,12 +271,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
                     {currentStep === 4 && <AvailabilityContactStep form={form} />}
 
                     {/* Step 5: Review & Submit */}
-                    {currentStep === 5 && (
-                        <ReviewSubmitStep
-                            form={form}
-                            goToStep={goToStep}
-                        />
-                    )}
+                    {currentStep === 5 && <ReviewSubmitStep form={form} goToStep={goToStep} />}
 
                     {/* Navigation Buttons */}
                     <div className="flex justify-between items-center pt-8">
@@ -384,7 +279,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
                             type="button"
                             variant="outline"
                             onClick={handlePrevious}
-                            disabled={currentStep === 1 || isLoading}
+                            disabled={currentStep === 1}
                             className="h-12 px-8 text-base bg-transparent"
                         >
                             <ChevronLeft className="h-5 w-5 mr-2" />
@@ -392,43 +287,19 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
                         </Button>
 
                         <div className="flex gap-3">
-                            {currentStep < steps.length - 1 ? ( // Steps 1-3: Show Continue
+                            {currentStep < steps.length ? (
                                 <Button
                                     type="button"
                                     onClick={handleNext}
-                                    disabled={isLoading}
                                     className="h-12 px-8 text-base bg-blue-600 hover:bg-blue-700"
                                 >
                                     Continue
                                     <ChevronRight className="h-5 w-5 ml-2" />
                                 </Button>
-                            ) : currentStep === steps.length - 1 ? ( // Step 4: Show Review
-                                <Button
-                                    type="button"
-                                    onClick={handleNext}
-                                    disabled={isLoading}
-                                    className="h-12 px-8 text-base bg-blue-600 hover:bg-blue-700"
-                                >
-                                    Review
-                                    <ChevronRight className="h-5 w-5 ml-2" />
-                                </Button>
-                            ) : ( // Step 5: Show Submit
-                                <Button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className="h-12 px-8 text-base bg-green-600 hover:bg-green-700"
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                            Creating...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <CheckCircle className="h-5 w-5 mr-2" />
-                                            Complete Profile
-                                        </>
-                                    )}
+                            ) : (
+                                <Button type="submit" className="h-12 px-8 text-base bg-green-600 hover:bg-green-700">
+                                    <CheckCircle className="h-5 w-5 mr-2" />
+                                    Complete Profile
                                 </Button>
                             )}
                         </div>

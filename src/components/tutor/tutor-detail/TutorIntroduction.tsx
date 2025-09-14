@@ -14,10 +14,9 @@ export function TutorIntroduction({ tutor }: TutorIntroductionProps) {
                 <CardTitle>Introduction</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div
-                    className="prose prose-slate max-w-none text-muted-foreground leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: tutor.bio }}
-                />
+                <p className="text-muted-foreground leading-relaxed">
+                    {tutor.bio}
+                </p>
 
             </CardContent>
         </Card>

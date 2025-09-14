@@ -1,5 +1,3 @@
-import { TimeSlot } from '../enums/timeSlot.enum';
-
 export interface Tutor {
     _id: string
     userId: string
@@ -19,6 +17,7 @@ export interface Tutor {
     }[]
     experienceYears: number
     hourlyRate: number
+    languages: string[]
     education: {
         degree: string
         institution: string
@@ -32,7 +31,7 @@ export interface Tutor {
     subjects: string[]
     availability: {
         dayOfWeek: number // 0-6 (Sun-Sat)
-        slots: TimeSlot[]
+        timeSlots: ("morning" | "afternoon" | "evening")[]
     }[]
     contact: {
         phone: string
@@ -46,6 +45,6 @@ export interface Tutor {
     createdAt: string
     updatedAt: string
     bio: string
-    classType: "ONLINE" | "IN_PERSON"
+    classType: "Online" | "In_Person"
     levels: string[]
 }

@@ -14,21 +14,21 @@ export function TutorContactCard({ tutor }: TutorContactCardProps) {
     const maskContact = (contact: string, type: "phone" | "email"): string => {
         if (type === "phone") {
             // Remove all non-digit characters
-            const digitsOnly = contact?.replace(/\D/g, '');
+            const digitsOnly = contact.replace(/\D/g, '');
 
             // Handle different phone number lengths
-            if (digitsOnly?.length <= 7) {
+            if (digitsOnly.length <= 7) {
                 // For shorter numbers (like 555-5555 becomes 555****)
-                return `${digitsOnly?.slice(0, 3)}****`;
+                return `${digitsOnly.slice(0, 3)}****`;
             } else {
                 // Standard masking for longer numbers
-                return `${digitsOnly?.slice(0, 3)}****${digitsOnly?.slice(-3)}`;
+                return `${digitsOnly.slice(0, 3)}****${digitsOnly.slice(-3)}`;
             }
         }
 
         const [local, domain] = contact.split("@");
         if (!local || !domain) return "****@****"; // Invalid email fallback
-        return `${local?.slice(0, 2)}****@${domain}`;
+        return `${local.slice(0, 2)}****@${domain}`;
 
     };
     return (
