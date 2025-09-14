@@ -10,22 +10,16 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Controller, UseFormReturn } from "react-hook-form"
 import { TutorFormData } from "./types"
 import ReactQuill from "react-quill"
-import { useState } from "react"
 
 interface PersonalInfoStepProps {
     form: UseFormReturn<TutorFormData>
-    onAvatarUpload: (file: File) => void
 }
 
-export function PersonalInfoStep({ form, onAvatarUpload }: PersonalInfoStepProps) {
 
-    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0]
-        if (file) {
-            onAvatarUpload(file)
-        }
-    }
-
+export function PersonalInfoStep({ form, }: PersonalInfoStepProps) {
+    const fileList = form.watch("avatarUrl") as unknown as FileList
+    const file = fileList?.[0]
+    // console.log(form.getValues())
     return (
         <Card className="shadow-lg border-0 bg-white rounded-2xl overflow-hidden">
             <CardHeader className="bg-slate-50/80 border-b border-slate-100 p-8">
@@ -40,14 +34,14 @@ export function PersonalInfoStep({ form, onAvatarUpload }: PersonalInfoStepProps
             <CardContent className="p-8 space-y-8">
                 <div className="flex items-start gap-6 p-6 bg-slate-50/50 rounded-2xl border border-slate-100">
                     <Avatar className="h-24 w-24 ring-4 ring-white shadow-lg">
-                        <AvatarImage src={form.watch("avatarUrl") || "/placeholder.svg"} />
+                        <AvatarImage src={file ? URL.createObjectURL(file) : "/placeholder.svg"} />
                         <AvatarFallback className="bg-blue-100 text-blue-600 text-xl font-semibold">
                             <User className="h-10 w-10" />
                         </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-3">
                         <div>
-                            <Label htmlFor="avatar" className="text-base font-semibold text-slate-700">
+                            <Label htmlFor="avatarUrl" className="text-base font-semibold text-slate-700">
                                 Profile Picture
                             </Label>
                             <p className="text-sm text-slate-500 mt-1">
@@ -56,11 +50,9 @@ export function PersonalInfoStep({ form, onAvatarUpload }: PersonalInfoStepProps
                         </div>
                         <div className="flex gap-3 max-w-[50%]">
                             <Input
-                                id="avatar"
                                 type="file"
                                 accept="image/*"
-                                onChange={handleAvatarChange}
-                                className="cursor-pointer"
+                                {...form.register("avatarUrl")}
                             />
                         </div>
                     </div>
@@ -84,6 +76,7 @@ export function PersonalInfoStep({ form, onAvatarUpload }: PersonalInfoStepProps
                             </p>
                         )}
                     </div>
+
                 </div>
 
                 <div className="space-y-4">
@@ -93,11 +86,11 @@ export function PersonalInfoStep({ form, onAvatarUpload }: PersonalInfoStepProps
                         control={form.control}
                         render={({ field }) => (
                             <RadioGroup value={field.value} onValueChange={field.onChange} className="flex gap-8">
-                                {["MALE", "FEMALE", "OTHER"].map((gender) => (
+                                {["Male", "Female", "Other"].map((gender) => (
                                     <div key={gender} className="flex items-center space-x-3">
                                         <RadioGroupItem value={gender} id={gender.toLowerCase()} className="w-5 h-5" />
                                         <Label htmlFor={gender.toLowerCase()} className="text-base font-medium cursor-pointer">
-                                            {gender.toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}
+                                            {gender}
                                         </Label>
                                     </div>
                                 ))}
@@ -161,7 +154,9 @@ export function PersonalInfoStep({ form, onAvatarUpload }: PersonalInfoStepProps
                         ))}
                     </div>
                 </div>
+
             </CardContent>
         </Card>
+
     )
 }

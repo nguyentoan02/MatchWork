@@ -6,8 +6,6 @@ import { Clock, Calendar, Check } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DAY_NAMES, TIME_SLOTS, TIME_SLOT_LABELS, TutorFormData } from "./types";
-import { IUser } from "@/types/user";
-import { readonly } from "zod";
 
 interface AvailabilityContactStepProps {
     form: UseFormReturn<TutorFormData>
@@ -52,7 +50,7 @@ export default function AvailabilityContactStep({ form }: AvailabilityContactSte
                                                         control={form.control}
                                                         render={({ field }) => {
                                                             const dayAvailability = field.value.find((a) => a.dayOfWeek === dayIndex)
-                                                            const isSelected = dayAvailability?.slots.includes(timeSlot)
+                                                            const isSelected = dayAvailability?.timeSlots.includes(timeSlot)
 
                                                             return (
                                                                 <Button
@@ -71,20 +69,20 @@ export default function AvailabilityContactStep({ form }: AvailabilityContactSte
                                                                         let dayAvailability = newAvailability.find((a) => a.dayOfWeek === dayIndex_copy)
 
                                                                         if (!dayAvailability) {
-                                                                            dayAvailability = { dayOfWeek: dayIndex_copy, slots: [] }
+                                                                            dayAvailability = { dayOfWeek: dayIndex_copy, timeSlots: [] }
                                                                             newAvailability.push(dayAvailability)
                                                                         }
 
-                                                                        if (dayAvailability.slots.includes(timeSlot)) {
-                                                                            dayAvailability.slots = dayAvailability.slots.filter(
+                                                                        if (dayAvailability.timeSlots.includes(timeSlot)) {
+                                                                            dayAvailability.timeSlots = dayAvailability.timeSlots.filter(
                                                                                 (s) => s !== timeSlot,
                                                                             )
                                                                         } else {
-                                                                            dayAvailability.slots.push(timeSlot)
+                                                                            dayAvailability.timeSlots.push(timeSlot)
                                                                         }
 
                                                                         // Remove days with no time slots
-                                                                        const filteredAvailability = newAvailability.filter((a) => a.slots.length > 0)
+                                                                        const filteredAvailability = newAvailability.filter((a) => a.timeSlots.length > 0)
                                                                         field.onChange(filteredAvailability)
                                                                     }}
                                                                 >
@@ -110,26 +108,20 @@ export default function AvailabilityContactStep({ form }: AvailabilityContactSte
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="phone">Phone Number *</Label>
-                            <Input
-                                id="phone"
-                                type="tel"
-                                placeholder="+1 (555) 123-4567"
-                                {...form.register("contact.phone")}
-                                defaultValue={form.getValues("contact.phone") || ""}
-                            />
+                            <Input id="phone" type="tel" placeholder="+1 (555) 123-4567" {...form.register("contact.phone")} />
                             {form.formState.errors.contact?.phone && (
                                 <p className="text-sm text-destructive">{form.formState.errors.contact.phone.message}</p>
                             )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Email Address</Label>
-                            <Input
-                                value={form.getValues("contact.email")}
-                                readOnly
-                                className="bg-gray-100 cursor-not-allowed"
-                            />
+                            <Label htmlFor="email">Email Address *</Label>
+                            <Input id="email" type="email" placeholder="john@example.com" {...form.register("contact.email")} />
+                            {form.formState.errors.contact?.email && (
+                                <p className="text-sm text-destructive">{form.formState.errors.contact.email.message}</p>
+                            )}
                         </div>
+
                     </div>
                 </div>
             </CardContent>
