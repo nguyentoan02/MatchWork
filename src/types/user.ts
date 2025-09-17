@@ -19,6 +19,9 @@ export interface IUser {
       lat?: number;
       lng?: number;
    };
+   isBanned?: boolean;
+   banReason?: string;
+   bannedAt?: Date;
    isActive: boolean;
    isVerifiedEmail: boolean;
    createdAt?: Date;
