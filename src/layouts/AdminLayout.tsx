@@ -1,15 +1,15 @@
 import AdminSidebar from "@/components/adminSidebar/adminSidebar";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
-   const location = useLocation();
-   const showSidebar = location.pathname !== "/";
-
    return (
-      <div className="min-h-screen flex h-screen overflow-hidden">
-         {showSidebar && <AdminSidebar />}
-         <div className="flex-grow flex flex-col">
-            <main className="flex-grow bg-gray-100 dark:bg-gray-900 p-6 overflow-y-auto">
+      <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950">
+         <div className="fixed top-0 left-0 h-full">
+            <AdminSidebar />
+         </div>
+         <div className="flex-grow flex flex-col ml-64">
+            {/* Thêm ml-64 để tạo khoảng trống cho sidebar */}
+            <main className="flex-grow p-6">
                <Outlet />
             </main>
          </div>
