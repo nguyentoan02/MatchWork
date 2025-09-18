@@ -1,142 +1,194 @@
 import type React from "react";
-import type { Tutor } from "@/types/Tutor";
-import tutorsData from "@/data/tutors.json";
+import type { Tutor } from "@/types/tutorListandDetail";
 import { useParams, useNavigate } from "react-router-dom";
-import { RelatedTutors, TutorAvailability, TutorCertification, TutorContactCard, TutorEducation, TutorHeader, TutorIntroduction, TutorSubject } from "@/components/tutor/tutor-detail";
+import { Loader2 } from "lucide-react";
+import {
+   RelatedTutors,
+   TutorAvailability,
+   TutorCertification,
+   TutorContactCard,
+   TutorEducation,
+   TutorHeader,
+   TutorIntroduction,
+   TutorSubject,
+} from "@/components/tutor/tutor-detail";
+import { useTutorDetail } from "@/hooks/useTutorListAndDetail";
+import tutorsData from "@/data/tutors.json";
 
 const TutorDetail: React.FC = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const rawTutor = tutorsData.find((t) => t._id === id);
-    const validTimeSlots = ["morning", "afternoon", "evening"] as const;
-    const mapClassType = (type: string): "Online" | "In_Person" => {
-        if (type === "Online") return "Online";
-        if (type === "In_Person") return "In_Person";
-        return "Online"; // fallback
-    };
-    const tutor: Tutor | undefined = rawTutor
-        ? {
-            ...rawTutor,
-            availability: rawTutor.availability.map((a: any) => ({
-                ...a,
-                timeSlots: Array.isArray(a.timeSlots)
-                    ? a.timeSlots.filter((slot: string) =>
-                        validTimeSlots.includes(
-                            slot as (typeof validTimeSlots)[number]
-                        )
-                    )
-                    : [],
-            })),
-            classType: mapClassType(rawTutor.classType),
-            education: Array.isArray(rawTutor.education),
-        }
-        : undefined;
+   const { id } = useParams<{ id: string }>();
+   const navigate = useNavigate();
 
-    if (!tutor) {
-        return <div className="text-center text-red-500">Tutor not found</div>;
-    }
+   const { data: rawTutor, isLoading, isError } = useTutorDetail(id ?? null);
 
-    const getRelatedTutors = () => {
-        const currentTutorSubjects = tutor.subjects
-        const currentTutorLocation = `${tutor.address.city}`;
+   if (isLoading) {
+      return (
+         <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
+         </div>
+      );
+   }
 
-        return tutorsData
-            .filter((t) => t._id !== tutor._id) // Exclude current tutor
-            .map((t) => {
-                let score = 0;
-                const tutorSubjects = t.subjects;
-                const tutorLocation = `${t.address.city}`;
+   // fallback local
+   const fallback =
+      !rawTutor && isError ? tutorsData.find((t) => t._id === id) : undefined;
+   if (!rawTutor && !fallback) {
+      return (
+         <div className="text-center text-red-500">
+            Không thể tải thông tin gia sư.
+         </div>
+      );
+   }
 
-                // Score based on shared subjects
-                const sharedSubjects = currentTutorSubjects.filter((subject) => tutorSubjects.includes(subject)
-                ).length;
-                score += sharedSubjects * 3;
+   const source: any = rawTutor ?? fallback;
 
-                // Score based on location
-                if (tutorLocation === currentTutorLocation) score += 2;
+   // helper
+   const userObj =
+      typeof source.userId === "object" ? source.userId : undefined;
 
-                // Score based on rating similarity
-                const ratingDiff = Math.abs(
-                    tutor.ratings.average - t.ratings.average
-                );
-                if (ratingDiff <= 0.5) score += 1;
+   // Normalize shape to match UI components and types in src/types/tutorListandDetail.ts
+   const normalizedTutor: Tutor = {
+      ...source,
+      // basic user fields
+      userId:
+         typeof source.userId === "string"
+            ? { _id: source.userId, name: source.fullName ?? "" }
+            : source.userId ?? {},
+      fullName:
+         source.fullName ??
+         userObj?.name ??
+         (source.userId && (source.userId as any).name) ??
+         "",
+      avatarUrl: userObj?.avatarUrl ?? source.avatarUrl ?? "",
+      // address
+      address: source.address ?? userObj?.address ?? { city: "", street: "" },
+      // contact (safe)
+      contact: source.contact ?? {
+         phone: userObj?.phone ?? "",
+         email: userObj?.email ?? "",
+      },
+      // languages default to array
+      languages: Array.isArray(source.languages) ? source.languages : [],
+      // subjects / levels / certifications default arrays
+      subjects: Array.isArray(source.subjects) ? source.subjects : [],
+      levels: Array.isArray(source.levels) ? source.levels : [],
+      certifications: Array.isArray(source.certifications)
+         ? source.certifications
+         : [],
+      // normalize availability: ensure slots AND timeSlots exist, dayOfWeek present
+      availability: Array.isArray(source.availability)
+         ? source.availability.map((a: any) => {
+              const slots = Array.isArray(a.slots)
+                 ? a.slots
+                 : Array.isArray(a.timeSlots)
+                 ? a.timeSlots
+                 : [];
+              const timeSlots = Array.isArray(a.timeSlots)
+                 ? a.timeSlots
+                 : Array.isArray(a.slots)
+                 ? a.slots
+                 : [];
+              return {
+                 dayOfWeek:
+                    typeof a.dayOfWeek === "number"
+                       ? a.dayOfWeek
+                       : Number(a.dayOfWeek) || 0,
+                 slots,
+                 timeSlots,
+              };
+           })
+         : [],
+      // normalize education: ensure dateRange with startDate/endDate
+      education: Array.isArray(source.education)
+         ? source.education.map((edu: any) => ({
+              institution: edu.institution ?? edu.school ?? "",
+              degree: edu.degree ?? edu.degreeTitle ?? "",
+              fieldOfStudy: edu.fieldOfStudy ?? edu.major ?? "",
+              dateRange:
+                 edu.dateRange ??
+                 (edu.startDate || edu.endDate
+                    ? {
+                         startDate: edu.startDate ?? "",
+                         endDate: edu.endDate ?? "",
+                      }
+                    : { startDate: "", endDate: "" }),
+              description: edu.description ?? "",
+           }))
+         : [],
+      // ratings default
+      ratings: source.ratings ?? { average: 0, totalReviews: 0 },
+      // other numeric/text defaults
+      experienceYears: source.experienceYears ?? 0,
+      hourlyRate: source.hourlyRate ?? 0,
+      bio: source.bio ?? "",
+      classType: Array.isArray(source.classType)
+         ? source.classType
+         : source.classType
+         ? [source.classType]
+         : [],
+   };
 
-                return { ...t, score };
-            })
-            .filter((t) => t.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 3) // Show top 3 related tutors
-            .map((t) => {
-                // Remove the score property and filter availability timeSlots
-                const { score, ...rest } = t;
-                return {
-                    ...rest,
-                    availability: t.availability.map((a: any) => ({
-                        ...a,
-                        timeSlots: Array.isArray(a.timeSlots)
-                            ? a.timeSlots.filter((slot: string) => validTimeSlots.includes(slot as (typeof validTimeSlots)[number])
-                            )
-                            : [],
-                    })),
-                    certifications: Array.isArray(t.certifications)
-                        ? t.certifications.map((c: any) => typeof c === "string"
-                            ? { name: c }
-                            : c
-                        )
-                        : [],
-                    education: Array.isArray(t.education) ? t.education : [],
-                    levels: Array.isArray((t as any).levels) ? (t as any).levels : [],
-                };
-            }) as unknown as Tutor[];
-    };
+   // Related tutors: reuse local dataset to compute recommendations (safe access)
+   const getRelatedTutors = () => {
+      const currentSubjects = normalizedTutor.subjects || [];
+      const currentCity =
+         (normalizedTutor.address && normalizedTutor.address.city) ||
+         (normalizedTutor.userId as any)?.address?.city ||
+         "";
 
-    const relatedTutors = getRelatedTutors();
+      return tutorsData
+         .filter((t) => t._id !== normalizedTutor._id)
+         .map((t) => {
+            let score = 0;
+            const tSubjects = t.subjects || [];
+            const shared = currentSubjects.filter((s) =>
+               tSubjects.includes(s)
+            ).length;
+            score += shared * 3;
+            const tCity = (t.address && t.address.city) || "";
+            if (tCity && tCity === currentCity) score += 2;
+            const rDiff = Math.abs(
+               (normalizedTutor.ratings?.average ?? 0) -
+                  (t.ratings?.average ?? 0)
+            );
+            if (rDiff <= 0.5) score += 1;
+            return { ...t, score };
+         })
+         .filter((x) => x.score > 0)
+         .sort((a, b) => b.score - a.score)
+         .slice(0, 3) as Tutor[];
+   };
 
-    function onViewProfile(_id: string): void {
-        navigate(`/tutor-detail/${_id}`);
-    }
+   const relatedTutors = getRelatedTutors();
 
-    return (
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Left Column (8/12) */}
-                <div className="lg:col-span-8 space-y-6">
-                    {/* Profile Header */}
-                    <TutorHeader tutor={tutor} />
+   function onViewProfile(_id: string): void {
+      navigate(`/tutor-detail/${_id}`);
+   }
 
-                    {/* Introduction */}
-                    <TutorIntroduction tutor={tutor} />
-
-                    {/* Certifications */}
-                    <TutorCertification tutor={tutor} />
-
-                    {/* Education */}
-                    <TutorEducation tutor={tutor} />
-
-                    {/* Subjects */}
-                    <TutorSubject tutor={tutor} />
-
-                    {/* Availability */}
-                    <TutorAvailability tutor={tutor} />
-
-                    {relatedTutors.length > 0 && (
-                        <RelatedTutors
-                            relatedTutors={relatedTutors}
-                            onViewProfile={onViewProfile}
-                        />
-                    )}
-                </div>
-
-                {/* Right Column (4/12) */}
-                <div className="lg:col-span-4 space-y-6">
-                    {/* Teaching Services and Contact Card */}
-                    <TutorContactCard tutor={tutor} />
-                </div>
-
+   return (
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-8 space-y-6">
+               <TutorHeader tutor={normalizedTutor} />
+               <TutorIntroduction tutor={normalizedTutor} />
+               <TutorCertification tutor={normalizedTutor} />
+               <TutorEducation tutor={normalizedTutor} />
+               <TutorSubject tutor={normalizedTutor} />
+               <TutorAvailability tutor={normalizedTutor} />
+               {relatedTutors.length > 0 && (
+                  <RelatedTutors
+                     relatedTutors={relatedTutors}
+                     onViewProfile={onViewProfile}
+                  />
+               )}
             </div>
-        </div>
-    );
+
+            <div className="lg:col-span-4 space-y-6">
+               <TutorContactCard tutor={normalizedTutor} />
+            </div>
+         </div>
+      </div>
+   );
 };
 
 export default TutorDetail;
