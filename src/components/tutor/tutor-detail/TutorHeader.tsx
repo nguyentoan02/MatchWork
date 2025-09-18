@@ -7,12 +7,14 @@ import {
    PopoverContent,
    PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAddFav, useFetchFav, useRemoveFav } from "@/hooks/useFavTutor";
 import { Tutor } from "@/types/Tutor";
 import {
    Calendar,
    Clock,
    Globe,
    Heart,
+   Loader2,
    MapPin,
    MessageCircle,
    Star,
@@ -23,6 +25,33 @@ interface TutorHeaderProps {
 }
 
 export function TutorHeader({ tutor }: TutorHeaderProps) {
+   const fav = useAddFav();
+   const removeFav = useRemoveFav();
+   const { data: isFav, isLoading, isError } = useFetchFav(tutor._id);
+   const handleSave = () => {
+      if (isFav) {
+         removeFav.mutate(tutor._id);
+      } else {
+         fav.mutate(tutor._id);
+      }
+   };
+
+   if (isLoading) {
+      return (
+         <div className="flex justify-center items-center p-10">
+            <Loader2 className="h-8 w-8 animate-spin text-sky-600" />
+         </div>
+      );
+   }
+
+   if (isError) {
+      return (
+         <div className="text-center text-red-500 p-10">
+            Không thể tải hồ sơ học sinh.
+         </div>
+      );
+   }
+
    return (
       <Card>
          <CardContent className="p-6">
@@ -127,9 +156,18 @@ export function TutorHeader({ tutor }: TutorHeaderProps) {
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap gap-3">
-                     <Button variant="outline" size="sm">
-                        <Heart className="w-4 h-4 mr-2" />
-                        Save
+                     <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSave}
+                        disabled={fav.isPending || removeFav.isPending}
+                     >
+                        <Heart
+                           className={`w-4 h-4 mr-2 ${
+                              isFav ? "text-red-500 fill-red-500" : ""
+                           }`}
+                        />
+                        {isFav ? "Unsave" : "Save"}
                      </Button>
                      <Button size="sm">
                         <MessageCircle className="w-4 h-4 mr-2" />
