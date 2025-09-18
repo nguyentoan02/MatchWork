@@ -60,19 +60,19 @@ export function PersonalInfoStep({ form, }: PersonalInfoStepProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                        <Label htmlFor="fullName" className="text-base font-semibold text-slate-700">
+                        <Label htmlFor="name" className="text-base font-semibold text-slate-700">
                             Full Name *
                         </Label>
                         <Input
-                            id="fullName"
+                            id="name"
                             placeholder="Enter your full name"
                             className="h-12 text-base"
-                            {...form.register("fullName")}
+                            {...form.register("name")}
                         />
-                        {form.formState.errors.fullName && (
+                        {form.formState.errors.name && (
                             <p className="text-sm text-red-500 flex items-center gap-1">
                                 <span className="w-1 h-1 bg-red-500 rounded-full"></span>
-                                {form.formState.errors.fullName.message}
+                                {form.formState.errors.name.message}
                             </p>
                         )}
                     </div>

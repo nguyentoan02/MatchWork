@@ -1,7 +1,9 @@
+import { TimeSlot } from "./student"
+
 export interface Tutor {
     _id: string
     userId: string
-    fullName?: string
+    name?: string
     avatarUrl?: string
     gender?: string
     address: {
@@ -13,7 +15,7 @@ export interface Tutor {
     certifications: {
         name: string
         description?: string
-        imageUrl?: string
+        imageUrl?: string[]
     }[]
     experienceYears: number
     hourlyRate: number
@@ -22,21 +24,17 @@ export interface Tutor {
         degree: string
         institution: string
         fieldOfStudy?: string
-        dateRange: {
-            startDate: string
-            endDate: string
-        }
+        startDate: string
+        endDate: string
         description: string
     }[]
     subjects: string[]
     availability: {
         dayOfWeek: number // 0-6 (Sun-Sat)
-        timeSlots: ("morning" | "afternoon" | "evening")[]
+        timeSlots: ("PRE_12" | "MID_12_17" | "AFTER_17")[]
     }[]
-    contact: {
-        phone: string
-        email: string
-    }
+    phone: string
+    email: string
     isApproved: boolean
     ratings: {
         average: number
@@ -45,6 +43,6 @@ export interface Tutor {
     createdAt: string
     updatedAt: string
     bio: string
-    classType: "Online" | "In_Person"
+    classType: "ONLINE" | "IN_PERSON"
     levels: string[]
 }

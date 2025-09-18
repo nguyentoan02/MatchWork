@@ -37,7 +37,7 @@ export function TutorEducation({ tutor }: TutorEducationProps) {
                             <div className="flex items-center gap-2">
                                 <Check className="w-4 h-4 text-green-600" />
                                 <span className="text-sm">
-                                    {edu.dateRange.startDate} - {edu.dateRange.endDate}
+                                    {edu.startDate} - {edu.endDate}
                                 </span>
                             </div>
                         </div>

@@ -35,7 +35,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
     const form = useForm<TutorFormData>({
         resolver: zodResolver(tutorSchema),
         defaultValues: {
-            fullName: initialData?.fullName || "",
+            name: initialData?.name || "",
             avatarUrl: initialData?.avatarUrl || "",
             dateOfBirth: initialData?.dateOfBirth || "",
             gender: initialData?.gender || undefined,
@@ -52,7 +52,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
             education: initialData?.education || [
                 {
                     degree: "", institution: "", fieldOfStudy: "",
-                    dateRange: { startDate: "", endDate: "" },
+                    startDate: "", endDate: "",
                     description: ""
                 },
             ],
@@ -63,10 +63,8 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
                     dayOfWeek: index,
                     timeSlots: [],
                 })),
-            contact: {
-                phone: initialData?.contact?.phone || "",
-                email: initialData?.contact?.email || "",
-            },
+            phone: initialData?.phone || "",
+            email: initialData?.email || "",
         },
     })
 
@@ -108,7 +106,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
     const getFieldsForStep = (step: number): (keyof TutorFormData)[] => {
         switch (step) {
             case 1:
-                return ["fullName", "bio", "gender", "dateOfBirth", "tagline", "address"]
+                return ["name", "bio", "gender", "dateOfBirth", "address"]
             case 2:
                 return [
                     "hourlyRate",
@@ -120,7 +118,7 @@ export default function TutorProfileForm({ initialData }: TutorProfileFormProps)
             case 3:
                 return ["education", "subjects"]
             case 4:
-                return ["availability", "contact"]
+                return ["availability", "email", "phone"]
             default:
                 return []
         }

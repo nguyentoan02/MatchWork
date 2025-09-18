@@ -22,10 +22,10 @@ export function TutorHeader({ tutor }: TutorHeaderProps) {
                                     tutor.avatarUrl ||
                                     "/placeholder.svg"
                                 }
-                                alt={tutor.fullName}
+                                alt={tutor.name}
                             />
                             <AvatarFallback className="text-2xl">
-                                {(tutor.fullName ?? "N/A")
+                                {(tutor.name ?? "N/A")
                                     .split(" ")
                                     .map((n) => n[0])
                                     .join("")}
@@ -57,14 +57,13 @@ export function TutorHeader({ tutor }: TutorHeaderProps) {
 
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold mb-2">
-                            {tutor.fullName}
+                            {tutor.name}
                         </h1>
 
                         <div className="flex items-center gap-2 mb-3">
                             <MapPin className="w-4 h-4 text-muted-foreground" />
                             <span className="text-sm">
-                                {tutor.address.city},{" "}
-                                {tutor.address.state}
+                                {tutor.address.city}
                             </span>
                         </div>
 

@@ -32,7 +32,7 @@ export function RelatedTutors({ relatedTutors, onViewProfile }: RelatedTutorsPro
                                         src={tutor.avatarUrl}
                                     />
                                     <AvatarFallback className="text-sm">
-                                        {(tutor.fullName ?? "")
+                                        {(tutor.name ?? "")
                                             .split(" ")
                                             .map((n) => n[0])
                                             .join("")}
@@ -47,7 +47,7 @@ export function RelatedTutors({ relatedTutors, onViewProfile }: RelatedTutorsPro
                                             )
                                         }
                                     >
-                                        {tutor.fullName}
+                                        {tutor.name}
                                     </h4>
                                     <p className="text-xs text-muted-foreground">
                                         {tutor.address.city},{" "}

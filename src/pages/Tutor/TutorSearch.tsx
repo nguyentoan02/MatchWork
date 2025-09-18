@@ -7,6 +7,7 @@ import tutorsData from "@/data/tutors.json"
 import { TutorCard } from "@/components/tutor/tutor-search/TutorCard"
 import { TutorFilterBar } from "@/components/tutor/tutor-search/TutorFilterSidebar"
 import { Pagination } from "@/components/common/Pagination"
+import { TimeSlot } from "@/types/student"
 
 export default function TutorSearch() {
     const [showFilters, setShowFilters] = useState(false)
@@ -38,7 +39,7 @@ export default function TutorSearch() {
         // Search query filter
         if (appliedFilters.searchQuery) {
             const query = appliedFilters.searchQuery.toLowerCase()
-            const matchesName = tutor.fullName?.toLowerCase().includes(query)
+            const matchesName = tutor.name?.toLowerCase().includes(query)
             const matchesBio = tutor.bio.toLowerCase().includes(query)
             const matchesSubjects = tutor.subjects.some((subject) =>
                 subject.toLowerCase().includes(query)
@@ -85,7 +86,7 @@ export default function TutorSearch() {
             if (
                 !appliedFilters.selectedTimeSlots
                     .map((slot) => slot.toLowerCase())
-                    .some((slot) => availableSlots.includes(slot as "morning" | "afternoon" | "evening"))
+                    .some((slot) => availableSlots.includes(slot as TimeSlot))
             )
                 return false
         }

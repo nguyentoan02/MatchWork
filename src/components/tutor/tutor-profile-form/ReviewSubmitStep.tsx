@@ -50,7 +50,7 @@ export default function ReviewSubmitStep({ form, goToStep }: ReviewSubmitStepPro
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                                 <div className="space-y-2">
                                     <span className="font-semibold text-slate-700">Full Name:</span>
-                                    <p className="text-slate-900">{form.watch("fullName")}</p>
+                                    <p className="text-slate-900">{form.watch("name")}</p>
                                 </div>
                                 <div className="space-y-2">
                                     <span className="font-semibold text-slate-700">Gender:</span>
@@ -234,7 +234,7 @@ export default function ReviewSubmitStep({ form, goToStep }: ReviewSubmitStepPro
                                                     {edu.degree} - {edu.institution}
                                                 </div>
                                                 <div className="text-slate-600 mt-1">
-                                                    {edu.fieldOfStudy} • {edu.dateRange.startDate} - {edu.dateRange.endDate}
+                                                    {edu.fieldOfStudy} • {edu.startDate} - {edu.endDate}
                                                 </div>
                                                 {edu.description && (
                                                     <div className="text-slate-500 mt-2 text-sm">
@@ -361,14 +361,14 @@ export default function ReviewSubmitStep({ form, goToStep }: ReviewSubmitStepPro
                                                 <Phone className="h-4 w-4 text-orange-600" />
                                                 <span className="font-semibold text-slate-700">Phone:</span>
                                             </div>
-                                            <p className="text-slate-900">{form.watch("contact.phone")}</p>
+                                            <p className="text-slate-900">{form.watch("phone")}</p>
                                         </div>
                                         <div className="bg-white p-4 rounded-lg border border-orange-200">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Mail className="h-4 w-4 text-orange-600" />
                                                 <span className="font-semibold text-slate-700">Email:</span>
                                             </div>
-                                            <p className="text-slate-900">{form.watch("contact.email")}</p>
+                                            <p className="text-slate-900">{form.watch("email")}</p>
                                         </div>
                                     </div>
                                 </div>

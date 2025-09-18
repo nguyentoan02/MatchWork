@@ -28,18 +28,7 @@ const TutorDetail: React.FC = () => {
                     : [],
             })),
             classType: mapClassType(rawTutor.classType),
-            education: Array.isArray(rawTutor.education)
-                ? rawTutor.education.map((e: any) => ({
-                    ...e,
-                    dateRange:
-                        typeof e.dateRange === "string"
-                            ? (() => {
-                                const [startDate, endDate] = e.dateRange.split(" - ");
-                                return { startDate: startDate?.trim() || "", endDate: endDate?.trim() || "" };
-                            })()
-                            : e.dateRange,
-                }))
-                : [],
+            education: Array.isArray(rawTutor.education),
         }
         : undefined;
 
@@ -55,12 +44,11 @@ const TutorDetail: React.FC = () => {
             .filter((t) => t._id !== tutor._id) // Exclude current tutor
             .map((t) => {
                 let score = 0;
-                const tutorSubjects = t.subjects
+                const tutorSubjects = t.subjects;
                 const tutorLocation = `${t.address.city}`;
 
                 // Score based on shared subjects
-                const sharedSubjects = currentTutorSubjects.filter((subject) =>
-                    tutorSubjects.includes(subject)
+                const sharedSubjects = currentTutorSubjects.filter((subject) => tutorSubjects.includes(subject)
                 ).length;
                 score += sharedSubjects * 3;
 
@@ -86,34 +74,20 @@ const TutorDetail: React.FC = () => {
                     availability: t.availability.map((a: any) => ({
                         ...a,
                         timeSlots: Array.isArray(a.timeSlots)
-                            ? a.timeSlots.filter((slot: string) =>
-                                validTimeSlots.includes(slot as (typeof validTimeSlots)[number])
+                            ? a.timeSlots.filter((slot: string) => validTimeSlots.includes(slot as (typeof validTimeSlots)[number])
                             )
                             : [],
                     })),
                     certifications: Array.isArray(t.certifications)
-                        ? t.certifications.map((c: any) =>
-                            typeof c === "string"
-                                ? { name: c }
-                                : c
+                        ? t.certifications.map((c: any) => typeof c === "string"
+                            ? { name: c }
+                            : c
                         )
                         : [],
-                    education: Array.isArray(t.education)
-                        ? t.education.map((e: any) => ({
-                            ...e,
-                            dateRange:
-                                typeof e.dateRange === "string"
-                                    ? (() => {
-                                        const [startDate, endDate] = e.dateRange.split(" - ");
-                                        return { startDate: startDate?.trim() || "", endDate: endDate?.trim() || "" };
-                                    })()
-                                    : e.dateRange,
-                        }))
-                        : [],
-                    // Ensure 'levels' property is present for type compatibility
+                    education: Array.isArray(t.education) ? t.education : [],
                     levels: Array.isArray((t as any).levels) ? (t as any).levels : [],
                 };
-            }) as Tutor[];
+            }) as unknown as Tutor[];
     };
 
     const relatedTutors = getRelatedTutors();

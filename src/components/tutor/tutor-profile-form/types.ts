@@ -6,7 +6,7 @@ export const certificationSchema = z.object({
 })
 
 export const tutorSchema = z.object({
-    fullName: z.string().min(2, "Full name is required"),
+    name: z.string().min(2, "Full name is required"),
     avatarUrl: z.string().optional(),
     tagline: z.string().optional(),
     dateOfBirth: z.string().optional(),
@@ -28,10 +28,8 @@ export const tutorSchema = z.object({
             degree: z.string().min(1, "Degree is required"),
             institution: z.string().min(1, "Institution is required"),
             fieldOfStudy: z.string().min(1, "Field of study is required"),
-            dateRange: z.object({
-                startDate: z.string().min(1, "Start date is required"),
-                endDate: z.string().min(1, "End date is required"),
-            }),
+            startDate: z.string().min(1, "Start date is required"),
+            endDate: z.string().min(1, "End date is required"),
             description: z.string().optional(),
         }),
     ),
@@ -42,11 +40,8 @@ export const tutorSchema = z.object({
             timeSlots: z.array(z.enum(["morning", "afternoon", "evening"])),
         }),
     ),
-    contact: z.object({
-        phone: z.string().min(10, "Phone number is required"),
-        email: z.string().optional(),
-        facebook: z.string().optional(),
-    }),
+    phone: z.string().min(10, "Phone number is required"),
+    email: z.string().optional(),
 })
 
 export type TutorFormData = z.infer<typeof tutorSchema>

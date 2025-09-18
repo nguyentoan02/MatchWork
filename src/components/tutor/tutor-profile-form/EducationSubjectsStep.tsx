@@ -14,7 +14,7 @@ interface EducationSubjectsStepProps {
     educationFields: Array<{ id: string }>
     subjectFields: string[]
     removeEducation: (index: number) => void
-    appendEducation: (value: { degree: string; institution: string; fieldOfStudy: string; dateRange: { startDate: string; endDate: string }; description: string }) => void
+    appendEducation: (value: { degree: string; institution: string; fieldOfStudy: string; startDate: string; endDate: string; description: string }) => void
     removeSubject: (index: number) => void
     appendSubject: (value: { category: string; items: string[] }) => void
 }
@@ -75,7 +75,7 @@ export default function EducationSubjectsStep({ form, educationFields, subjectFi
                                                 id={`education-${index}-startDate`}
                                                 type="month"
                                                 placeholder="MM/YYYY"
-                                                {...form.register(`education.${index}.dateRange.startDate` as const)}
+                                                {...form.register(`education.${index}.startDate` as const)}
                                             />
                                         </div>
                                         <div className="space-y-1">
@@ -86,7 +86,7 @@ export default function EducationSubjectsStep({ form, educationFields, subjectFi
                                                 id={`education-${index}-endDate`}
                                                 type="month"
                                                 placeholder="MM/YYYY or Present"
-                                                {...form.register(`education.${index}.dateRange.endDate` as const)}
+                                                {...form.register(`education.${index}.endDate` as const)}
                                             />
                                         </div>
                                     </div>

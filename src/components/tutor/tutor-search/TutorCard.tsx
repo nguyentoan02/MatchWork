@@ -31,7 +31,7 @@ export function TutorCard({ tutor }: TutorCardProps) {
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                             <Avatar className="h-14 w-14 border-2 border-primary/10">
-                                <AvatarImage src={tutor.avatarUrl || "/placeholder.svg"} alt={tutor.fullName} />
+                                <AvatarImage src={tutor.avatarUrl || "/placeholder.svg"} alt={tutor.name} />
                                 <AvatarFallback className="bg-primary/10">
                                     <User className="h-6 w-6 text-primary" />
                                 </AvatarFallback>
@@ -41,7 +41,7 @@ export function TutorCard({ tutor }: TutorCardProps) {
                                     className="text-lg font-semibold cursor-pointer hover:text-primary transition-colors"
                                     onClick={() => onViewProfile(tutor._id)}
                                 >
-                                    {tutor.fullName}
+                                    {tutor.name}
                                 </h3>
                                 <div className="flex items-center text-muted-foreground text-sm mt-1">
                                     <MapPin className="h-3.5 w-3.5 mr-1" />
