@@ -1,4 +1,4 @@
 export interface FavoriteTutor {
-   studentId: string;
    tutorId?: string;
+   isFav: boolean;
 }

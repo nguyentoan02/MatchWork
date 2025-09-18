@@ -13,9 +13,9 @@ export const useAddFav = () => {
 
    return useMutation({
       mutationFn: favoriteTutor,
-      onSuccess: (response) => {
+      onSuccess: (response, tutor) => {
          toast("success", response.message);
-         queryClient.invalidateQueries({ queryKey: ["TUTORFAV"] });
+         queryClient.invalidateQueries({ queryKey: ["TUTORFAV", tutor] });
       },
       onError: (error) => {
          console.log(error);
@@ -30,7 +30,7 @@ export const useAddFav = () => {
 
 export const useFetchFav = (tutorId: string) => {
    return useQuery<FavoriteTutor>({
-      queryKey: ["TUTORFAV"],
+      queryKey: ["TUTORFAV", tutorId],
       queryFn: () => fetchFavoriteTutor(tutorId),
    });
 };
@@ -41,8 +41,8 @@ export const useRemoveFav = () => {
 
    return useMutation({
       mutationFn: deleteFavoriteTutor,
-      onSuccess: (response) => {
-         queryClient.invalidateQueries({ queryKey: ["TUTORFAV"] });
+      onSuccess: (response, tutorId) => {
+         queryClient.invalidateQueries({ queryKey: ["TUTORFAV", tutorId] });
          toats("success", response.message);
       },
       onError: (error) => {

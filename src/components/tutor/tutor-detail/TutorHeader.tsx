@@ -29,7 +29,7 @@ export function TutorHeader({ tutor }: TutorHeaderProps) {
    const removeFav = useRemoveFav();
    const { data: isFav, isLoading, isError } = useFetchFav(tutor._id);
    const handleSave = () => {
-      if (isFav) {
+      if (isFav?.isFav) {
          removeFav.mutate(tutor._id);
       } else {
          fav.mutate(tutor._id);
@@ -47,7 +47,7 @@ export function TutorHeader({ tutor }: TutorHeaderProps) {
    if (isError) {
       return (
          <div className="text-center text-red-500 p-10">
-            Không thể tải hồ sơ học sinh.
+            Không thể tải hồ sơ học gia sư.
          </div>
       );
    }
@@ -164,10 +164,10 @@ export function TutorHeader({ tutor }: TutorHeaderProps) {
                      >
                         <Heart
                            className={`w-4 h-4 mr-2 ${
-                              isFav ? "text-red-500 fill-red-500" : ""
+                              isFav?.isFav ? "text-red-500 fill-red-500" : ""
                            }`}
                         />
-                        {isFav ? "Unsave" : "Save"}
+                        {isFav?.isFav ? "Unsave" : "Save"}
                      </Button>
                      <Button size="sm">
                         <MessageCircle className="w-4 h-4 mr-2" />
