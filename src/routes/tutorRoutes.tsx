@@ -4,6 +4,7 @@ import JobManage from "@/pages/Employer/JobManage";
 import ProfilePage from "@/pages/Profilepage";
 import TutorProfile from "@/pages/TutorProfile/TutorProfile";
 import TutorLayout from "@/layouts/TutorLayout";
+import TutorProfilePage from "@/pages/TutorProfile/TutorProfilePage";
 
 export const tutorRoutes = {
    element: (
@@ -15,6 +16,7 @@ export const tutorRoutes = {
       { path: "/tutor/dashboard", element: <OverviewPage /> },
       { path: "/tutor/profile", element: <ProfilePage /> },
       { path: "/tutor/profile-page", element: <TutorProfile /> },
+      { path: "/tutor/create-profile", element: <TutorProfilePage /> },
       {
          path: "/tutor/jobs",
          element: <JobManage />,
