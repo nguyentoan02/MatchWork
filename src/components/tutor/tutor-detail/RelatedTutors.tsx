@@ -49,7 +49,7 @@ export function RelatedTutors({
                               {tutor.fullName}
                            </h4>
                            <p className="text-xs text-muted-foreground">
-                              {tutor.address.city},{" "}
+                              {tutor.address?.city ?? "N/A"}
                            </p>
                         </div>
                      </div>
@@ -59,10 +59,11 @@ export function RelatedTutors({
                         {[...Array(5)].map((_, i) => (
                            <Star
                               key={i}
-                              className={`w-3 h-3 ${i < Math.floor(tutor.ratings?.average ?? 0)
-                                 ? "text-yellow-400 fill-yellow-400"
-                                 : "text-gray-300"
-                                 }`}
+                              className={`w-3 h-3 ${
+                                 i < Math.floor(tutor.ratings?.average ?? 0)
+                                    ? "text-yellow-400 fill-yellow-400"
+                                    : "text-gray-300"
+                              }`}
                            />
                         ))}
                         <span className="text-xs text-muted-foreground ml-1">
@@ -100,40 +101,41 @@ export function RelatedTutors({
                                     {subject}
                                  </Badge>
                               ))}
-                           {Array.isArray(tutor.subjects) && tutor.subjects.length > 2 && (
-                              <Popover>
-                                 <PopoverTrigger asChild>
-                                    <Button
-                                       variant="ghost"
-                                       size="sm"
-                                       className="h-6 px-1.5 text-xs rounded-md"
+                           {Array.isArray(tutor.subjects) &&
+                              tutor.subjects.length > 2 && (
+                                 <Popover>
+                                    <PopoverTrigger asChild>
+                                       <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 px-1.5 text-xs rounded-md"
+                                       >
+                                          +{(tutor.subjects?.length ?? 0) - 2}
+                                       </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                       className="w-64 p-2"
+                                       align="start"
+                                       sideOffset={4}
                                     >
-                                       +{tutor.subjects.length - 2}
-                                    </Button>
-                                 </PopoverTrigger>
-                                 <PopoverContent
-                                    className="w-64 p-2"
-                                    align="start"
-                                    sideOffset={4}
-                                 >
-                                    <div className="grid gap-2">
-                                       <div className="flex flex-wrap gap-1">
-                                          {tutor.subjects
-                                             .slice(2)
-                                             .map((subject, i) => (
-                                                <Badge
-                                                   key={i}
-                                                   variant="secondary"
-                                                   className="text-xs px-1.5 py-0.5"
-                                                >
-                                                   {subject}
-                                                </Badge>
-                                             ))}
+                                       <div className="grid gap-2">
+                                          <div className="flex flex-wrap gap-1">
+                                             {(tutor.subjects ?? [])
+                                                .slice(2)
+                                                .map((subject, i) => (
+                                                   <Badge
+                                                      key={i}
+                                                      variant="secondary"
+                                                      className="text-xs px-1.5 py-0.5"
+                                                   >
+                                                      {subject}
+                                                   </Badge>
+                                                ))}
+                                          </div>
                                        </div>
-                                    </div>
-                                 </PopoverContent>
-                              </Popover>
-                           )}
+                                    </PopoverContent>
+                                 </Popover>
+                              )}
                         </div>
                      </div>
 
