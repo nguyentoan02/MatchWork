@@ -91,9 +91,8 @@ export function RelatedTutors({
                            Teaches:
                         </p>
                         <div className="flex flex-wrap gap-1">
-                           {(tutor.subjects ?? [])
-                              .slice(0, 2)
-                              .map((subject, i) => (
+                           {Array.isArray(tutor.subjects) &&
+                              tutor.subjects.slice(0, 2).map((subject, i) => (
                                  <Badge
                                     key={i}
                                     variant="secondary"
@@ -102,40 +101,41 @@ export function RelatedTutors({
                                     {subject}
                                  </Badge>
                               ))}
-                           {(tutor.subjects?.length ?? 0) > 2 && (
-                              <Popover>
-                                 <PopoverTrigger asChild>
-                                    <Button
-                                       variant="ghost"
-                                       size="sm"
-                                       className="h-6 px-1.5 text-xs rounded-md"
+                           {Array.isArray(tutor.subjects) &&
+                              tutor.subjects.length > 2 && (
+                                 <Popover>
+                                    <PopoverTrigger asChild>
+                                       <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 px-1.5 text-xs rounded-md"
+                                       >
+                                          +{(tutor.subjects?.length ?? 0) - 2}
+                                       </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                       className="w-64 p-2"
+                                       align="start"
+                                       sideOffset={4}
                                     >
-                                       +{(tutor.subjects?.length ?? 0) - 2}
-                                    </Button>
-                                 </PopoverTrigger>
-                                 <PopoverContent
-                                    className="w-64 p-2"
-                                    align="start"
-                                    sideOffset={4}
-                                 >
-                                    <div className="grid gap-2">
-                                       <div className="flex flex-wrap gap-1">
-                                          {(tutor.subjects ?? [])
-                                             .slice(2)
-                                             .map((subject, i) => (
-                                                <Badge
-                                                   key={i}
-                                                   variant="secondary"
-                                                   className="text-xs px-1.5 py-0.5"
-                                                >
-                                                   {subject}
-                                                </Badge>
-                                             ))}
+                                       <div className="grid gap-2">
+                                          <div className="flex flex-wrap gap-1">
+                                             {(tutor.subjects ?? [])
+                                                .slice(2)
+                                                .map((subject, i) => (
+                                                   <Badge
+                                                      key={i}
+                                                      variant="secondary"
+                                                      className="text-xs px-1.5 py-0.5"
+                                                   >
+                                                      {subject}
+                                                   </Badge>
+                                                ))}
+                                          </div>
                                        </div>
-                                    </div>
-                                 </PopoverContent>
-                              </Popover>
-                           )}
+                                    </PopoverContent>
+                                 </Popover>
+                              )}
                         </div>
                      </div>
 
