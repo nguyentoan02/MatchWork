@@ -121,7 +121,9 @@ const FlashcardQuizList: React.FC = () => {
                               variant="ghost"
                               size="sm"
                               onClick={() =>
-                                 navigate(`/flashcard/edit/${q._id}`)
+                                 navigate(
+                                    `/tutor/editFlashcard?flashcardId=${q._id}`
+                                 )
                               }
                            >
                               Chỉnh sửa

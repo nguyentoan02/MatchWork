@@ -28,6 +28,7 @@ export type QuizInfoHandle = {
    getValues: () => QuizInfoValues;
    validate?: () => Promise<boolean>;
    reset?: (v?: Partial<QuizInfoValues>) => void;
+   setValues?: (v?: Partial<QuizInfoValues>) => void;
 };
 
 const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
@@ -116,6 +117,27 @@ const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
             return valid;
          },
          reset: (v?: Partial<QuizInfoValues>) => reset(v as any),
+         // setValues allows parent to update form values programmatically (useful for edit)
+         setValues: (v?: Partial<QuizInfoValues>) => {
+            if (v) {
+               // reset preserves form state but sets new values
+               reset({
+                  settings: {
+                     shuffleQuestions: v.settings?.shuffleQuestions ?? false,
+                     showCorrectAnswersAfterSubmit:
+                        v.settings?.showCorrectAnswersAfterSubmit ?? true,
+                     timeLimitMinutes: v.settings?.timeLimitMinutes ?? null,
+                  },
+                  tags: v.tags ?? [],
+                  title: v.title ?? "",
+                  description: v.description ?? "",
+                  quizMode: v.quizMode ?? QuizModeEnum.STUDY,
+                  totalQuestions: v.totalQuestions,
+               } as any);
+            } else {
+               reset();
+            }
+         },
       }));
 
       const [tagInput, setTagInput] = useState("");

@@ -3,7 +3,7 @@ import { BaseAPIResponse } from "./response";
 import { IQuizInfo } from "./quiz";
 
 export interface IQuizQuestion {
-   quizId?: string;
+   _id?: string;
    order: number;
    questionType: QuestionTypeEnum;
 

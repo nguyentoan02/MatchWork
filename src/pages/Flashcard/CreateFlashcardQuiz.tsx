@@ -1,9 +1,8 @@
 import React, { useRef } from "react";
 import { QuizInfoHandle } from "@/components/Quiz/QuizInfoForm";
-import { FlashcardQuestion, IQuizBody, QuizInfoValues } from "@/types/quiz";
+import { FlashcardQuestion, IQuizBody } from "@/types/quiz";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/useToast";
 import { z } from "zod";
 import { QuestionTypeEnum, QuizModeEnum } from "@/enums/quiz.enum";
@@ -43,7 +42,6 @@ const payloadSchema = z.object({
 const CreateFlashcardQuiz: React.FC = () => {
    const quizInfoRef = useRef<QuizInfoHandle | null>(null);
    const quizQuestionsRef = useRef<QuizQuestionsHandle | null>(null);
-   const { setValue } = useForm<QuizInfoValues>(); // parent form instance (filling only)
    const addToast = useToast();
    const createFlashcardQuiz = useCreateQuiz();
 
@@ -85,13 +83,6 @@ const CreateFlashcardQuiz: React.FC = () => {
          questionArr,
       };
 
-      // fill parent useForm if needed
-      setValue("title", infoValues.title);
-      setValue("description", infoValues.description ?? "");
-      setValue("quizMode", infoValues.quizMode);
-      setValue("settings", infoValues.settings);
-      setValue("tags", infoValues.tags || []);
-
       // validate with zod and log
       const parsed = payloadSchema.parse(payload) as IQuizBody;
       createFlashcardQuiz.mutate(parsed);
@@ -114,7 +105,14 @@ const CreateFlashcardQuiz: React.FC = () => {
                </div>
 
                <div className="flex justify-end mt-2">
-                  <Button onClick={handleSubmit}>Lưu / Submit</Button>
+                  <Button
+                     onClick={handleSubmit}
+                     disabled={createFlashcardQuiz.isPending}
+                  >
+                     {createFlashcardQuiz.isPending
+                        ? "Đang tạo ...."
+                        : "Lưu / Submit"}
+                  </Button>
                </div>
             </CardContent>
          </Card>

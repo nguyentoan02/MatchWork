@@ -19,7 +19,7 @@ const FlashcardQuestions: React.FC<Props> = ({ questions = [] }) => {
    return (
       <div className="space-y-4">
          {questions.map((q, i) => (
-            <Card key={(q as any)._id ?? q.quizId ?? i} className="">
+            <Card key={(q as any)._id ?? q._id ?? i} className="">
                <CardContent className="p-4 relative">
                   {/* order badge top-right */}
                   <div className="absolute right-4 top-4">

@@ -1,5 +1,5 @@
 import apiClient from "@/lib/api";
-import { IQuizBody, IQuizResponse } from "@/types/quiz";
+import { IQuizBody, IQuizResponse, IQUizUpdate } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
 
 export const createFlashCardQuiz = async (
@@ -20,5 +20,12 @@ export const fetchFlashcardQuestions = async (
    const response = await apiClient.get("/quiz/getQuizQuestionsByQuiz", {
       params: { quizId },
    });
+   return response.data;
+};
+
+export const editFlashcardQuestion = async (
+   data: IQUizUpdate
+): Promise<IQuizQuestionResponse> => {
+   const response = await apiClient.put("/quiz/editQuiz", data);
    return response.data;
 };

@@ -7,6 +7,7 @@ import TutorLayout from "@/layouts/TutorLayout";
 import CreateFlashcardQuiz from "@/pages/Flashcard/CreateFlashcardQuiz";
 import FlashcardQuizList from "@/pages/Flashcard/FlashcardQuizList";
 import ViewFlashcardQuizQuestion from "@/pages/Flashcard/ViewFlashcardQuizQuestion";
+import EditFlashcardQuiz from "@/pages/Flashcard/EditFlashcardQuiz";
 
 export const tutorRoutes = {
    element: (
@@ -33,6 +34,10 @@ export const tutorRoutes = {
       {
          path: "/tutor/flashcard",
          element: <ViewFlashcardQuizQuestion />,
+      },
+      {
+         path: "/tutor/editFlashcard",
+         element: <EditFlashcardQuiz />,
       },
    ],
 };

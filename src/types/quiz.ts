@@ -17,7 +17,7 @@ export type QuizInfoValues = {
 
 export type FlashcardQuestion = {
    // mirror subset of server IQuizQuestion for flashcard usage
-   id: string; // client id
+   _id: string; // client id
    order?: number;
    frontText: string;
    backText: string;
@@ -74,4 +74,21 @@ export interface IQuizInfo {
    totalQuestions: number;
    createdAt?: Date;
    updatedAt?: Date;
+}
+
+export interface IQUizUpdate {
+   _id?: string;
+   title: string;
+   description?: string;
+   quizMode: QuizModeEnum;
+   settings?: QuizSettings;
+   createdBy: {
+      role: string;
+      name: string;
+   };
+   tags: string[];
+   totalQuestions: number;
+   newQuestionArr: IQuizQuestion[];
+   deleteQuestionArr: { _id: string }[];
+   editQuestionArr: IQuizQuestion[];
 }
