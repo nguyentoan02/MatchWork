@@ -6,7 +6,8 @@ import {
    Home,
    User,
    LayoutDashboard,
-   BookOpen,
+   Calendar, // Thêm icon Calendar
+   BookHeart, // Thêm icon BookHeart
    BookPlus,
    BookCopy,
 } from "lucide-react";
@@ -21,7 +22,7 @@ export type SidebarItem = {
 
 export const tutorSidebarConfig: SidebarItem[] = [
    {
-      to: "/student/dashboard",
+      to: "/tutor/dashboard",
       label: "Bảng điều khiển",
       icon: <LayoutDashboard className="h-4 w-4" />,
    },
@@ -31,9 +32,14 @@ export const tutorSidebarConfig: SidebarItem[] = [
       icon: <User className="h-4 w-4" />,
    },
    {
-      to: "/student/applications",
-      label: "Lớp học của tôi",
-      icon: <BookOpen className="h-4 w-4" />,
+      to: "/tutor/teaching-requests",
+      label: "Yêu cầu dạy học",
+      icon: <BookHeart className="h-4 w-4" />,
+   },
+   {
+      to: "/tutor/schedule",
+      label: "Lịch dạy",
+      icon: <Calendar className="h-4 w-4" />,
    },
    {
       to: "/tutor/createFlashcardQuiz",
