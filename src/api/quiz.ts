@@ -1,6 +1,7 @@
 import apiClient from "@/lib/api";
 import { IQuizBody, IQuizResponse, IQUizUpdate } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
+import { BaseAPIResponse } from "@/types/response";
 
 export const createFlashCardQuiz = async (
    data: IQuizBody
@@ -27,5 +28,14 @@ export const editFlashcardQuestion = async (
    data: IQUizUpdate
 ): Promise<IQuizQuestionResponse> => {
    const response = await apiClient.put("/quiz/editQuiz", data);
+   return response.data;
+};
+
+export const deleteFlashcardQuestion = async (
+   quizId: string
+): Promise<BaseAPIResponse> => {
+   const response = await apiClient.delete("/quiz/deleteQuiz", {
+      data: { quizId },
+   });
    return response.data;
 };

@@ -93,7 +93,7 @@ export default function ViewFlashcardQuizQuestion() {
 
             <div className="w-1/2 relative flex items-center justify-center mx-auto">
                {/* Prev arrow (left) */}
-               <div className="absolute left-0 top-1/2 -translate-y-1/2">
+               <div className="absolute left-0 top-1/2 -translate-y-1/2 z-50">
                   <Button
                      variant={canPrev ? "default" : "ghost"}
                      onClick={prev}
@@ -112,12 +112,9 @@ export default function ViewFlashcardQuizQuestion() {
                </div>
 
                {/* Card */}
-               <Card className="w-full max-w-[680px] mx-4">
+               <Card className="w-full  mx-4">
                   <CardContent className="flex flex-col items-center pt-5">
-                     <div
-                        className="w-full sm:w-[640px] h-96 flex items-center justify-center"
-                        style={{ perspective: 1200 }}
-                     >
+                     <div className="w-full sm:w-[640px] h-96 flex items-center justify-center">
                         <div
                            role="button"
                            tabIndex={0}

@@ -61,7 +61,7 @@ export interface IQuizBody {
 }
 
 export interface IQuizInfo {
-   _id?: string;
+   _id: string;
    title: string;
    description?: string;
    quizMode: QuizModeEnum;
@@ -79,8 +79,8 @@ export interface IQuizInfo {
 export interface IQUizUpdate {
    _id?: string;
    title: string;
-   description?: string;
-   quizMode: QuizModeEnum;
+   description: string;
+   quizMode?: QuizModeEnum;
    settings?: QuizSettings;
    createdBy: {
       role: string;

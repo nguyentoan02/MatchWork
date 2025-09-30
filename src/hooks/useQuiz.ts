@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./useToast";
 import {
    createFlashCardQuiz,
+   deleteFlashcardQuestion,
    editFlashcardQuestion,
    fetchFlashcardQuestions,
    fetchFlashCardQuiz,
@@ -47,8 +48,22 @@ export const useUpdateFlashcard = () => {
          addToast("success", response.message);
       },
       onError: (error: any) => {
-         console.log(error);
          addToast("error", error?.response?.data.message);
+      },
+   });
+};
+
+export const useDeleteFlashcard = () => {
+   const queryClient = useQueryClient();
+   const addToast = useToast();
+   return useMutation({
+      mutationFn: deleteFlashcardQuestion,
+      onSuccess: (response) => {
+         addToast("success", response.message);
+         queryClient.invalidateQueries({ queryKey: ["TUTORFLASHCARDQUIZS"] });
+      },
+      onError: (error: any) => {
+         addToast("error", error.response?.data.message);
       },
    });
 };
