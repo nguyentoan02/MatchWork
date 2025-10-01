@@ -81,7 +81,7 @@ export function TutorFilterBar({
                     {/* Search Input */}
                     <div className="flex flex-1 md:w-1/2">
                         <Input
-                            placeholder="Search by name, subject, or bio..."
+                            placeholder="Search by name..."
                             value={currentFilters.searchQuery}
                             onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
                             className="h-10 rounded-r-none"
