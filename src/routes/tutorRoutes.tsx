@@ -14,6 +14,8 @@ import TeachingRequestDetail from "@/pages/Tutor/TeachingRequestDetail";
 import SchedulePage from "@/pages/SchedulePage"; // Import trang mới
 import RejectedSessionsPage from "@/pages/RejectedSessionsPage"; // Import trang rejected sessions
 import CreateMultipleChoiceQuiz from "@/pages/MultipleChoice/CreateMultipleChoiceQuiz";
+import ViewMultipleQuizList from "@/pages/MultipleChoice/ViewMultipleQuizList";
+import ViewMultipleChoiceQuiz from "@/pages/MultipleChoice/ViewMultipleChoiceQuiz";
 // import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
 export const tutorRoutes = {
@@ -68,6 +70,14 @@ export const tutorRoutes = {
       {
          path: "/tutor/rejected-sessions",
          element: <RejectedSessionsPage />,
+      },
+      {
+         path: "/tutor/MultipleChoiceList",
+         element: <ViewMultipleQuizList />,
+      },
+      {
+         path: "/tutor/multipleChoice",
+         element: <ViewMultipleChoiceQuiz />,
       },
    ],
 };

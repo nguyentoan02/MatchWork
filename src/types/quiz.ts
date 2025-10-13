@@ -77,6 +77,7 @@ export interface IQuizInfo {
    title: string;
    description?: string;
    quizMode: QuizModeEnum;
+   quizType: QuestionTypeEnum;
    settings?: QuizSettings;
    createdBy: {
       role: string;
@@ -84,8 +85,8 @@ export interface IQuizInfo {
    };
    tags: string[];
    totalQuestions: number;
-   createdAt?: Date;
-   updatedAt?: Date;
+   createdAt: Date;
+   updatedAt: Date;
 }
 
 export interface IQUizUpdate {

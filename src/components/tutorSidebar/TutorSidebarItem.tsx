@@ -58,6 +58,11 @@ export const tutorSidebarConfig: SidebarItem[] = [
       icon: <BookCopy className="h-4 w-4" />,
    },
    {
+      to: "/tutor/MultipleChoiceList",
+      label: "Xem bộ câu hỏi Trắc nghiệm",
+      icon: <BookCopy className="h-4 w-4" />,
+   },
+   {
       to: "/tutor/rejected-sessions",
       label: "Buổi học bị từ chối",
       icon: <XCircle className="h-4 w-4" />,
