@@ -1,5 +1,5 @@
 import apiClient from "@/lib/api";
-import { IQuizBody, MCQResponse } from "@/types/quiz";
+import { IQuizBody, MCQResponse, updateIMCQBody } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
 
 export const createMCQ = async (payload: IQuizBody): Promise<MCQResponse> => {
@@ -21,5 +21,10 @@ export const fetchMCQById = async (
    const response = await apiClient.get("quiz/getMultipleChoiceQuizByQuizId", {
       params: { quizId },
    });
+   return response.data;
+};
+
+export const editMCQ = async (payload: updateIMCQBody) => {
+   const response = await apiClient.put("quiz/editMultipleChoiceQuiz", payload);
    return response.data;
 };

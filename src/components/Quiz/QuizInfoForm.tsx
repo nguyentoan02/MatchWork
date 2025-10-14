@@ -22,6 +22,7 @@ import { QuizModeEnum } from "@/enums/quiz.enum";
 
 type Props = {
    defaultValues?: Partial<QuizInfoValues>;
+   isFlashcard?: boolean;
 };
 
 export type QuizInfoHandle = {
@@ -32,7 +33,7 @@ export type QuizInfoHandle = {
 };
 
 const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
-   ({ defaultValues }, ref) => {
+   ({ defaultValues, isFlashcard = false }, ref) => {
       const {
          register,
          control,
@@ -56,21 +57,45 @@ const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
             ...defaultValues,
          },
       });
+      useEffect(() => {
+         if (isFlashcard) {
+            setValue("quizMode", QuizModeEnum.STUDY);
+         }
+      }, [isFlashcard, setValue]);
 
       useEffect(() => {
-         if (defaultValues) reset(defaultValues as Partial<QuizInfoValues>);
+         if (defaultValues) {
+            // Override with STUDY if isFlashcard, otherwise use provided value
+            const quizMode = isFlashcard
+               ? QuizModeEnum.STUDY
+               : defaultValues.quizMode;
+
+            reset({
+               ...defaultValues,
+               quizMode,
+            } as Partial<QuizInfoValues>);
+         }
          // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [defaultValues]);
+      }, [defaultValues, isFlashcard]);
 
       // expose imperative handle so parent can call getValues()
       useImperativeHandle(ref, () => ({
          getValues: () => {
             // ensure nested defaults exist
             const vals = getValues() as any;
+            let quizMode = vals.quizMode;
+
+            // Chỉ gán STUDY làm mặc định cho flashcard
+            if (isFlashcard) {
+               quizMode = QuizModeEnum.STUDY;
+            } else if (!quizMode) {
+               quizMode = QuizModeEnum.STUDY; // Chỉ fallback khi undefined
+            }
+
             return {
                title: vals.title ?? "",
                description: vals.description ?? "",
-               quizMode: vals.quizMode ?? QuizModeEnum.STUDY,
+               quizMode: quizMode, // Sử dụng giá trị đã xử lý
                settings: {
                   shuffleQuestions: vals?.settings?.shuffleQuestions ?? false,
                   showCorrectAnswersAfterSubmit:
@@ -90,14 +115,12 @@ const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
             let valid = ok;
 
             // quizMode must exist
-            if (!vals.quizMode) {
+            if (!isFlashcard && !vals.quizMode) {
                setError("quizMode" as any, {
                   type: "manual",
                   message: "Vui lòng chọn Quiz mode",
                });
                valid = false;
-            } else {
-               clearErrors("quizMode" as any);
             }
 
             // tags: no empty values
@@ -215,7 +238,11 @@ const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
                      render={({ field }) => (
                         <Select
                            onValueChange={field.onChange}
-                           value={field.value}
+                           value={
+                              isFlashcard ? QuizModeEnum.STUDY : field.value
+                           }
+                           defaultValue={QuizModeEnum.STUDY}
+                           disabled={isFlashcard}
                         >
                            <SelectTrigger className="w-full">
                               <SelectValue placeholder="Chọn mode" />

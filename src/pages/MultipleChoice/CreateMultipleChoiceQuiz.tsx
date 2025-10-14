@@ -1,45 +1,52 @@
 import MultipleChoiceQuizQuestionForm, {
    MultipleChoiceQuestionsFormHandle,
-} from "@/components/Quiz/MultipleChoice/MultipleChoiceQuizQuestionForm";
+} from "@/components/Quiz/MultipleChoice/MultiplechoiceQuizQuestionForm";
 import QuizInfoForm, { QuizInfoHandle } from "@/components/Quiz/QuizInfoForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMCQ } from "@/hooks/useMCQ";
 import { useToast } from "@/hooks/useToast";
-import { useMultipleChoiceQuizStore } from "@/store/useMultipleChoiceQuizStore";
+import { QuestionTypeEnum } from "@/enums/quiz.enum";
 import { IQuizBody } from "@/types/quiz";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const CreateMultipleChoiceQuiz = () => {
    const quizInfoRef = useRef<QuizInfoHandle | null>(null);
    const mcqRef = useRef<MultipleChoiceQuestionsFormHandle | null>(null);
-   const getMCQ = useMultipleChoiceQuizStore();
    const addToast = useToast();
    const { create } = useMCQ();
 
    const handleSubmit = async () => {
       if (!quizInfoRef.current || !mcqRef.current) return;
+      const newQuestions = mcqRef.current.getNew();
       const infoValid = await quizInfoRef.current.validate?.();
       const mcqValid = await mcqRef.current.validate?.();
-      if (infoValid === false || mcqValid.valid === false) {
-         addToast("error", "Vui lòng kiểm tra thông tin quiz và các thẻ");
+      if (infoValid === false || mcqValid?.valid === false) {
+         addToast("error", "Vui lòng kiểm tra thông tin quiz và các câu hỏi");
          return;
       }
-      const infoValues = quizInfoRef.current.getValues();
-      const mcqValues = getMCQ.getMultipleChoiceQuizQuestions();
 
-      // const mappedQuestions = mcqValues.map((q) => ({
-      //    ...q,
-      //    options: q.options.map((opt) => opt.trim()),
-      //    correctAnswer: q.correctAnswer?.trim(),
-      // }));
+      const infoValues = quizInfoRef.current.getValues();
+
+      // Xử lý câu hỏi (cần phải làm sạch các dữ liệu)
+      const mappedQuestions = newQuestions.map((q) => ({
+         questionType: QuestionTypeEnum.MULTIPLE_CHOICE,
+         questionText: q.questionText,
+         options: (q.options || []).map((opt) => opt.trim()),
+         correctAnswer: q.correctAnswer?.trim() || "",
+         explanation: q.explanation || "",
+         points: q.points || 0,
+         order: q.order || 0,
+      }));
 
       const payload = {
          ...infoValues,
-         questionArr: mcqValues,
-         totalQuestions: mcqValues.length,
+         questionArr: mappedQuestions,
+         totalQuestions: mappedQuestions.length,
+         quizType: QuestionTypeEnum.MULTIPLE_CHOICE,
       } as IQuizBody;
-      console.log("Payload to submit:", payload);
+      console.log("Full payload:", payload);
+
       create.mutate(payload);
    };
 
@@ -60,14 +67,8 @@ const CreateMultipleChoiceQuiz = () => {
                </div>
 
                <div className="flex justify-end mt-2">
-                  <Button
-                     onClick={handleSubmit}
-                     // disabled={createFlashcardQuiz.isPending}
-                  >
-                     {/* {createFlashcardQuiz.isPending
-                        ? "Đang tạo ...."
-                        : "Lưu / Submit"} */}
-                     Lưu / Submit
+                  <Button onClick={handleSubmit} disabled={create.isPending}>
+                     {create.isPending ? "Đang xử lý..." : "Lưu / Submit"}
                   </Button>
                </div>
             </CardContent>

@@ -33,5 +33,19 @@ export const useMCQ = (quizId?: string) => {
       enabled: !!quizId,
    });
 
-   return { create, fetchList, fetchMCQByQuizId };
+   const updateMCQ = useMutation({
+      mutationFn: (payload: any) => {
+         return fetchMCQById(payload);
+      },
+      onSuccess: (response) => addToast("success", response.message),
+      onError: (error: any) => {
+         addToast(
+            "error",
+            error?.response?.data.message || "Error updating MCQ"
+         );
+         console.log("Error updating MCQ:", error);
+      },
+   });
+
+   return { create, fetchList, fetchMCQByQuizId, updateMCQ };
 };

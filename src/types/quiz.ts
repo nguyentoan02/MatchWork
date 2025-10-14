@@ -121,3 +121,21 @@ export interface MCQResponse extends BaseAPIResponse {
       questionArr?: IQuizQuestion[];
    };
 }
+
+export interface updateIMCQBody {
+   _id: string;
+   title: string;
+   description: string;
+   quizMode: QuizModeEnum;
+   quizType: QuestionTypeEnum.MULTIPLE_CHOICE;
+   settings?: QuizSettings;
+   createdBy: {
+      role: string;
+      name: string;
+   };
+   tags: string[];
+   totalQuestions: number;
+   deleteMultipleChoiceQuizQuestionsArr?: IQuizQuestion[];
+   newMultipleChoiceQuizQuestionsArr?: { _id: string }[];
+   editMultipleChoiceQuizQuestionsArr?: IQuizQuestion[];
+}

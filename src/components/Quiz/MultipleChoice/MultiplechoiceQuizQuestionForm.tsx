@@ -1,172 +1,64 @@
-import React, { forwardRef, useImperativeHandle, useRef, memo } from "react";
 import {
-   useForm,
-   useFieldArray,
-   Control,
-   UseFormRegister,
-   UseFormSetValue,
-   UseFormWatch,
-   UseFormGetValues,
-   Controller,
-} from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+   forwardRef,
+   useImperativeHandle,
+   useState,
+   useRef,
+   useEffect,
+} from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash } from "lucide-react";
-import { QuestionTypeEnum } from "@/enums/quiz.enum";
+import { Trash, ChevronUp, ChevronDown, Plus } from "lucide-react";
 import { MultipleChoiceQuestions } from "@/types/quiz";
+import { QuestionTypeEnum } from "@/enums/quiz.enum";
 import { useMultipleChoiceQuizStore } from "@/store/useMultipleChoiceQuizStore";
 
-const MCQSchema = z
-   .object({
-      _id: z.string().optional(),
-      order: z.number().int().nonnegative().optional(),
-      questionType: z.literal(QuestionTypeEnum.MULTIPLE_CHOICE),
-      questionText: z.string().min(1, "Question text is required"),
-      options: z
-         .array(z.string().min(1, "Option text is required"))
-         .min(2, "At least 2 options are required"),
-      correctAnswer: z.string().min(1, "Correct answer is required"),
-      explanation: z.string().optional(),
-      points: z.number().int().nonnegative().optional(),
-   })
-   .superRefine((data, ctx) => {
-      if (!data.options.includes(data.correctAnswer)) {
-         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["correctAnswer"],
-            message: "Correct answer must be one of the options",
-         });
-      }
-   });
+export type MultipleChoiceQuestionsFormHandle = {
+   validate: () => Promise<{ valid: boolean; errors?: Record<string, string> }>;
+   reset: (questions?: MultipleChoiceQuestions[]) => void;
+   getNew: () => MultipleChoiceQuestions[];
+   getEdited: () => MultipleChoiceQuestions[];
+   getDeleted: () => { _id: string }[];
+   clearChangeSets?: () => void;
+};
 
-const FormSchema = z.object({
-   questions: z.array(MCQSchema).min(1, "At least one question is required"),
-});
+const makeId = () => Math.random().toString(36).slice(2, 9);
 
-type FormValues = z.infer<typeof FormSchema>;
-
-const defaultOption = (): string => "";
-
-const defaultQuestion = (): FormValues["questions"][number] => ({
-   _id: undefined,
+const emptyQuestion = (): MultipleChoiceQuestions => ({
+   _id: makeId(),
    order: undefined,
    questionType: QuestionTypeEnum.MULTIPLE_CHOICE,
    questionText: "",
    options: ["", ""],
    correctAnswer: "",
    explanation: "",
-   points: 0,
+   points: 1,
 });
 
-export type MultipleChoiceQuestionsFormHandle = {
-   validate: () => Promise<{ valid: boolean; errors?: Record<string, string> }>;
-   reset?: (questions?: MultipleChoiceQuestions[]) => void;
-};
+const shallowEqualQuestion = (
+   a?: Partial<MultipleChoiceQuestions>,
+   b?: Partial<MultipleChoiceQuestions>
+) => {
+   if (!a || !b) return false;
 
-type OptionsEditorProps = {
-   control: Control<FormValues>;
-   register: UseFormRegister<FormValues>;
-   setValue: UseFormSetValue<FormValues>;
-   watch: UseFormWatch<FormValues>;
-   getValues: UseFormGetValues<FormValues>;
-   qIndex: number;
-   defaultOption: () => FormValues["questions"][number]["options"][number];
-};
-
-const OptionsEditorBase: React.FC<OptionsEditorProps> = ({
-   control,
-   register,
-   watch,
-   qIndex,
-   defaultOption,
-}) => {
-   const name = `questions.${qIndex}.options` as const;
-   const {
-      fields: opts,
-      append: appendOpt,
-      remove: removeOpt,
-   } = useFieldArray({ control, name: name as any });
-
-   // subscribe to options array so UI updates when option text changes
-   const options = (watch(`questions.${qIndex}.options`) as string[]) ?? [];
+   // Compare options arrays
+   const optionsEqual =
+      Array.isArray(a.options) &&
+      Array.isArray(b.options) &&
+      a.options.length === b.options.length &&
+      a.options.every((opt, i) => opt === b.options?.[i]);
 
    return (
-      <div className="space-y-2">
-         <Controller
-            control={control}
-            name={`questions.${qIndex}.correctAnswer` as const}
-            render={({ field }) => {
-               const current = field.value ?? "";
-               return (
-                  <>
-                     {opts.map((opt, oi) => {
-                        const optVal = options[oi] ?? "";
-                        return (
-                           <div
-                              key={opt.id}
-                              className="flex items-center gap-2"
-                           >
-                              <input
-                                 type="radio"
-                                 name={`questions.${qIndex}.correctAnswer`}
-                                 aria-label={`questions.${qIndex}.correctAnswer`}
-                                 checked={current === optVal && optVal !== ""}
-                                 onChange={() => field.onChange(optVal)}
-                              />
-
-                              <Input
-                                 {...register(
-                                    `questions.${qIndex}.options.${oi}` as const,
-                                    {
-                                       onChange: (e) => {
-                                          const newVal = e.target.value;
-                                          // if this option is currently selected, keep correctAnswer synced
-                                          if (current === (options[oi] ?? "")) {
-                                             // update controller value to new text
-                                             field.onChange(newVal);
-                                          }
-                                       },
-                                    }
-                                 )}
-                                 placeholder={`Option ${oi + 1}`}
-                                 defaultValue={options[oi] ?? ""}
-                              />
-
-                              <button
-                                 type="button"
-                                 onClick={() => removeOpt(oi)}
-                                 className="btn-ghost p-2 text-red-500"
-                                 title="Remove option"
-                              >
-                                 <Trash className="w-4 h-4" />
-                              </button>
-                           </div>
-                        );
-                     })}
-                  </>
-               );
-            }}
-         />
-
-         <div className="flex gap-2">
-            <Button
-               variant="outline"
-               type="button"
-               onClick={() => appendOpt(defaultOption())}
-            >
-               <Plus className="mr-2 w-4 h-4" /> Add option
-            </Button>
-         </div>
-      </div>
+      (a.questionText ?? "") === (b.questionText ?? "") &&
+      (a.correctAnswer ?? "") === (b.correctAnswer ?? "") &&
+      (a.explanation ?? "") === (b.explanation ?? "") &&
+      (a.points ?? 0) === (b.points ?? 0) &&
+      (a.order ?? 0) === (b.order ?? 0) &&
+      optionsEqual
    );
 };
-
-const OptionsEditor = memo(OptionsEditorBase);
 
 const MultipleChoiceQuizQuestionForm =
    forwardRef<MultipleChoiceQuestionsFormHandle>((_, ref) => {
@@ -176,195 +68,487 @@ const MultipleChoiceQuizQuestionForm =
          (s) => s.resetMultipleChoiceQuizQuestion
       );
 
-      const initialQuestions = (
-         Array.isArray(storeQuestions) && storeQuestions.length
-            ? storeQuestions
-            : [defaultQuestion()]
-      ).map((q: any, i: number) => ({
-         _id: q._id ?? undefined,
-         order: q.order ?? i + 1,
-         questionType: QuestionTypeEnum.MULTIPLE_CHOICE,
-         questionText: q.questionText ?? "",
-         options: q.options ?? ["", ""],
-         correctAnswer: q.correctAnswer ?? "",
-         explanation: q.explanation ?? "",
-         points: q.points ?? 0,
-      })) as FormValues["questions"];
+      const [questions, setQuestionsState] = useState<
+         MultipleChoiceQuestions[]
+      >(
+         storeQuestions?.length
+            ? storeQuestions.map((q, i) => ({
+                 ...q,
+                 order: q.order ?? i + 1,
+                 _id: q._id ?? makeId(),
+              }))
+            : [emptyQuestion()]
+      );
 
-      const {
-         control,
-         register,
-         getValues,
-         trigger,
-         reset,
-         setValue,
-         watch,
-         formState,
-      } = useForm<FormValues>({
-         resolver: zodResolver(FormSchema),
-         mode: "onChange",
-         defaultValues: { questions: initialQuestions },
-      });
+      const [errors, setErrors] = useState<Record<string, string>>({});
 
-      const {
-         fields: questions,
-         append,
-         remove,
-         insert,
-         move,
-      } = useFieldArray({
-         control,
-         name: "questions",
-      });
+      // refs for change-tracking - EXACTLY like FlashCardQuizQuestionsForm
+      const originalMapRef = useRef<Record<string, MultipleChoiceQuestions>>(
+         {}
+      );
+      const originalIdsRef = useRef<Set<string>>(new Set());
+      const deletedRef = useRef<{ _id: string }[]>([]);
+      const editedMapRef = useRef<Record<string, MultipleChoiceQuestions>>({});
+      const newMapRef = useRef<Record<string, MultipleChoiceQuestions>>({});
 
-      const lastSerializedRef = useRef<string | null>(null);
+      // initialize original snapshots when store questions change
+      useEffect(() => {
+         const snapshot: Record<string, MultipleChoiceQuestions> = {};
+         const ids = new Set<string>();
 
-      // update order inputs to match current index + 1
-      const updateOrders = () => {
-         const vals = getValues();
-         const qs = (vals.questions || []) as any[];
-         qs.forEach((_, i) => {
-            setValue(`questions.${i}.order` as const, i + 1, {
-               shouldValidate: false,
-               shouldDirty: true,
-            });
+         (storeQuestions || []).forEach((q, i) => {
+            const id = q._id ?? makeId();
+            // Sửa điều kiện nhận biết câu hỏi từ server - MongoDB ID có độ dài 24
+            if (id && id.length === 24) {
+               ids.add(id);
+               snapshot[id] = { ...q, _id: id, order: q.order ?? i + 1 };
+               console.log("Added to original:", id);
+            }
          });
-      };
 
-      const appendQuestion: any = (q?: FormValues["questions"][number]) => {
-         append(q ?? defaultQuestion());
-         setTimeout(updateOrders, 0);
-      };
+         originalMapRef.current = snapshot;
+         originalIdsRef.current = ids;
+         deletedRef.current = [];
+         editedMapRef.current = {};
+         newMapRef.current = {};
 
-      const insertQuestion = (
-         index: number,
-         q?: FormValues["questions"][number]
-      ) => {
-         insert(index, q ?? defaultQuestion());
-         setTimeout(updateOrders, 0);
-      };
-      const moveQuestion = (from: number, to: number) => {
-         move(from, to);
-         setTimeout(updateOrders, 0);
-      };
-      const removeQuestion = (index: number) => {
-         remove(index);
-         setTimeout(updateOrders, 0);
-      };
+         console.log("Original IDs:", Array.from(ids));
+      }, [storeQuestions]);
 
       useImperativeHandle(
          ref,
          () => ({
             validate: async () => {
-               const ok = await trigger();
-               if (!ok) {
-                  return { valid: false, errors: {} };
-               }
-               const vals = getValues();
-               const parsed = FormSchema.safeParse(vals);
-               const errors: Record<string, string> = {};
-               if (!parsed.success) {
-                  parsed.error.issues.forEach((issue) => {
-                     const path = issue.path.join(".");
-                     const key = path ? `questions.${path}` : "form";
-                     errors[key] = issue.message;
-                  });
-                  return { valid: false, errors };
-               }
+               const e: Record<string, string> = {};
+               questions.forEach((q) => {
+                  if (!q.questionText || q.questionText.trim() === "")
+                     e[`${q._id}-question`] = "Question text is required";
 
-               // normalized payload
-               const normalized = parsed.data.questions.map((q) => ({
-                  _id: q._id,
-                  order: q.order,
-                  questionType: q.questionType,
-                  questionText: q.questionText,
-                  options: q.options,
-                  correctAnswer: q.correctAnswer,
-                  explanation: q.explanation,
-                  points: q.points,
-               })) as unknown as MultipleChoiceQuestions[];
+                  if (!q.options || q.options.length < 2)
+                     e[`${q._id}-options`] = "At least 2 options are required";
 
-               const serialized = JSON.stringify(normalized);
-               if (lastSerializedRef.current !== serialized) {
-                  lastSerializedRef.current = serialized;
-                  resetQuestionsInStore();
-                  normalized.forEach((q) => addQuestion(q));
-               }
+                  if (!q.correctAnswer || q.correctAnswer.trim() === "")
+                     e[`${q._id}-answer`] = "Correct answer is required";
 
-               return { valid: true };
+                  // Only check inclusion when correctAnswer is a defined, non-empty string
+                  if (
+                     q.options &&
+                     typeof q.correctAnswer === "string" &&
+                     q.correctAnswer.trim() !== "" &&
+                     !q.options.includes(q.correctAnswer)
+                  )
+                     e[`${q._id}-answer`] =
+                        "Correct answer must be one of the options";
+               });
+
+               setErrors(e);
+
+               return { valid: Object.keys(e).length === 0, errors: e };
             },
 
             reset: (qs?: MultipleChoiceQuestions[]) => {
-               const src = qs && qs.length ? qs : [defaultQuestion()];
-               const normalized = src.map((q: any, i: number) => ({
-                  _id: q._id ?? undefined,
-                  order: q.order ?? i + 1,
-                  questionType: QuestionTypeEnum.MULTIPLE_CHOICE,
-                  questionText: q.questionText ?? "",
-                  options: q.options ?? ["", ""],
-                  correctAnswer: q.correctAnswer ?? "",
-                  explanation: q.explanation ?? "",
-                  points: q.points ?? 0,
-               })) as FormValues["questions"];
-               reset({ questions: normalized });
-               lastSerializedRef.current = null;
+               if (qs && qs.length) {
+                  const normalized = qs.map((q, i) => ({
+                     ...q,
+                     _id: q._id ?? makeId(),
+                     order: q.order ?? i + 1,
+                  }));
+                  setQuestionsState(normalized);
+               } else setQuestionsState([emptyQuestion()]);
+
+               setErrors({});
+
+               // reset change sets
+               deletedRef.current = [];
+               editedMapRef.current = {};
+               newMapRef.current = {};
+
+               // update original snapshot
+               const snapshot: Record<string, MultipleChoiceQuestions> = {};
+               const ids = new Set<string>();
+               (qs || []).forEach((q, i) => {
+                  const id = q._id ?? makeId();
+                  if (id && !id.startsWith("client-")) {
+                     ids.add(id);
+                     snapshot[id] = { ...q, _id: id, order: q.order ?? i + 1 };
+                  }
+               });
+
+               originalMapRef.current = snapshot;
+               originalIdsRef.current = ids;
+               console.log("After reset - Original IDs:", Array.from(ids));
+            },
+
+            getDeleted: () => {
+               console.log("Deleted questions:", deletedRef.current);
+               return deletedRef.current.slice();
+            },
+
+            getEdited: () => {
+               const edited = Object.values(editedMapRef.current).filter(
+                  (q) => !deletedRef.current.some((d) => d._id === q._id)
+               );
+               console.log("Edited questions:", edited);
+               return edited;
+            },
+
+            getNew: () => {
+               const newQuestions: MultipleChoiceQuestions[] = questions
+                  .filter((q) => !originalIdsRef.current.has(q._id as string))
+                  .map((q) => ({
+                     questionType:
+                        QuestionTypeEnum.MULTIPLE_CHOICE as QuestionTypeEnum.MULTIPLE_CHOICE,
+                     questionText: q.questionText || "",
+                     options: q.options || [],
+                     correctAnswer: q.correctAnswer || "",
+                     explanation: q.explanation || "",
+                     order: q.order || 0,
+                     points: q.points || 0,
+                  }));
+               console.log("New questions:", newQuestions);
+               return newQuestions;
+            },
+
+            clearChangeSets: () => {
+               deletedRef.current = [];
+               editedMapRef.current = {};
+               newMapRef.current = {};
             },
          }),
-         [getValues, trigger, reset, addQuestion, resetQuestionsInStore]
+         [questions, addQuestion, resetQuestionsInStore]
       );
 
-      const handleAddQuestion = () => appendQuestion(defaultQuestion());
+      const update = (id: string, patch: Partial<MultipleChoiceQuestions>) => {
+         setQuestionsState((prev) =>
+            prev.map((p) => (p._id === id ? { ...p, ...patch } : p))
+         );
 
-      // compute total points live
-      const watched = watch("questions") || [];
-      const totalPoints = watched.reduce(
-         (s: number, q: any) => s + (Number(q?.points) || 0),
+         // clear related errors
+         setErrors((prev) => {
+            const copy = { ...prev };
+            if (patch.questionText !== undefined) delete copy[`${id}-question`];
+            if (patch.correctAnswer !== undefined) delete copy[`${id}-answer`];
+            if (patch.options !== undefined) delete copy[`${id}-options`];
+            return copy;
+         });
+
+         // update change sets - EXACTLY like FlashCardQuizQuestionsForm
+         const isOriginal = id.length === 24 && originalIdsRef.current.has(id);
+
+         // get updated question (approximate)
+         const updated = (questions.find((q) => q._id === id) ?? {
+            _id: id,
+            ...patch,
+         }) as MultipleChoiceQuestions;
+
+         const merged = {
+            ...(originalMapRef.current[id] ?? {}),
+            ...updated,
+            ...patch,
+         };
+
+         if (isOriginal) {
+            // compare with original snapshot to decide if edited
+            const original = originalMapRef.current[id];
+            if (!shallowEqualQuestion(original, merged)) {
+               console.log("Question edited:", id);
+               editedMapRef.current[id] = { ...merged, _id: id };
+            } else {
+               // if matches original now, remove from edited set
+               console.log("Question no longer edited:", id);
+               delete editedMapRef.current[id];
+            }
+         } else {
+            // new question: keep in newMapRef as current state
+            console.log("New question updated:", id);
+            newMapRef.current[id] = { ...merged, _id: id };
+         }
+      };
+
+      const add = (afterId?: string) => {
+         setQuestionsState((prev) => {
+            const nv = [...prev];
+            const idx = afterId
+               ? Math.max(0, nv.findIndex((q) => q._id === afterId) + 1)
+               : nv.length;
+            const baseNewQ = emptyQuestion();
+            const newId = baseNewQ._id ?? makeId();
+            const newQ = { ...baseNewQ, _id: newId };
+            nv.splice(idx, 0, newQ);
+            // add to newMap
+            newMapRef.current[newId] = { ...newQ };
+            console.log("New question added:", newId);
+            return nv.map((q, i) => ({ ...q, order: i + 1 }));
+         });
+      };
+
+      const remove = (id: string) => {
+         setQuestionsState((prev) => {
+            const nv = prev.filter((q) => q._id !== id);
+            // keep at least 1
+            if (nv.length < 1) return prev;
+            return nv.map((q, i) => ({ ...q, order: i + 1 }));
+         });
+
+         // if removed item is original, add to deleted list
+         if (originalIdsRef.current.has(id)) {
+            // only add once
+            const already = deletedRef.current.find((d) => d._id === id);
+            if (!already) {
+               deletedRef.current.push({ _id: id });
+               console.log("Original question deleted:", id);
+            }
+            // ensure it's not in edited set
+            delete editedMapRef.current[id];
+         } else {
+            // new item removed: remove from newMapRef
+            console.log("New question removed:", id);
+            delete newMapRef.current[id];
+         }
+
+         // clear errors related
+         setErrors((prev) => {
+            const copy = { ...prev };
+            delete copy[`${id}-question`];
+            delete copy[`${id}-answer`];
+            delete copy[`${id}-options`];
+            return copy;
+         });
+      };
+
+      const moveUp = (index: number) => {
+         if (index <= 0) return;
+         setQuestionsState((prev) => {
+            const nv = [...prev];
+            [nv[index - 1], nv[index]] = [nv[index], nv[index - 1]];
+            return nv.map((q, i) => {
+               const nq = { ...q, order: i + 1 };
+               // Sửa lỗi - Kiểm tra nq._id tồn tại
+               if (nq._id && originalIdsRef.current.has(nq._id)) {
+                  const original = originalMapRef.current[nq._id];
+                  if (!shallowEqualQuestion(original, nq)) {
+                     console.log("Question reordered (edited):", nq._id);
+                     editedMapRef.current[nq._id] = nq;
+                  } else {
+                     delete editedMapRef.current[nq._id];
+                  }
+               } else if (nq._id) {
+                  console.log("New question reordered:", nq._id);
+                  newMapRef.current[nq._id] = nq;
+               }
+               return nq;
+            });
+         });
+      };
+
+      const moveDown = (index: number) => {
+         setQuestionsState((prev) => {
+            if (index >= prev.length - 1) return prev;
+            const nv = [...prev];
+            [nv[index], nv[index + 1]] = [nv[index + 1], nv[index]];
+            return nv.map((q, i) => {
+               const nq = { ...q, order: i + 1 };
+               // Sửa lỗi - Kiểm tra nq._id tồn tại
+               if (nq._id && originalIdsRef.current.has(nq._id)) {
+                  const original = originalMapRef.current[nq._id];
+                  if (!shallowEqualQuestion(original, nq)) {
+                     console.log("Question reordered (edited):", nq._id);
+                     editedMapRef.current[nq._id] = nq;
+                  } else {
+                     delete editedMapRef.current[nq._id];
+                  }
+               } else if (nq._id) {
+                  console.log("New question reordered:", nq._id);
+                  newMapRef.current[nq._id] = nq;
+               }
+               return nq;
+            });
+         });
+      };
+
+      // Function to add an option to a question
+      const addOption = (questionId: string) => {
+         setQuestionsState((prev) =>
+            prev.map((q) => {
+               if (q._id === questionId) {
+                  const options = [...(q.options || []), ""];
+                  return { ...q, options };
+               }
+               return q;
+            })
+         );
+
+         // Update tracking
+         const question = questions.find((q) => q._id === questionId);
+         if (question) {
+            update(questionId, {
+               options: [...(question.options || []), ""],
+            });
+         }
+      };
+
+      // Function to update an option
+      const updateOption = (
+         questionId: string,
+         optionIndex: number,
+         value: string
+      ) => {
+         setQuestionsState((prev) =>
+            prev.map((q) => {
+               if (q._id === questionId && Array.isArray(q.options)) {
+                  const newOptions = [...q.options];
+                  newOptions[optionIndex] = value;
+                  return { ...q, options: newOptions };
+               }
+               return q;
+            })
+         );
+
+         // Update tracking and handle if this was the correct answer
+         const question = questions.find((q) => q._id === questionId);
+         if (question && Array.isArray(question.options)) {
+            const oldOption = question.options[optionIndex];
+            const newOptions = [...question.options];
+            newOptions[optionIndex] = value;
+
+            const updates: Partial<MultipleChoiceQuestions> = {
+               options: newOptions,
+            };
+
+            // If this option was the correct answer, update correctAnswer too
+            if (question.correctAnswer === oldOption) {
+               updates.correctAnswer = value;
+            }
+
+            update(questionId, updates);
+         }
+      };
+
+      // Function to remove an option
+      const removeOption = (questionId: string, optionIndex: number) => {
+         setQuestionsState((prev) =>
+            prev.map((q) => {
+               if (
+                  q._id === questionId &&
+                  Array.isArray(q.options) &&
+                  q.options.length > 2
+               ) {
+                  const removedOption = q.options[optionIndex];
+                  const newOptions = q.options.filter(
+                     (_, i) => i !== optionIndex
+                  );
+                  let updates = { options: newOptions };
+
+                  // If removed option was correct answer, reset correctAnswer
+                  if (q.correctAnswer === removedOption) {
+                     return { ...q, ...updates, correctAnswer: "" };
+                  }
+
+                  return { ...q, ...updates };
+               }
+               return q;
+            })
+         );
+
+         // Update tracking
+         const question = questions.find((q) => q._id === questionId);
+         if (
+            question &&
+            Array.isArray(question.options) &&
+            question.options.length > 2
+         ) {
+            const removedOption = question.options[optionIndex];
+            const newOptions = question.options.filter(
+               (_, i) => i !== optionIndex
+            );
+
+            const updates: Partial<MultipleChoiceQuestions> = {
+               options: newOptions,
+            };
+
+            // If removed option was correct answer, reset correctAnswer
+            if (question.correctAnswer === removedOption) {
+               updates.correctAnswer = "";
+            }
+
+            update(questionId, updates);
+         }
+      };
+
+      // Function to set correct answer
+      const setCorrectAnswer = (questionId: string, option: string) => {
+         setQuestionsState((prev) =>
+            prev.map((q) => {
+               if (q._id === questionId) {
+                  return { ...q, correctAnswer: option };
+               }
+               return q;
+            })
+         );
+
+         update(questionId, { correctAnswer: option });
+      };
+
+      // Calculate total points
+      const totalPoints = questions.reduce(
+         (sum, q) => sum + (Number(q.points) || 0),
          0
       );
 
       return (
          <div className="space-y-4">
             {questions.map((q, idx) => (
-               <Card key={q.id} className="bg-slate-800/40">
+               <Card key={q._id} className="bg-slate-800/40">
                   <CardHeader className="flex items-center justify-between py-2 px-4">
                      <CardTitle className="text-sm">
-                        Question #{idx + 1}
+                        Question #{q.order ?? idx + 1}
                      </CardTitle>
+
                      <div className="flex items-center gap-2">
                         <Button
+                           type="button"
                            variant="ghost"
                            size="sm"
-                           onClick={() =>
-                              insertQuestion(idx + 1, defaultQuestion())
-                           }
+                           onClick={() => moveUp(idx)}
+                           disabled={idx === 0}
+                           title="Move up"
                         >
-                           Add below
+                           <ChevronUp className="w-4 h-4" />
                         </Button>
+
                         <Button
+                           type="button"
                            variant="ghost"
                            size="sm"
-                           onClick={() =>
-                              moveQuestion(idx, Math.max(0, idx - 1))
-                           }
+                           onClick={() => moveDown(idx)}
+                           disabled={idx === questions.length - 1}
+                           title="Move down"
                         >
-                           ↑
+                           <ChevronDown className="w-4 h-4" />
                         </Button>
+
                         <Button
+                           type="button"
                            variant="ghost"
                            size="sm"
-                           onClick={() =>
-                              moveQuestion(
-                                 idx,
-                                 Math.min(questions.length - 1, idx + 1)
-                              )
-                           }
+                           onClick={() => {
+                              if (q._id) add(q._id);
+                           }}
+                           title="Add after"
                         >
-                           ↓
+                           <Plus className="w-4 h-4" />
                         </Button>
+
                         <Button
-                           variant="destructive"
+                           type="button"
+                           variant="ghost"
                            size="sm"
-                           onClick={() => removeQuestion(idx)}
+                           onClick={() => {
+                              if (q._id) remove(q._id); // Thêm kiểm tra trước khi gọi hàm
+                           }}
+                           disabled={questions.length <= 1}
+                           className="text-red-500"
+                           title="Delete"
                         >
                            <Trash className="w-4 h-4" />
                         </Button>
@@ -377,65 +561,99 @@ const MultipleChoiceQuizQuestionForm =
                            <Label>Points</Label>
                            <Input
                               type="number"
-                              {...register(`questions.${idx}.points` as const, {
-                                 valueAsNumber: true,
-                              })}
+                              value={q.points || 0}
+                              onChange={(e) =>
+                                 update(q._id as string, {
+                                    points: parseInt(e.target.value) || 0,
+                                 })
+                              }
                               placeholder="Points"
                            />
-                           {formState.errors.questions?.[idx]?.points && (
-                              <div className="text-xs text-red-400 mt-1">
-                                 {String(
-                                    (formState.errors.questions as any)[idx]
-                                       .points?.message
-                                 )}
-                              </div>
-                           )}
                         </div>
                      </div>
 
                      <div className="mt-3">
                         <Label>Question</Label>
                         <Input
-                           {...register(
-                              `questions.${idx}.questionText` as const
-                           )}
+                           value={q.questionText || ""}
+                           onChange={(e) =>
+                              update(q._id as string, {
+                                 questionText: e.target.value,
+                              })
+                           }
                            placeholder="Question text"
                         />
-                        {formState.errors.questions?.[idx]?.questionText && (
+                        {errors[`${q._id}-question`] && (
                            <div className="text-xs text-red-400 mt-1">
-                              {String(
-                                 (formState.errors.questions as any)[idx]
-                                    .questionText?.message
-                              )}
+                              {errors[`${q._id}-question`]}
                            </div>
                         )}
                      </div>
 
                      <div className="mt-3">
-                        <Label>Options (min 2, select exactly 1 correct)</Label>
-                        <OptionsEditor
-                           control={control}
-                           register={register}
-                           setValue={setValue}
-                           watch={watch}
-                           qIndex={idx}
-                           getValues={getValues}
-                           defaultOption={defaultOption}
-                        />
-                        {formState.errors.questions?.[idx]?.correctAnswer && (
+                        <Label>Options (min 2, select 1 correct)</Label>
+                        <div className="space-y-2">
+                           {(q.options || []).map((option, optIdx) => (
+                              <div
+                                 key={optIdx}
+                                 className="flex items-center gap-2"
+                              >
+                                 <input
+                                    type="radio"
+                                    checked={q.correctAnswer === option}
+                                    onChange={() => {
+                                       if (q._id)
+                                          setCorrectAnswer(q._id, option);
+                                    }}
+                                    disabled={!option}
+                                 />
+
+                                 <Input
+                                    value={option}
+                                    onChange={(e) =>
+                                       updateOption(
+                                          q._id as string,
+                                          optIdx,
+                                          e.target.value
+                                       )
+                                    }
+                                    placeholder={`Option ${optIdx + 1}`}
+                                 />
+
+                                 <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() =>
+                                       removeOption(q._id as string, optIdx)
+                                    }
+                                    disabled={(q.options || []).length <= 2}
+                                    className="p-2 text-red-500"
+                                 >
+                                    <Trash className="w-4 h-4" />
+                                 </Button>
+                              </div>
+                           ))}
+
+                           <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => addOption(q._id as string)}
+                              className="mt-2"
+                           >
+                              <Plus className="mr-2 w-4 h-4" /> Add option
+                           </Button>
+                        </div>
+
+                        {errors[`${q._id}-options`] && (
                            <div className="text-xs text-red-400 mt-1">
-                              {String(
-                                 (formState.errors.questions as any)[idx]
-                                    .correctAnswer?.message
-                              )}
+                              {errors[`${q._id}-options`]}
                            </div>
                         )}
-                        {formState.errors.questions?.[idx]?.options && (
+
+                        {errors[`${q._id}-answer`] && (
                            <div className="text-xs text-red-400 mt-1">
-                              {String(
-                                 (formState.errors.questions as any)[idx]
-                                    .options?.message
-                              )}
+                              {errors[`${q._id}-answer`]}
                            </div>
                         )}
                      </div>
@@ -443,10 +661,14 @@ const MultipleChoiceQuizQuestionForm =
                      <div className="mt-3">
                         <Label>Explanation (optional)</Label>
                         <Textarea
-                           {...register(
-                              `questions.${idx}.explanation` as const
-                           )}
+                           value={q.explanation || ""}
+                           onChange={(e) =>
+                              update(q._id as string, {
+                                 explanation: e.target.value,
+                              })
+                           }
                            rows={3}
+                           placeholder="Explanation (optional)"
                         />
                      </div>
                   </CardContent>
@@ -458,7 +680,7 @@ const MultipleChoiceQuizQuestionForm =
                   Total points: {totalPoints}
                </div>
                <div>
-                  <Button onClick={handleAddQuestion} variant="outline">
+                  <Button onClick={() => add()} variant="outline">
                      <Plus className="mr-2 w-4 h-4" /> Add question
                   </Button>
                </div>
