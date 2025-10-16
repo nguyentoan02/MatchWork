@@ -135,7 +135,7 @@ export interface updateIMCQBody {
    };
    tags: string[];
    totalQuestions: number;
-   deleteMultipleChoiceQuizQuestionsArr?: IQuizQuestion[];
-   newMultipleChoiceQuizQuestionsArr?: { _id: string }[];
+   newMultipleChoiceQuizQuestionsArr?: IQuizQuestion[];
+   deleteMultipleChoiceQuizQuestionsArr?: { _id: string }[];
    editMultipleChoiceQuizQuestionsArr?: IQuizQuestion[];
 }

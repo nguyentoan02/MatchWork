@@ -1,15 +1,17 @@
 import {
    createMCQ,
+   editMCQ,
    fetchMCQById,
    fetchMCQList,
 } from "@/api/multipleChoiceQuiz";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./useToast";
 import { MCQResponse } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
 
 export const useMCQ = (quizId?: string) => {
    const addToast = useToast();
+   const queryClient = useQueryClient();
    const create = useMutation({
       mutationFn: createMCQ,
       onSuccess: (response) => addToast("success", response.message),
@@ -34,10 +36,11 @@ export const useMCQ = (quizId?: string) => {
    });
 
    const updateMCQ = useMutation({
-      mutationFn: (payload: any) => {
-         return fetchMCQById(payload);
+      mutationFn: editMCQ,
+      onSuccess: (response) => {
+         queryClient.invalidateQueries({ queryKey: ["MCQLIST"] });
+         addToast("success", response.message);
       },
-      onSuccess: (response) => addToast("success", response.message),
       onError: (error: any) => {
          addToast(
             "error",

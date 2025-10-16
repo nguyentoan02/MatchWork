@@ -25,6 +25,9 @@ export const fetchMCQById = async (
 };
 
 export const editMCQ = async (payload: updateIMCQBody) => {
-   const response = await apiClient.put("quiz/editMultipleChoiceQuiz", payload);
+   const response = await apiClient.put(
+      "quiz/updateMultipleChoiceQuiz",
+      payload
+   );
    return response.data;
 };

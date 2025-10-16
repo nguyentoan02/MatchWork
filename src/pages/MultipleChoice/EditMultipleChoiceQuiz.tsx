@@ -138,8 +138,6 @@ const EditMultipleChoiceQuiz = () => {
          deleteMultipleChoiceQuizQuestionsArr: deletedQuestions.map(
             (q: any) => ({
                ...q,
-               order: q.order ?? 0,
-               questionType: q.questionType ?? QuestionTypeEnum.MULTIPLE_CHOICE,
                _id: q._id ?? "",
             })
          ),
@@ -149,7 +147,6 @@ const EditMultipleChoiceQuiz = () => {
             (deletedQuestions?.length || 0) +
             (newQuestions?.length || 0),
       };
-      console.log("Full payload object:", payload);
 
       updateMCQ.mutate(payload);
    };

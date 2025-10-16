@@ -102,7 +102,6 @@ const MultipleChoiceQuizQuestionForm =
             if (id && id.length === 24) {
                ids.add(id);
                snapshot[id] = { ...q, _id: id, order: q.order ?? i + 1 };
-               console.log("Added to original:", id);
             }
          });
 
@@ -111,8 +110,6 @@ const MultipleChoiceQuizQuestionForm =
          deletedRef.current = [];
          editedMapRef.current = {};
          newMapRef.current = {};
-
-         console.log("Original IDs:", Array.from(ids));
       }, [storeQuestions]);
 
       useImperativeHandle(
@@ -176,11 +173,9 @@ const MultipleChoiceQuizQuestionForm =
 
                originalMapRef.current = snapshot;
                originalIdsRef.current = ids;
-               console.log("After reset - Original IDs:", Array.from(ids));
             },
 
             getDeleted: () => {
-               console.log("Deleted questions:", deletedRef.current);
                return deletedRef.current.slice();
             },
 
@@ -188,7 +183,6 @@ const MultipleChoiceQuizQuestionForm =
                const edited = Object.values(editedMapRef.current).filter(
                   (q) => !deletedRef.current.some((d) => d._id === q._id)
                );
-               console.log("Edited questions:", edited);
                return edited;
             },
 
@@ -205,7 +199,6 @@ const MultipleChoiceQuizQuestionForm =
                      order: q.order || 0,
                      points: q.points || 0,
                   }));
-               console.log("New questions:", newQuestions);
                return newQuestions;
             },
 
@@ -251,16 +244,13 @@ const MultipleChoiceQuizQuestionForm =
             // compare with original snapshot to decide if edited
             const original = originalMapRef.current[id];
             if (!shallowEqualQuestion(original, merged)) {
-               console.log("Question edited:", id);
                editedMapRef.current[id] = { ...merged, _id: id };
             } else {
                // if matches original now, remove from edited set
-               console.log("Question no longer edited:", id);
                delete editedMapRef.current[id];
             }
          } else {
             // new question: keep in newMapRef as current state
-            console.log("New question updated:", id);
             newMapRef.current[id] = { ...merged, _id: id };
          }
       };
@@ -277,7 +267,6 @@ const MultipleChoiceQuizQuestionForm =
             nv.splice(idx, 0, newQ);
             // add to newMap
             newMapRef.current[newId] = { ...newQ };
-            console.log("New question added:", newId);
             return nv.map((q, i) => ({ ...q, order: i + 1 }));
          });
       };
@@ -296,13 +285,11 @@ const MultipleChoiceQuizQuestionForm =
             const already = deletedRef.current.find((d) => d._id === id);
             if (!already) {
                deletedRef.current.push({ _id: id });
-               console.log("Original question deleted:", id);
             }
             // ensure it's not in edited set
             delete editedMapRef.current[id];
          } else {
             // new item removed: remove from newMapRef
-            console.log("New question removed:", id);
             delete newMapRef.current[id];
          }
 
@@ -327,13 +314,11 @@ const MultipleChoiceQuizQuestionForm =
                if (nq._id && originalIdsRef.current.has(nq._id)) {
                   const original = originalMapRef.current[nq._id];
                   if (!shallowEqualQuestion(original, nq)) {
-                     console.log("Question reordered (edited):", nq._id);
                      editedMapRef.current[nq._id] = nq;
                   } else {
                      delete editedMapRef.current[nq._id];
                   }
                } else if (nq._id) {
-                  console.log("New question reordered:", nq._id);
                   newMapRef.current[nq._id] = nq;
                }
                return nq;
@@ -352,13 +337,11 @@ const MultipleChoiceQuizQuestionForm =
                if (nq._id && originalIdsRef.current.has(nq._id)) {
                   const original = originalMapRef.current[nq._id];
                   if (!shallowEqualQuestion(original, nq)) {
-                     console.log("Question reordered (edited):", nq._id);
                      editedMapRef.current[nq._id] = nq;
                   } else {
                      delete editedMapRef.current[nq._id];
                   }
                } else if (nq._id) {
-                  console.log("New question reordered:", nq._id);
                   newMapRef.current[nq._id] = nq;
                }
                return nq;
@@ -556,17 +539,18 @@ const MultipleChoiceQuizQuestionForm =
                   </CardHeader>
 
                   <CardContent className="p-4">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="hidden">
                         <div>
                            <Label>Points</Label>
                            <Input
                               type="number"
-                              value={q.points || 0}
+                              value={q.points || 1}
                               onChange={(e) =>
                                  update(q._id as string, {
                                     points: parseInt(e.target.value) || 0,
                                  })
                               }
+                              disabled={true}
                               placeholder="Points"
                            />
                         </div>
