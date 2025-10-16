@@ -207,8 +207,11 @@ const EditMultipleChoiceQuiz = () => {
                   <Button variant="outline" onClick={() => navigate(-1)}>
                      Hủy
                   </Button>
-                  <Button onClick={handleSubmit} disabled={updateMCQ.isPending}>
-                     {updateMCQ.isPending ? "Đang xử lý..." : "Lưu"}
+                  <Button
+                     onClick={handleSubmit}
+                     disabled={updateMCQ.isPending || updateMCQ.isSuccess}
+                  >
+                     {updateMCQ.isPending ? "Đang xử lý..." : "Lưu thay đổi"}
                   </Button>
                </div>
             </CardContent>

@@ -95,12 +95,14 @@ const ViewMultipleQuizList: React.FC = () => {
                      <div className="text-xs text-muted-foreground mb-3">
                         {q.settings ? (
                            <>
-                              Shuffle:{" "}
-                              {q.settings.shuffleQuestions ? "Yes" : "No"} •
-                              Show answers:{" "}
+                              Thời gian:{" "}
+                              {q.settings.timeLimitMinutes
+                                 ? q.settings.timeLimitMinutes + " phút"
+                                 : "Không giới hạn"}{" "}
+                              • Hiện câu trả lời:{" "}
                               {q.settings.showCorrectAnswersAfterSubmit
-                                 ? "Yes"
-                                 : "No"}
+                                 ? "Có"
+                                 : "Không"}
                            </>
                         ) : (
                            "No settings"

@@ -190,8 +190,7 @@ const MultipleChoiceQuizQuestionForm =
                const newQuestions: MultipleChoiceQuestions[] = questions
                   .filter((q) => !originalIdsRef.current.has(q._id as string))
                   .map((q) => ({
-                     questionType:
-                        QuestionTypeEnum.MULTIPLE_CHOICE as QuestionTypeEnum.MULTIPLE_CHOICE,
+                     questionType: QuestionTypeEnum.MULTIPLE_CHOICE,
                      questionText: q.questionText || "",
                      options: q.options || [],
                      correctAnswer: q.correctAnswer || "",
@@ -484,7 +483,7 @@ const MultipleChoiceQuizQuestionForm =
                <Card key={q._id} className="bg-slate-800/40">
                   <CardHeader className="flex items-center justify-between py-2 px-4">
                      <CardTitle className="text-sm">
-                        Question #{q.order ?? idx + 1}
+                        Câu hỏi #{q.order ?? idx + 1}
                      </CardTitle>
 
                      <div className="flex items-center gap-2">
@@ -541,7 +540,7 @@ const MultipleChoiceQuizQuestionForm =
                   <CardContent className="p-4">
                      <div className="hidden">
                         <div>
-                           <Label>Points</Label>
+                           <Label>Điểm</Label>
                            <Input
                               type="number"
                               value={q.points || 1}
@@ -557,7 +556,7 @@ const MultipleChoiceQuizQuestionForm =
                      </div>
 
                      <div className="mt-3">
-                        <Label>Question</Label>
+                        <Label>Các câu hỏi trắc nghiệm</Label>
                         <Input
                            value={q.questionText || ""}
                            onChange={(e) =>
@@ -575,7 +574,7 @@ const MultipleChoiceQuizQuestionForm =
                      </div>
 
                      <div className="mt-3">
-                        <Label>Options (min 2, select 1 correct)</Label>
+                        <Label>Các lựa chọn (min 2, chọn 1 đúng)</Label>
                         <div className="space-y-2">
                            {(q.options || []).map((option, optIdx) => (
                               <div
@@ -625,7 +624,7 @@ const MultipleChoiceQuizQuestionForm =
                               onClick={() => addOption(q._id as string)}
                               className="mt-2"
                            >
-                              <Plus className="mr-2 w-4 h-4" /> Add option
+                              <Plus className="mr-2 w-4 h-4" /> Thêm lựa chọn
                            </Button>
                         </div>
 
@@ -643,7 +642,7 @@ const MultipleChoiceQuizQuestionForm =
                      </div>
 
                      <div className="mt-3">
-                        <Label>Explanation (optional)</Label>
+                        <Label>giải thích (optional)</Label>
                         <Textarea
                            value={q.explanation || ""}
                            onChange={(e) =>
@@ -661,11 +660,11 @@ const MultipleChoiceQuizQuestionForm =
 
             <div className="flex items-center justify-between">
                <div className="text-sm font-medium">
-                  Total points: {totalPoints}
+                  Tổng số điểm: {totalPoints}
                </div>
                <div>
                   <Button onClick={() => add()} variant="outline">
-                     <Plus className="mr-2 w-4 h-4" /> Add question
+                     <Plus className="mr-2 w-4 h-4" /> thêm câu hỏi
                   </Button>
                </div>
             </div>

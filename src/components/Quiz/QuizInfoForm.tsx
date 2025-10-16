@@ -19,6 +19,13 @@ import Switch from "@/components/ui/switch";
 import { QuizInfoValues } from "@/types/quiz";
 import { Button } from "@/components/ui/button";
 import { QuizModeEnum } from "@/enums/quiz.enum";
+import {
+   Tooltip,
+   TooltipContent,
+   TooltipProvider,
+   TooltipTrigger,
+} from "../ui/tooltip";
+import { InfoIcon } from "lucide-react";
 
 type Props = {
    defaultValues?: Partial<QuizInfoValues>;
@@ -265,8 +272,8 @@ const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
                </div>
             </div>
 
-            <div className="flex items-center justify-between gap-4">
-               <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-4 ">
+               <div className="flex items-center gap-3 flex-shrink-0">
                   <div>
                      <div className="text-sm">Shuffle questions</div>
                      <div className="text-xs text-muted-foreground">
@@ -278,6 +285,7 @@ const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
                      control={control}
                      render={({ field }) => (
                         <Switch
+                           disabled={!isFlashcard}
                            checked={Boolean(field.value)}
                            onCheckedChange={(v) => field.onChange(Boolean(v))}
                         />
@@ -285,15 +293,77 @@ const QuizInfoForm = forwardRef<QuizInfoHandle, Props>(
                   />
                </div>
 
-               <div className="flex items-center gap-3">
-                  <div>
-                     <div className="text-sm">Show answers after submit</div>
+               <div className="flex items-center gap-3 w-full">
+                  <Label
+                     htmlFor="timeLimit"
+                     className="flex items-center gap-2 flex-shrink-0"
+                  >
+                     <div className="flex flex-col ">
+                        <div className="text-sm">Giới hạn thời gian(phút)</div>
+                        <div className="text-xs text-muted-foreground">
+                           Dùng cho trắc nghiệm
+                        </div>
+                     </div>
+
+                     <TooltipProvider>
+                        <Tooltip>
+                           <TooltipTrigger asChild>
+                              <button type="button" className="ml-1 p-0">
+                                 <InfoIcon className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                           </TooltipTrigger>
+                           <TooltipContent
+                              side="left"
+                              align="center"
+                              sideOffset={4}
+                              className="whitespace-nowrap"
+                           >
+                              <p>Để trống nếu không giới hạn thời gian</p>
+                           </TooltipContent>
+                        </Tooltip>
+                     </TooltipProvider>
+                  </Label>
+
+                  <Controller
+                     name="settings.timeLimitMinutes"
+                     control={control}
+                     render={({ field }) => (
+                        <Input
+                           id="timeLimit"
+                           type="number"
+                           min="0"
+                           placeholder="Không giới hạn"
+                           className="w-full"
+                           disabled={isFlashcard}
+                           value={field.value === null ? "" : field.value}
+                           onChange={(e) => {
+                              const value =
+                                 e.target.value === ""
+                                    ? null
+                                    : Math.max(
+                                         0,
+                                         parseInt(e.target.value) || 0
+                                      );
+                              field.onChange(value);
+                           }}
+                        />
+                     )}
+                  />
+               </div>
+
+               <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="">
+                     <div className="text-sm">Xem đáp án sau khi nộp</div>
+                     <div className="text-xs text-muted-foreground">
+                        Dùng cho trắc nghiệm
+                     </div>
                   </div>
                   <Controller
                      name="settings.showCorrectAnswersAfterSubmit"
                      control={control}
                      render={({ field }) => (
                         <Switch
+                           disabled={isFlashcard}
                            checked={Boolean(field.value)}
                            onCheckedChange={(v) => field.onChange(Boolean(v))}
                         />

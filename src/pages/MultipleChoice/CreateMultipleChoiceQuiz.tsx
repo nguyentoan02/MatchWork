@@ -8,14 +8,17 @@ import { useMCQ } from "@/hooks/useMCQ";
 import { useToast } from "@/hooks/useToast";
 import { QuestionTypeEnum } from "@/enums/quiz.enum";
 import { IQuizBody } from "@/types/quiz";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const CreateMultipleChoiceQuiz = () => {
    const quizInfoRef = useRef<QuizInfoHandle | null>(null);
    const mcqRef = useRef<MultipleChoiceQuestionsFormHandle | null>(null);
    const addToast = useToast();
    const { create } = useMCQ();
-   mcqRef.current?.reset?.();
+   useEffect(() => {
+      mcqRef.current?.reset?.();
+      quizInfoRef.current?.reset?.();
+   }, []);
 
    const handleSubmit = async () => {
       if (!quizInfoRef.current || !mcqRef.current) return;

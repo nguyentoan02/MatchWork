@@ -29,7 +29,7 @@ export type MultipleChoiceQuestions = {
    // mirror subset of server IQuizQuestion for multiple choice usage
    _id?: string; // client id
    order?: number;
-   questionType: QuestionTypeEnum.MULTIPLE_CHOICE;
+   questionType: QuestionTypeEnum;
    questionText: string;
    options: string[];
    correctAnswer?: string;
@@ -127,7 +127,7 @@ export interface updateIMCQBody {
    title: string;
    description: string;
    quizMode: QuizModeEnum;
-   quizType: QuestionTypeEnum.MULTIPLE_CHOICE;
+   quizType: QuestionTypeEnum;
    settings?: QuizSettings;
    createdBy: {
       role: string;
