@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./useToast";
 import {
+   asignQuizToSession,
    createFlashCardQuiz,
    deleteFlashcardQuestion,
    editFlashcardQuestion,
@@ -9,6 +10,7 @@ import {
 } from "@/api/quiz";
 import { IQuizResponse } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
+import { useSessionDetail } from "./useSessions";
 
 export const useCreateQuiz = () => {
    const addToast = useToast();
@@ -61,6 +63,22 @@ export const useDeleteFlashcard = () => {
       onSuccess: (response) => {
          addToast("success", response.message);
          queryClient.invalidateQueries({ queryKey: ["TUTORFLASHCARDQUIZS"] });
+      },
+      onError: (error: any) => {
+         addToast("error", error.response?.data.message);
+      },
+   });
+};
+
+export const useAsignQuizToSession = (sessionId: string) => {
+   const addToast = useToast();
+   const sessionDetail = useSessionDetail(sessionId);
+
+   return useMutation({
+      mutationFn: asignQuizToSession,
+      onSuccess: (response) => {
+         addToast("success", response.message);
+         sessionDetail.refetch();
       },
       onError: (error: any) => {
          addToast("error", error.response?.data.message);

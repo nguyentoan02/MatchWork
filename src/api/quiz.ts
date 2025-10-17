@@ -39,3 +39,17 @@ export const deleteFlashcardQuestion = async (
    });
    return response.data;
 };
+
+export const asignQuizToSession = async ({
+   sessionId,
+   quizIds,
+}: {
+   sessionId: string;
+   quizIds: string[];
+}): Promise<BaseAPIResponse> => {
+   const response = await apiClient.post("/quiz/asignQuizToSession", {
+      sessionId,
+      quizIds,
+   });
+   return response.data;
+};
