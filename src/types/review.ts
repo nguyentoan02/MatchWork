@@ -1,17 +1,22 @@
+// types/review.ts
 export interface Review {
-    _id: string
-    rating: number
-    comment: string
+    _id: string;
+    rating: number;
+    comment?: string;
     reviewerId: {
-        name: string
-        avatarUrl: string
-    }
+        _id: string;
+        name: string;
+        avatarUrl?: string;
+    };
     revieweeId: {
-        name: string
-        avatarUrl: string
-    }
-    teachingRequestId: string
-    createdAt: string
-    helpfulCount?: number
+        _id: string;
+        name: string;
+        avatarUrl?: string;
+    };
+    teachingRequestId: {
+        _id: string;
+        subject: string;
+        level: string;
+    };
+    createdAt: string;
 }
-

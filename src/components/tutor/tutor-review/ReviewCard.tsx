@@ -1,49 +1,17 @@
-"use client"
-
-import { useState } from "react"
-import { Star, ThumbsUp } from "lucide-react"
+import { Star } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from "date-fns"
-
-interface Review {
-    _id: string
-    rating: number
-    comment: string
-    reviewerId: {
-        name: string
-        avatarUrl: string
-    }
-    revieweeId: {
-        name: string
-        avatarUrl: string
-    }
-    teachingRequestId: {
-        subject: string
-        level: string
-    }
-    createdAt: string
-    helpfulCount?: number
-}
+import { Review } from "@/types/review"
 
 interface ReviewCardProps {
     review: Review
     onEdit?: (review: Review) => void
 }
 
-export function ReviewCard({ review, onEdit }: ReviewCardProps) {
-    const [helpfulCount, setHelpfulCount] = useState(review.helpfulCount || 0)
-    const [hasVoted, setHasVoted] = useState(false)
-
-    const handleHelpful = () => {
-        if (!hasVoted) {
-            setHelpfulCount((prev) => prev + 1)
-            setHasVoted(true)
-        }
-    }
-
+export function ReviewCard({ review }: ReviewCardProps) {
     const getInitials = (name: string) => {
+        if (!name) return "??";
         return name
             .split(" ")
             .map((n) => n[0])
@@ -56,6 +24,24 @@ export function ReviewCard({ review, onEdit }: ReviewCardProps) {
         addSuffix: true,
     })
 
+    // Safe reviewer data extraction
+    const reviewerName = typeof review.reviewerId === 'object'
+        ? review.reviewerId?.name
+        : 'Anonymous User';
+
+    const reviewerAvatar = typeof review.reviewerId === 'object'
+        ? review.reviewerId?.avatarUrl
+        : null;
+
+    // Safe teaching request data extraction
+    const subject = typeof review.teachingRequestId === 'object'
+        ? review.teachingRequestId?.subject
+        : 'Unknown Subject';
+
+    const level = typeof review.teachingRequestId === 'object'
+        ? review.teachingRequestId?.level
+        : 'Unknown Level';
+
     return (
         <Card className="rounded-2xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
             <div className="space-y-4">
@@ -63,13 +49,16 @@ export function ReviewCard({ review, onEdit }: ReviewCardProps) {
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">
-                            <AvatarImage src={review.reviewerId.avatarUrl || "/placeholder.svg"} alt={review.reviewerId.name} />
+                            <AvatarImage
+                                src={reviewerAvatar || "/placeholder.svg"}
+                                alt={reviewerName}
+                            />
                             <AvatarFallback className="bg-primary text-primary-foreground">
-                                {getInitials(review.reviewerId.name)}
+                                {getInitials(reviewerName)}
                             </AvatarFallback>
                         </Avatar>
                         <div>
-                            <div className="font-semibold text-foreground">{review.reviewerId.name}</div>
+                            <div className="font-semibold text-foreground">{reviewerName}</div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <span>{relativeTime}</span>
                             </div>
@@ -93,23 +82,8 @@ export function ReviewCard({ review, onEdit }: ReviewCardProps) {
 
                 {/* Teaching Request Info */}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span className="rounded-full bg-muted px-3 py-1">{review.teachingRequestId.subject}</span>
-                    <span className="rounded-full bg-muted px-3 py-1">{review.teachingRequestId.level}</span>
-                </div>
-
-                {/* Helpful Button */}
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleHelpful}
-                        disabled={hasVoted}
-                        className="gap-2 bg-transparent"
-                    >
-                        <ThumbsUp className="h-4 w-4" />
-                        <span>Helpful</span>
-                        {helpfulCount > 0 && <span className="text-muted-foreground">({helpfulCount})</span>}
-                    </Button>
+                    <span className="rounded-full bg-muted px-3 py-1">{subject}</span>
+                    <span className="rounded-full bg-muted px-3 py-1">{level}</span>
                 </div>
             </div>
         </Card>

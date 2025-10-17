@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useState, useEffect } from "react"
@@ -60,7 +58,7 @@ export function ReviewModalForm({ isOpen, onClose, onSubmit, initialData, isEdit
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Overlay */}
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/50 transition-opacity" onClick={onClose} />
 
             {/* Modal Content */}
             <div className="relative w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
