@@ -17,6 +17,7 @@ import CreateMultipleChoiceQuiz from "@/pages/MultipleChoice/CreateMultipleChoic
 import ViewMultipleQuizList from "@/pages/MultipleChoice/ViewMultipleQuizList";
 import ViewMultipleChoiceQuiz from "@/pages/MultipleChoice/ViewMultipleChoiceQuiz";
 import EditMultipleChoiceQuiz from "@/pages/MultipleChoice/EditMultipleChoiceQuiz";
+import { ReviewList } from "@/pages/Review/TutorReviewList";
 // import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
 export const tutorRoutes = {
@@ -83,6 +84,10 @@ export const tutorRoutes = {
       {
          path: "/tutor/editMultipleChoice",
          element: <EditMultipleChoiceQuiz />,
+      },
+      {
+         path: "/tutor/review-list",
+         element: <ReviewList />,
       },
    ],
 };
