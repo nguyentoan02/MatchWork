@@ -15,11 +15,6 @@ export default function QuizzesCard({ session, canManage }: any) {
 
    const [isShowingModal, setIsShowingModal] = useState(false);
 
-   const handleOpenModal = () => {
-      setIsShowingModal(true);
-      ``;
-   };
-
    const handleSaveFlashcards = (selectedFlashcards: string[]) => {
       asign.mutate({ sessionId: session._id, quizIds: selectedFlashcards });
       setIsShowingModal(false);
@@ -40,7 +35,7 @@ export default function QuizzesCard({ session, canManage }: any) {
                   Flashcard ({quizData.length})
                </CardTitle>
                {canManage && (
-                  <Button size="sm" onClick={handleOpenModal}>
+                  <Button size="sm" onClick={() => setIsShowingModal(true)}>
                      <Plus className="h-4 w-4 mr-2" />
                      Gắn Flashcard mới
                   </Button>

@@ -1,5 +1,10 @@
 import apiClient from "@/lib/api";
-import { IQuizBody, IQuizResponse, IQUizUpdate } from "@/types/quiz";
+import {
+   IQuizBody,
+   IQuizResponse,
+   IQUizUpdate,
+   ISessionAssignedQuizzesResponse,
+} from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
 import { BaseAPIResponse } from "@/types/response";
 
@@ -50,6 +55,15 @@ export const asignQuizToSession = async ({
    const response = await apiClient.post("/quiz/asignQuizToSession", {
       sessionId,
       quizIds,
+   });
+   return response.data;
+};
+
+export const fetchSessionAssigned = async (
+   quizId: string
+): Promise<ISessionAssignedQuizzesResponse> => {
+   const response = await apiClient.get("/quiz/getSessionsAssigned", {
+      params: { quizId },
    });
    return response.data;
 };

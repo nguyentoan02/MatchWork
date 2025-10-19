@@ -7,6 +7,7 @@ import {
    editFlashcardQuestion,
    fetchFlashcardQuestions,
    fetchFlashCardQuiz,
+   fetchSessionAssigned,
 } from "@/api/quiz";
 import { IQuizResponse } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
@@ -83,5 +84,12 @@ export const useAsignQuizToSession = (sessionId: string) => {
       onError: (error: any) => {
          addToast("error", error.response?.data.message);
       },
+   });
+};
+
+export const useSessionAssignedQuizzes = (quizId: string) => {
+   return useQuery({
+      queryKey: ["SESSIONASSIGNEDQUIZS", quizId],
+      queryFn: () => fetchSessionAssigned(quizId),
    });
 };

@@ -59,13 +59,11 @@ const FlashcardListModal = ({
       onClose();
    };
 
-   // Filter flashcards only
    const flashcards = useMemo(() => {
       if (!quizzes) return [];
       return quizzes.filter((quiz: any) => quiz.quizType === "FLASHCARD");
    }, [quizzes]);
 
-   // Filter by search term
    const filteredFlashcards = useMemo(() => {
       if (!searchTerm) return flashcards;
       return flashcards.filter(
