@@ -4,6 +4,8 @@ import { IUser } from "@/types/user";
 
 // Mở rộng DecodedToken để bao gồm các trường từ JWT payload
 interface DecodedToken extends IUser {
+   // đây này nó trả về cái id chứ không phải _id như trong database
+   // thua bố toàn log debug tùm lum =))
    id: string;
    email: string;
    iat: number;

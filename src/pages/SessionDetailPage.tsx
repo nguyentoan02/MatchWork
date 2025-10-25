@@ -40,10 +40,14 @@ export default function SessionDetailPage() {
          const tutorUserId = (session.teachingRequestId.tutorId as any)?.userId
             ?._id;
          console.log("Tutor check:", {
-            currentUserId: currentUser._id,
+            // cái hook nó trả về là id chứ ko phải _id
+            // currentUserId: currentUser._id,
+            currentUserId: currentUser.id,
             tutorUserId,
          });
-         return tutorUserId === currentUser._id;
+         // cái hook nó trả về là id chứ ko phải _id
+         // return tutorUserId === currentUser._id;
+         return tutorUserId === currentUser.id;
       }
 
       if (currentUser.role === Role.STUDENT) {

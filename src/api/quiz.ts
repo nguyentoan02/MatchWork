@@ -1,5 +1,10 @@
 import apiClient from "@/lib/api";
-import { IQuizBody, IQuizResponse, IQUizUpdate } from "@/types/quiz";
+import {
+   IQuizBody,
+   IQuizResponse,
+   IQUizUpdate,
+   ISessionAssignedQuizzesResponse,
+} from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
 import { BaseAPIResponse } from "@/types/response";
 
@@ -36,6 +41,38 @@ export const deleteFlashcardQuestion = async (
 ): Promise<BaseAPIResponse> => {
    const response = await apiClient.delete("/quiz/deleteQuiz", {
       data: { quizId },
+   });
+   return response.data;
+};
+
+export const asignQuizToSession = async ({
+   sessionId,
+   quizIds,
+}: {
+   sessionId: string;
+   quizIds: string[];
+}): Promise<BaseAPIResponse> => {
+   const response = await apiClient.post("/quiz/asignQuizToSession", {
+      sessionId,
+      quizIds,
+   });
+   return response.data;
+};
+
+export const fetchSessionAssigned = async (
+   quizId: string
+): Promise<ISessionAssignedQuizzesResponse> => {
+   const response = await apiClient.get("/quiz/getSessionsAssigned", {
+      params: { quizId },
+   });
+   return response.data;
+};
+
+export const fetchQuizzesAssignedToSession = async (
+   sessionId: string
+): Promise<ISessionAssignedQuizzesResponse> => {
+   const response = await apiClient.get("/quiz/getQuizzesAssignedToSession", {
+      params: { sessionId },
    });
    return response.data;
 };
