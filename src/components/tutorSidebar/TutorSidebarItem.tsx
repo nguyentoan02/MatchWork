@@ -13,6 +13,7 @@ import {
    XCircle,
    FileUp,
    FolderKanban,
+   Wallet,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -43,6 +44,11 @@ export const tutorSidebarConfig: SidebarItem[] = [
       to: "/tutor/schedule",
       label: "Lịch dạy",
       icon: <Calendar className="h-4 w-4" />,
+   },
+   {
+      to: "/tutor/learning-commitments",
+      label: "Learning Commitments",
+      icon: <BookCopy className="h-4 w-4" />,
    },
    {
       to: "/tutor/createFlashcardQuiz",
@@ -83,6 +89,12 @@ export const tutorSidebarConfig: SidebarItem[] = [
       to: "/tutor/material-management",
       label: "Quản lý tài liệu",
       icon: <FolderKanban className="h-4 w-4" />,
+   },
+
+   {
+      to: "/tutor/wallet",
+      label: "Ví của tôi",
+      icon: <Wallet className="h-4 w-4" />,
    },
 
    // Thêm các mục khác ở đây
