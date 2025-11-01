@@ -139,3 +139,27 @@ export interface updateIMCQBody {
    deleteMultipleChoiceQuizQuestionsArr?: { _id: string }[];
    editMultipleChoiceQuizQuestionsArr?: IQuizQuestion[];
 }
+
+export interface ISessionAssignedQuizzesResponse extends BaseAPIResponse {
+   data: {
+      _id: string;
+      teachingRequestId?: {
+         _id: string;
+         studentId?: {
+            _id: string;
+            userId?: {
+               _id: string;
+               name: string;
+               email: string;
+            };
+         };
+         subject?: string;
+         level?: string;
+      } | null;
+      startTime?: string | Date;
+      endTime?: string | Date;
+      status?: string;
+      isTrial?: boolean;
+      createdAt?: string | Date;
+   }[];
+}

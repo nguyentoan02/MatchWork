@@ -21,6 +21,8 @@ import { ReviewList } from "@/pages/Review/TutorReviewList";
 import { CreateLearningCommitmentPage } from "@/pages/Student/CreateLearningCommitmentPage";
 import { LearningCommitmentsPage } from "@/pages/Student/LearningCommitmentsPage";
 import WalletManagement from "@/pages/wallet/walletManagement";
+import SessionDetailPage from "@/pages/SessionDetailPage";
+// import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
 export const tutorRoutes = {
    element: (
@@ -102,6 +104,10 @@ export const tutorRoutes = {
       {
          path: "/tutor/wallet",
          element: <WalletManagement />,
+      },
+      {
+         path: "/tutor/session/:id",
+         element: <SessionDetailPage />,
       },
    ],
 };

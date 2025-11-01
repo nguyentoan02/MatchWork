@@ -11,8 +11,9 @@ import {
    MessageSquare,
    FileText,
    Key,
-   AlertCircle,
+   Package as PackageIcon,
    Users,
+   AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -23,36 +24,49 @@ export type SidebarItem = {
    icon?: React.ReactNode;
 };
 
-export const adminSidebarConfig: SidebarItem[] = [
+const personalItems: SidebarItem[] = [
    {
       to: "/admin/dashboard",
-      label: "Bảng điều khiển",
-      icon: <LayoutDashboard className="h-4 w-4" />,
+      label: "Tổng quan",
+      icon: <LayoutDashboard className="h-5 w-5" />,
    },
    {
       to: "/admin/profile",
-      label: "Hồ sơ của tôi",
-      icon: <User className="h-4 w-4" />,
+      label: "Hồ sơ cá nhân",
+      icon: <User className="h-5 w-5" />,
    },
    {
+      to: "/profile/change-password",
+      label: "Đổi mật khẩu",
+      icon: <Key className="h-5 w-5" />,
+   },
+];
+
+const managementItems: SidebarItem[] = [
+   {
       to: "/admin/tutor-profile",
-      label: "Hồ sơ gia sư",
-      icon: <FileText className="h-4 w-4" />,
+      label: "Hồ sơ Gia sư",
+      icon: <FileText className="h-5 w-5" />,
    },
    {
       to: "/admin/tutors",
-      label: "Tài khoản gia sư",
-      icon: <BookOpen className="h-4 w-4" />,
+      label: "Tài khoản Gia sư",
+      icon: <BookOpen className="h-5 w-5" />,
    },
    {
       to: "/admin/students",
-      label: "Tài khoản học sinh",
-      icon: <GraduationCap className="h-4 w-4" />,
+      label: "Tài khoản Học sinh",
+      icon: <GraduationCap className="h-5 w-5" />,
    },
    {
       to: "/admin/teaching-requests",
-      label: "Yêu cầu dạy học",
-      icon: <MessageSquare className="h-4 w-4" />,
+      label: "Yêu cầu dạy",
+      icon: <MessageSquare className="h-5 w-5" />,
+   },
+   {
+      to: "/admin/packages",
+      label: "Gói dịch vụ",
+      icon: <PackageIcon className="h-5 w-5" />,
    },
    {
       to: "/admin/learning",
@@ -64,17 +78,12 @@ export const adminSidebarConfig: SidebarItem[] = [
       label: "Tranh chấp buổi học",
       icon: <AlertCircle className="h-4 w-4" />,
    },
-   {
-      to: "/profile/change-password",
-      label: "Đổi mật khẩu",
-      icon: <Key className="h-4 w-4" />,
-   },
 ];
 
 const AdminSidebarItems: React.FC<{
    onLinkClick?: () => void;
    collapsed?: boolean;
-}> = (props = {}) => {
+}> = (props) => {
    const { onLinkClick, collapsed = false } = props;
    const location = useLocation();
    const navigate = useNavigate();
@@ -89,39 +98,45 @@ const AdminSidebarItems: React.FC<{
       onLinkClick?.();
    };
 
-   return (
-      <div className="flex flex-col h-full">
-         <div className="space-y-1 flex-grow">
-            <Link
-               to="/"
-               onClick={() => onLinkClick?.()}
-               className={`flex items-center gap-3 p-2 rounded-md text-sm font-medium transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800`}
-               title="Trang chủ"
-            >
-               <Home className="h-4 w-4 flex-none" />
-               <span className={`${collapsed ? "sr-only" : "inline-block"}`}>
-                  Trang chủ
-               </span>
-            </Link>
+   const baseItemClass =
+      "group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200";
+   const activeClass =
+      "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md";
+   const inactiveClass = "text-gray-700 hover:bg-gray-50";
 
-            {adminSidebarConfig.map((item) => {
+   const renderGroup = (title: string, items: SidebarItem[]) => (
+      <div>
+         <div
+            className={`px-3 pt-3 pb-2 text-[10px] tracking-wide uppercase text-gray-400 ${
+               collapsed ? "sr-only" : "block"
+            }`}
+         >
+            {title}
+         </div>
+         <nav className="space-y-1">
+            {items.map((item) => {
                const active = isActive(item.to, item.exact);
                return (
                   <Link
                      key={item.to}
                      to={item.to}
                      onClick={() => onLinkClick?.()}
-                     className={`flex items-center gap-3 p-2 rounded-md text-sm font-medium transition-colors duration-200
-                        ${
-                           active
-                              ? "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300"
-                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        }
-                     `}
+                     className={`${baseItemClass} ${
+                        active ? activeClass : inactiveClass
+                     }`}
+                     aria-current={active ? "page" : undefined}
                      title={item.label}
                   >
                      {item.icon && (
-                        <span className="flex-none">{item.icon}</span>
+                        <span
+                           className={`flex-none ${
+                              active
+                                 ? "text-white"
+                                 : "text-gray-500 group-hover:text-inherit"
+                           }`}
+                        >
+                           {item.icon}
+                        </span>
                      )}
                      <span
                         className={`${collapsed ? "sr-only" : "inline-block"}`}
@@ -131,16 +146,50 @@ const AdminSidebarItems: React.FC<{
                   </Link>
                );
             })}
+         </nav>
+      </div>
+   );
+
+   return (
+      <div className="flex flex-col h-full">
+         <div className="space-y-1 flex-grow">
+            <Link
+               to="/"
+               onClick={() => onLinkClick?.()}
+               className={`${baseItemClass} ${
+                  isActive("/", true) ? activeClass : inactiveClass
+               }`}
+               title="Trang chủ"
+            >
+               <Home
+                  className={`h-5 w-5 flex-none ${
+                     isActive("/", true)
+                        ? "text-white"
+                        : "text-gray-500 group-hover:text-inherit"
+                  }`}
+               />
+               <span className={`${collapsed ? "sr-only" : "inline-block"}`}>
+                  Trang chủ
+               </span>
+            </Link>
+
+            {renderGroup("Tài khoản cá nhân", personalItems)}
+
+            <div className="px-3 py-2">
+               <div className="h-px bg-gray-200 dark:bg-gray-800" />
+            </div>
+
+            {renderGroup("Quản trị hệ thống", managementItems)}
          </div>
 
          <div className="mt-auto pt-2 border-t border-gray-200 dark:border-gray-800">
             <Button
                variant="ghost"
-               className="w-full justify-start text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30"
+               className="w-full justify-start text-sm font-semibold text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30"
                onClick={handleLogout}
                title="Đăng xuất"
             >
-               <LogOut className="h-4 w-4 mr-3" />
+               <LogOut className="h-5 w-5 mr-3" />
                <span className={`${collapsed ? "sr-only" : "inline-block"}`}>
                   Đăng xuất
                </span>

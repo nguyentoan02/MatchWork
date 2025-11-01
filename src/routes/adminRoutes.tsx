@@ -14,6 +14,7 @@ import DisputeDetailPage from "@/pages/admin/DisputeDetailPage";
 import ProfilePage from "@/pages/Profilepage";
 import AdminLayout from "@/layouts/AdminLayout";
 import SessionDisputeManagement from "@/pages/admin/SessionDisputeManagement";
+import PackageManagement from "@/pages/admin/PackageManagement";
 
 export const adminRoutes = {
    element: (
@@ -47,6 +48,7 @@ export const adminRoutes = {
          path: "/admin/disputes/:sessionId",
          element: <DisputeDetailPage />,
       },
+      { path: "/admin/packages", element: <PackageManagement /> },
       { path: "/admin/profile", element: <ProfilePage /> },
       { path: "/profile/change-password", element: <ChangePasswordPage /> },
    ],
