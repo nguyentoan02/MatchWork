@@ -39,12 +39,12 @@ export default function SessionDetailPage() {
       const lc: any = (session as any).learningCommitmentId;
       if (currentUser.role === Role.TUTOR) {
          const tutorUserId = lc?.tutor?.userId?._id || lc?.tutor?.userId;
-         return tutorUserId === currentUser._id;
+         return tutorUserId === currentUser.id;
       }
 
       if (currentUser.role === Role.STUDENT) {
          const studentUserId = lc?.student?.userId?._id || lc?.student?.userId;
-         return studentUserId === currentUser._id;
+         return studentUserId === currentUser.id;
       }
 
       return false;
