@@ -18,6 +18,9 @@ import ViewMultipleQuizList from "@/pages/MultipleChoice/ViewMultipleQuizList";
 import ViewMultipleChoiceQuiz from "@/pages/MultipleChoice/ViewMultipleChoiceQuiz";
 import EditMultipleChoiceQuiz from "@/pages/MultipleChoice/EditMultipleChoiceQuiz";
 import { ReviewList } from "@/pages/Review/TutorReviewList";
+import { CreateLearningCommitmentPage } from "@/pages/Student/CreateLearningCommitmentPage";
+import { LearningCommitmentsPage } from "@/pages/Student/LearningCommitmentsPage";
+import WalletManagement from "@/pages/wallet/walletManagement";
 import SessionDetailPage from "@/pages/SessionDetailPage";
 // import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
@@ -40,6 +43,10 @@ export const tutorRoutes = {
       {
          path: "/tutor/schedule", // Thêm route mới
          element: <SchedulePage />,
+      },
+      {
+         path: "/tutor/learning-commitments",
+         element: <LearningCommitmentsPage />,
       },
       {
          // Session detail route moved to sharedRoutes (accessible by both roles)
@@ -89,6 +96,14 @@ export const tutorRoutes = {
       {
          path: "/tutor/review-list",
          element: <ReviewList />,
+      },
+      {
+         path: "/tutor/commitments/create",
+         element: <CreateLearningCommitmentPage />,
+      },
+      {
+         path: "/tutor/wallet",
+         element: <WalletManagement />,
       },
       {
          path: "/tutor/session/:id",
