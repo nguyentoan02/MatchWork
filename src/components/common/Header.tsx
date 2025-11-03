@@ -227,7 +227,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
    };
 
    return (
-      <header className="w-full sticky top-0 z-50 bg-sky-50/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
+      <header className="w-full sticky top-0 z-40 bg-sky-50/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
          <div className="w-[100%] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
                {/* Left: logo + admin mobile menu */}

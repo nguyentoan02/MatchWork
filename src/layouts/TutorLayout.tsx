@@ -5,7 +5,7 @@ import Header from "@/components/common/Header";
 const TutorLayout = () => {
    return (
       <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950">
-         <header className="fixed top-0 left-0 w-full z-30">
+         <header className="fixed top-0 left-0 w-full z-40">
             <Header />
          </header>
 

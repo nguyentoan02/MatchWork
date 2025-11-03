@@ -94,5 +94,9 @@ export const tutorRoutes = {
          path: "/tutor/session/:id",
          element: <SessionDetailPage />,
       },
+      {
+         path: "/tutor/session/:id",
+         element: <SessionDetailPage />,
+      },
    ],
 };
