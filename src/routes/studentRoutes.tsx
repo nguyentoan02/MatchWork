@@ -15,6 +15,9 @@ import TeachingRequestDetail from "@/pages/Tutor/TeachingRequestDetail"; // Impo
 import RejectedSessionsPage from "@/pages/RejectedSessionsPage"; // Import trang rejected sessions
 import { StudentReviewHistory } from "@/pages/Review/StudentReviewHistory";
 import SessionDetailPage from "@/pages/SessionDetailPage";
+import { LearningCommitmentsPage } from "@/pages/Student/LearningCommitmentsPage";
+import WalletManagement from "@/pages/wallet/walletManagement";
+
 // import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
 export const studentRoutes = {
@@ -127,6 +130,14 @@ export const studentRoutes = {
       {
          path: "/student/create-student-profile",
          element: <CreateStudentProfile />,
+      },
+      {
+         path: "/student/learning-commitments",
+         element: <LearningCommitmentsPage />,
+      },
+      {
+         path: "/student/wallet",
+         element: <WalletManagement />,
       },
    ],
 };

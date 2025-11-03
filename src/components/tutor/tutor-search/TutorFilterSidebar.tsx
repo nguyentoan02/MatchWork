@@ -16,12 +16,10 @@ import {
    GraduationCap,
    Users,
    DollarSign,
-   ChevronDown,
    X,
    Search,
    BookOpen,
    Layers,
-   Filter,
 } from "lucide-react";
 import type { Tutor } from "@/types/Tutor";
 import { Level, LEVEL_VALUES } from "@/enums/level.enum";
