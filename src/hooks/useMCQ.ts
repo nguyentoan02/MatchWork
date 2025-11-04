@@ -9,6 +9,8 @@ import { useToast } from "./useToast";
 import { MCQResponse } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
 import { submitMCQtoServer } from "@/api/quiz";
+import { IQuizSubmissionResponse } from "@/types/quizSubmission";
+import { fetchMCQHistory, fetchMCQHistoryList } from "@/api/doQuiz";
 
 export const useMCQ = (quizId?: string) => {
    const addToast = useToast();
@@ -64,5 +66,24 @@ export const useMCQ = (quizId?: string) => {
       },
    });
 
-   return { create, fetchList, fetchMCQByQuizId, updateMCQ, submitMCQ };
+   const fetchMCQSubmitHistoryList = useQuery<IQuizSubmissionResponse>({
+      queryKey: ["MCQSUBMITHISTORYLIST"],
+      queryFn: fetchMCQHistoryList,
+   });
+
+   return {
+      create,
+      fetchList,
+      fetchMCQByQuizId,
+      updateMCQ,
+      submitMCQ,
+      fetchMCQSubmitHistoryList,
+   };
 };
+
+export const usefetchHistory = (quizId: string) =>
+   useQuery<IQuizSubmissionResponse>({
+      queryKey: ["MCQSUBMITHISTORY", quizId],
+      queryFn: () => fetchMCQHistory(quizId!),
+      enabled: !!quizId,
+   });

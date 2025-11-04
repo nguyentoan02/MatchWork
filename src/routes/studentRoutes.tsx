@@ -18,6 +18,8 @@ import SessionDetailPage from "@/pages/SessionDetailPage";
 import { LearningCommitmentsPage } from "@/pages/Student/LearningCommitmentsPage";
 import WalletManagement from "@/pages/wallet/walletManagement";
 import DoMCQ from "@/pages/MultipleChoice/DoMCQ";
+import ViewMCQHistoryList from "@/pages/MultipleChoice/ViewMCQHistoryList";
+import ViewMCQHistory from "@/pages/MultipleChoice/ViewMCQHistory";
 
 // import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
@@ -143,6 +145,14 @@ export const studentRoutes = {
       {
          path: "/student/doMCQ",
          element: <DoMCQ />,
+      },
+      {
+         path: "/student/MCQHistory",
+         element: <ViewMCQHistoryList />,
+      },
+      {
+         path: "/student/doneMCQ",
+         element: <ViewMCQHistory />,
       },
    ],
 };
