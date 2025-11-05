@@ -46,13 +46,7 @@ export const getMyTutorReviews = async (filters?: {
     if (filters?.levels && filters.levels.length > 0) {
         params.append('levels', filters.levels.join(','));
     }
-
-    console.log('API call params:', params.toString());
-
     const response = await apiClient.get(`/review/tutor/me?${params.toString()}`);
-
-    // Add this logging to see what's returned
-    console.log('API response:', response.data);
 
     return response.data.data;
 };
@@ -97,11 +91,7 @@ export const getStudentReviewHistory = async (filters?: {
         params.append('levels', filters.levels.join(','));
     }
 
-    console.log('Student Reviews API call params:', params.toString());
-
     const response = await apiClient.get(`/review/student/history?${params.toString()}`);
-
-    console.log('Student Reviews API response:', response.data);
     return response.data.data;
 };
 
@@ -112,4 +102,13 @@ export const updateReview = async (reviewId: string, data: {
 }): Promise<Review> => {
     const response = await apiClient.put(`/review/${reviewId}`, data);
     return response.data.data.review;
+};
+
+// Check if student can review a tutor (has completed learning commitments)
+export const checkReviewEligibility = async (tutorUserId: string): Promise<{
+    hasCompleted: boolean;
+    teachingRequestIds: string[];
+}> => {
+    const response = await apiClient.get(`/review/check-eligibility/${tutorUserId}`);
+    return response.data.data.eligibility;
 };

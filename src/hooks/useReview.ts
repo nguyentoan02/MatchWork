@@ -6,6 +6,7 @@ import {
     getStudentReviewHistory,
     updateReview,
     getMyTutorReviews,
+    checkReviewEligibility,
 } from "@/api/review";
 import { useUser } from "./useUser";
 import { Role } from "@/types/user";
@@ -113,5 +114,22 @@ export const useReview = (tutorId?: string, filters?: {
         updateReview: updateMutation.mutateAsync,
         isCreating: createMutation.isPending,
         isUpdating: updateMutation.isPending,
+    };
+};
+
+export const useReviewEligibility = (tutorUserId: string) => {
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ["reviewEligibility", tutorUserId],
+        queryFn: () => checkReviewEligibility(tutorUserId),
+        enabled: !!tutorUserId,
+    });
+
+    return {
+        eligibility: data,
+        isLoading,
+        error,
+        refetch,
+        hasCompleted: data?.hasCompleted || false,
+        teachingRequestIds: data?.teachingRequestIds || [],
     };
 };

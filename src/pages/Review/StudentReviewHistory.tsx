@@ -76,7 +76,10 @@ export function StudentReviewHistory() {
             refetchHistory();
         } catch (error) {
             console.error(error);
-            toast("error", "Failed to update review. Please try again.");
+            toast(
+                "error",
+                (error as any)?.response?.data?.message || (error as any)?.message || "Failed to submit review"
+            );
         }
     };
 
