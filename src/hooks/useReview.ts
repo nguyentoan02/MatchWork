@@ -118,10 +118,12 @@ export const useReview = (tutorId?: string, filters?: {
 };
 
 export const useReviewEligibility = (tutorUserId: string) => {
+    const { user } = useUser();
+
     const { data, isLoading, error, refetch } = useQuery({
         queryKey: ["reviewEligibility", tutorUserId],
         queryFn: () => checkReviewEligibility(tutorUserId),
-        enabled: !!tutorUserId,
+        enabled: !!user && user.role === Role.STUDENT,
     });
 
     return {

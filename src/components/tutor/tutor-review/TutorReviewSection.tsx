@@ -167,7 +167,6 @@ export function TutorReviewSection({ tutorId }: TutorReviewSectionProps) {
                )}
             </div>
 
-            {/* Action Button - Only show if user is logged in AND has completed learning commitments */}
             {!isTutorReviewsLoading && user && hasCompleted && (
                <div className="fixed bottom-6 right-6 z-50 md:static md:mt-8">
                   {existingReview ? (
