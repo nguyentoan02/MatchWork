@@ -6,6 +6,7 @@ import {
     getStudentReviewHistory,
     updateReview,
     getMyTutorReviews,
+    checkReviewEligibility,
 } from "@/api/review";
 import { useUser } from "./useUser";
 import { Role } from "@/types/user";
@@ -58,16 +59,17 @@ export const useReview = (tutorId?: string, filters?: {
         enabled: !!tutorId,
     });
 
-    //  Student’s review history
+    // Student's review history with filtering
     const {
         data: studentReviewHistory,
         isLoading: isHistoryLoading,
         refetch: refetchHistory,
     } = useQuery({
-        queryKey: ["studentReviewHistory"],
-        queryFn: getStudentReviewHistory,
+        queryKey: ["studentReviewHistory", filters],
+        queryFn: () => getStudentReviewHistory(filters),
         enabled: user?.role === Role.STUDENT,
-    });
+        keepPreviousData: true,
+    } as any);
 
     //  Create review
     const createMutation = useMutation({
@@ -112,5 +114,24 @@ export const useReview = (tutorId?: string, filters?: {
         updateReview: updateMutation.mutateAsync,
         isCreating: createMutation.isPending,
         isUpdating: updateMutation.isPending,
+    };
+};
+
+export const useReviewEligibility = (tutorUserId: string) => {
+    const { user } = useUser();
+
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ["reviewEligibility", tutorUserId],
+        queryFn: () => checkReviewEligibility(tutorUserId),
+        enabled: !!user && user.role === Role.STUDENT,
+    });
+
+    return {
+        eligibility: data,
+        isLoading,
+        error,
+        refetch,
+        hasCompleted: data?.hasCompleted || false,
+        teachingRequestIds: data?.teachingRequestIds || [],
     };
 };
