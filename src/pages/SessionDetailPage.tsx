@@ -39,14 +39,14 @@ export default function SessionDetailPage() {
       // Cho phép cả TUTOR và STUDENT chỉnh sửa dựa trên learningCommitment
       const lc: any = (session as any).learningCommitmentId;
       if (currentUser.role === Role.TUTOR) {
-         const tutorUserId = lc?.tutor?.userId?.id || lc?.tutor?.userId;
+         const tutorUserId = lc?.tutor?.userId?._id || lc?.tutor?.userId;
          return tutorUserId === currentUser.id;
       }
 
-      if (currentUser.role === Role.STUDENT) {
-         const studentUserId = lc?.student?.userId?.id || lc?.student?.userId;
-         return studentUserId === currentUser.id;
-      }
+      // if (currentUser.role === Role.STUDENT) {
+      //    const studentUserId = lc?.student?.userId?._id || lc?.student?.userId;
+      //    return studentUserId === currentUser.id;
+      // }
 
       return false;
    };
