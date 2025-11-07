@@ -55,3 +55,11 @@ export interface IQuizSubmissionResponse extends BaseAPIResponse {
       submittedAt: Date;
    };
 }
+
+export interface IAttemptSubmissionResponse extends BaseAPIResponse {
+   data: {
+      quizId: string;
+      attempt: number;
+      submissionIds: string[];
+   }[];
+}

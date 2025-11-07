@@ -8,8 +8,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "./useToast";
 import { MCQResponse } from "@/types/quiz";
 import { IQuizQuestionResponse } from "@/types/quizQuestion";
-import { submitMCQtoServer } from "@/api/quiz";
-import { IQuizSubmissionResponse } from "@/types/quizSubmission";
+import { getAttempt, submitMCQtoServer } from "@/api/quiz";
+import {
+   IAttemptSubmissionResponse,
+   IQuizSubmissionResponse,
+} from "@/types/quizSubmission";
 import { fetchMCQHistory, fetchMCQHistoryList } from "@/api/doQuiz";
 
 export const useMCQ = (quizId?: string) => {
@@ -87,3 +90,12 @@ export const usefetchHistory = (quizId: string) =>
       queryFn: () => fetchMCQHistory(quizId!),
       enabled: !!quizId,
    });
+
+export const useFetchAttempt = (sessionId: string) => {
+   const attempts = useQuery<IAttemptSubmissionResponse>({
+      queryKey: ["MCQATTEMPT", sessionId],
+      queryFn: () => getAttempt(sessionId),
+      enabled: !!sessionId,
+   });
+   return { attempts };
+};
