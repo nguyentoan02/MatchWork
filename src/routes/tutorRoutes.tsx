@@ -132,6 +132,10 @@ export const tutorRoutes = {
          element: <SessionDetailPage />,
       },
       {
+         path: "/tutor/session/:id",
+         element: <SessionDetailPage />,
+      },
+      {
          path: "/tutor/create-material",
          element: <CreateMaterialPage />,
       },

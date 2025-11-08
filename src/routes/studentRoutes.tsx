@@ -14,8 +14,12 @@ import SchedulePage from "@/pages/SchedulePage"; // Import trang mới
 import TeachingRequestDetail from "@/pages/Tutor/TeachingRequestDetail"; // Import component detail
 import RejectedSessionsPage from "@/pages/RejectedSessionsPage"; // Import trang rejected sessions
 import { StudentReviewHistory } from "@/pages/Review/StudentReviewHistory";
+import SessionDetailPage from "@/pages/SessionDetailPage";
 import { LearningCommitmentsPage } from "@/pages/Student/LearningCommitmentsPage";
 import WalletManagement from "@/pages/wallet/walletManagement";
+import DoMCQ from "@/pages/MultipleChoice/DoMCQ";
+import ViewMCQHistoryList from "@/pages/MultipleChoice/ViewMCQHistoryList";
+import ViewMCQHistory from "@/pages/MultipleChoice/ViewMCQHistory";
 
 // import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
@@ -109,6 +113,22 @@ export const studentRoutes = {
             </IsCreatedProfileRoute>
          ),
       },
+      {
+         path: "/student/flashcard",
+         element: (
+            <IsCreatedProfileRoute>
+               <ViewFlashcardQuizQuestion />
+            </IsCreatedProfileRoute>
+         ),
+      },
+      {
+         path: "/student/session/:id",
+         element: (
+            <IsCreatedProfileRoute>
+               <SessionDetailPage />
+            </IsCreatedProfileRoute>
+         ),
+      },
       // Route tạo profile KHÔNG được wrap!
       {
          path: "/student/create-student-profile",
@@ -121,6 +141,18 @@ export const studentRoutes = {
       {
          path: "/student/wallet",
          element: <WalletManagement />,
+      },
+      {
+         path: "/student/doMCQ",
+         element: <DoMCQ />,
+      },
+      {
+         path: "/student/MCQHistory",
+         element: <ViewMCQHistoryList />,
+      },
+      {
+         path: "/student/doneMCQ",
+         element: <ViewMCQHistory />,
       },
    ],
 };

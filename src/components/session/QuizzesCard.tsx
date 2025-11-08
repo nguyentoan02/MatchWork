@@ -11,7 +11,6 @@ import { IQuizInfo } from "@/types/quiz";
 import { useAsignFlashcardStore } from "@/store/useAsignFlashcardStore";
 
 export default function QuizzesCard({ session, canManage }: any) {
-   const quizData = session?.quizIds || [];
    const {
       data: quizzesAssignedData,
       isLoading,
@@ -21,8 +20,7 @@ export default function QuizzesCard({ session, canManage }: any) {
    const quizzes = Array.isArray(quizzesAssignedData?.data)
       ? (quizzesAssignedData!.data as IQuizInfo[])
       : ([] as IQuizInfo[]);
-   const { flashcards, isInitialized, initFromAPI, reset } =
-      useAsignFlashcardStore();
+   const { flashcards, isInitialized, initFromAPI } = useAsignFlashcardStore();
 
    const navigate = useNavigate();
 
@@ -32,17 +30,7 @@ export default function QuizzesCard({ session, canManage }: any) {
       if (!isLoading && session._id && quizzes) {
          initFromAPI(session._id, quizzes);
       }
-      console.log("store", flashcards);
-      console.log("quizzes", quizzes);
    }, [session._id, quizzes, isInitialized, initFromAPI]);
-
-   useEffect(() => {
-      return () => {
-         if (session._id) {
-            reset();
-         }
-      };
-   }, [session._id, reset]);
 
    if (isLoading) {
       return (
@@ -74,7 +62,7 @@ export default function QuizzesCard({ session, canManage }: any) {
             <CardHeader className="flex flex-row items-center justify-between">
                <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5" />
-                  Flashcard ({quizData.length})
+                  Flashcard ({flashcards.length})
                </CardTitle>
                {canManage && (
                   <Button size="sm" onClick={() => setIsShowingModal(true)}>
@@ -163,7 +151,9 @@ export default function QuizzesCard({ session, canManage }: any) {
                                              variant="outline"
                                              className="text-xs"
                                           >
-                                             {quiz.quizMode}
+                                             {quiz.quizMode === "STUDY"
+                                                ? "HỌC TẬP"
+                                                : "   "}
                                           </Badge>
                                        </div>
 
@@ -238,9 +228,9 @@ export default function QuizzesCard({ session, canManage }: any) {
                                           </div>
                                        )}
 
-                                       <p className="text-xs text-muted-foreground mt-2">
-                                          ID: {quiz._id}
-                                       </p>
+                                       {/* <p className="text-xs text-muted-foreground mt-2"> */}
+                                       {/* ID: {quiz._id} */}
+                                       {/* </p> */}
                                     </div>
 
                                     <div className="flex items-center gap-2 ml-4">
@@ -250,7 +240,11 @@ export default function QuizzesCard({ session, canManage }: any) {
 
                                        {/* Nút Xem: dẫn tới /viewQuizz */}
                                        <Link
-                                          to={`/tutor/flashcard?flashcardId=${quiz._id}`}
+                                          to={
+                                             canManage
+                                                ? `/tutor/flashcard?flashcardId=${quiz._id}`
+                                                : `/student/flashcard?flashcardId=${quiz._id}`
+                                          }
                                        >
                                           <Button size="sm">Xem</Button>
                                        </Link>
