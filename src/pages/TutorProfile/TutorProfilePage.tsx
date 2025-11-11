@@ -190,7 +190,6 @@ export default function TutorProfile() {
                         tempCertId: cert?.tempId,
                         certId: cert?._id,
                     });
-                    console.log(`📸 Mapping: certIndex=${certIndex}, fileIndex=${globalIndex}, fileName=${file.name}`);
                 }
             });
         });
@@ -208,7 +207,6 @@ export default function TutorProfile() {
 
         // Add the mapping information
         if (imageCertMapping.length > 0) {
-            console.log("📨 Final imageCertMapping being sent:", imageCertMapping);
             formData.append("imageCertMapping", JSON.stringify(imageCertMapping));
         }
 
@@ -226,9 +224,6 @@ export default function TutorProfile() {
 
         const validation = validateForm(submissionData as TutorProfileFormData, !!tutorProfile);
 
-        // console.log("📤 Form data being submitted:", submissionData);
-        // console.log("🗑️ removedImages being sent:", removedImages);
-
         if (!validation.isValid) {
             return;
         }
@@ -245,6 +240,7 @@ export default function TutorProfile() {
                     console.log(`  ${key}:`, value);
                 }
             }
+            console.log(tutorProfile)
 
             if (tutorProfile) {
                 await updateTutor(formDataToSend);
