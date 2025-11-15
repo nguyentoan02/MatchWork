@@ -1,6 +1,5 @@
 import ProtectedRoute from "./ProtectedRoute";
 import OverviewPage from "../pages/dashboard/OverviewPage";
-
 import ChangePasswordPage from "@/pages/auth/ChangePasswordPage";
 import StudentLayout from "@/layouts/StudentLayout";
 import ProfileForm from "@/components/user/ProfileForm";
@@ -21,8 +20,7 @@ import WalletManagement from "@/pages/wallet/walletManagement";
 import DoMCQ from "@/pages/MultipleChoice/DoMCQ";
 import ViewMCQHistoryList from "@/pages/MultipleChoice/ViewMCQHistoryList";
 import ViewMCQHistory from "@/pages/MultipleChoice/ViewMCQHistory";
-
-// import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
+import ChatPage from "@/pages/chat/chatPage";
 
 export const studentRoutes = {
    element: (
@@ -31,7 +29,6 @@ export const studentRoutes = {
       </ProtectedRoute>
    ),
    children: [
-      // Các route cần kiểm tra profile thì wrap bằng IsCreatedProfileRoute
       {
          path: "/student/dashboard",
          element: (
@@ -44,13 +41,12 @@ export const studentRoutes = {
          path: "/student/applications",
          element: <MyApplicationsPage />,
       },
-      // Thêm route detail để student xem chi tiết và ra quyết định
       {
          path: "/student/applications/:id",
-         element: <TeachingRequestDetail />, // tái sử dụng component detail
+         element: <TeachingRequestDetail />,
       },
       {
-         path: "/student/schedule", // Thêm route mới
+         path: "/student/schedule",
          element: (
             <IsCreatedProfileRoute>
                <SchedulePage />
@@ -60,11 +56,6 @@ export const studentRoutes = {
       {
          path: "student/review-history",
          element: <StudentReviewHistory />,
-      },
-      {
-         // Session detail route moved to sharedRoutes (accessible by both roles)
-         // path: "/session/:id",
-         // element: <SessionDetailPage />,
       },
       {
          path: "/profile/change-password",
@@ -138,7 +129,6 @@ export const studentRoutes = {
             </IsCreatedProfileRoute>
          ),
       },
-      // Route tạo profile KHÔNG được wrap!
       {
          path: "/student/create-student-profile",
          element: <CreateStudentProfile />,
@@ -162,6 +152,10 @@ export const studentRoutes = {
       {
          path: "/student/doneMCQ",
          element: <ViewMCQHistory />,
+      },
+      {
+         path: "/student/chat",
+         element: <ChatPage />,
       },
    ],
 };
