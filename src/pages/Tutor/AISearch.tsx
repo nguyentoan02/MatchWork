@@ -62,16 +62,10 @@ const AISearch = (props: Props) => {
                // Pass the entire response to let parent handle structure
                props.onAISearchResults(response);
             }
-
-            // Clear AI search input after successful search
-            setAiSearchQuery("");
          },
          onError: (error: any) => {
             console.error("AI Search Error:", error);
-            addToast(
-               "error",
-               error?.message || "Không thể thực hiện tìm kiếm AI"
-            );
+            setAiSearchQuery("");
          },
       });
    };
