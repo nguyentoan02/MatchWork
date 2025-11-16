@@ -21,6 +21,9 @@ import WalletManagement from "@/pages/wallet/walletManagement";
 import DoMCQ from "@/pages/MultipleChoice/DoMCQ";
 import ViewMCQHistoryList from "@/pages/MultipleChoice/ViewMCQHistoryList";
 import ViewMCQHistory from "@/pages/MultipleChoice/ViewMCQHistory";
+import DoSAQ from "@/pages/ShortAnswer/DoSAQ";
+import ViewSAQHistory from "@/pages/ShortAnswer/ViewSAQHistory";
+import ViewSAQHistoryList from "@/pages/ShortAnswer/ViewSAQHistoryList";
 
 // import SessionDetailPage from "@/pages/SessionDetailPage"; // Moved to sharedRoutes
 
@@ -156,6 +159,10 @@ export const studentRoutes = {
          element: <DoMCQ />,
       },
       {
+         path: "/student/doSAQ",
+         element: <DoSAQ />,
+      },
+      {
          path: "/student/MCQHistory",
          element: <ViewMCQHistoryList />,
       },
@@ -163,5 +170,13 @@ export const studentRoutes = {
          path: "/student/doneMCQ",
          element: <ViewMCQHistory />,
       },
+      {
+         path: "/student/SAQHistory",
+         element: <ViewSAQHistoryList />,
+      },
+      {
+         path: "/student/doneSAQ",
+         element: <ViewSAQHistory />,
+      }
    ],
 };
