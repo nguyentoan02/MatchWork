@@ -1,6 +1,6 @@
 import ProtectedRoute from "./ProtectedRoute";
 import OverviewPage from "../pages/dashboard/OverviewPage";
-import JobManage from "@/pages/Employer/JobManage";
+
 import ProfilePage from "@/pages/Profilepage";
 import TutorProfile from "@/pages/TutorProfile/TutorProfile";
 import TutorLayout from "@/layouts/TutorLayout";
@@ -32,6 +32,7 @@ import EditShortAnswerQuiz from "@/pages/ShortAnswer/EditShortAnswerQuiz";
 import CreateShortAnswerQuiz from "@/pages/ShortAnswer/CreateShortAnswerQuiz";
 import ViewStudentMCQHistoryList from "@/pages/MultipleChoice/ViewStudentMCQHistoryList";
 import ViewMCQHistory from "@/pages/MultipleChoice/ViewMCQHistory";
+import PaymentTutorPage from "@/pages/paymentTutor/paymentTutor";
 import ChatPage from "@/pages/chat/chatPage";
 import ViewSAQHistory from "@/pages/ShortAnswer/ViewSAQHistory";
 
@@ -62,10 +63,6 @@ export const tutorRoutes = {
       {
          path: "/tutor/learning-commitments",
          element: <LearningCommitmentsPage />,
-      },
-      {
-         path: "/tutor/jobs",
-         element: <JobManage />,
       },
       {
          path: "/tutor/createFlashcardQuiz",
@@ -146,6 +143,10 @@ export const tutorRoutes = {
       {
          path: "/tutor/material-management",
          element: <MaterialManagementPage />,
+      },
+      {
+         path: "/tutor/payment-history",
+         element: <PaymentTutorPage />,
       },
       {
          path: "/tutor/studentMCQHistoryList",

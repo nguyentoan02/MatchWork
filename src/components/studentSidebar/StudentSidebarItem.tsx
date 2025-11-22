@@ -14,6 +14,7 @@ import {
    Star,
    Wallet,
    History,
+   CreditCard, // Thêm icon này
    AlertTriangle,
    MessageCircle,
 } from "lucide-react";
@@ -78,6 +79,11 @@ export const studentSidebarConfig: SidebarItem[] = [
       icon: <Wallet className="h-4 w-4" />,
    },
    {
+      to: "/student/payment-history",
+      label: "Lịch sử thanh toán",
+      icon: <CreditCard className="h-4 w-4" />,
+   },
+   {
       to: "/student/chat",
       label: "Nhắn tin",
       icon: <MessageCircle className="h-4 w-4" />,
@@ -135,9 +141,10 @@ const StudentSidebarItems: React.FC<{
                      to={item.to}
                      onClick={() => onLinkClick?.()}
                      className={`flex items-center gap-3 p-2 rounded-md text-sm font-medium transition-colors duration-200
-                        ${active
-                           ? "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300"
-                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        ${
+                           active
+                              ? "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300"
+                              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                         }
                      `}
                      title={item.label}
