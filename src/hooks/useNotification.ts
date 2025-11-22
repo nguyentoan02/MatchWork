@@ -127,7 +127,6 @@ export const useNotification = (): UseNotificationReturn => {
 
       // Connection status handlers
       const handleConnect = () => {
-         console.log("🔔 Notification socket connected");
          setIsConnected(true);
          setError(null);
          
@@ -136,20 +135,17 @@ export const useNotification = (): UseNotificationReturn => {
          socket.emit("getNotifications", { page: 1, limit: 50 });
       };
 
-      const handleDisconnect = (reason: string) => {
-         console.log("🔔 Notification socket disconnected:", reason);
+      const handleDisconnect = () => {
          setIsConnected(false);
       };
 
       const handleConnectError = (error: any) => {
-         console.error("🔔 Notification socket connection error:", error);
          setError(`Connection failed: ${error.message}`);
          setIsConnected(false);
       };
 
       // Notification event handlers
       const handleNewNotification = (data: any) => {
-         console.log("🔔 New notification received:", data);
          const notification: Notification = {
             ...data.notification,
             type: data.notification.type || "system",
@@ -169,12 +165,10 @@ export const useNotification = (): UseNotificationReturn => {
       };
 
       const handleUnreadCount = (data: any) => {
-         console.log("🔔 Unread count updated:", data.count);
          setUnreadCount(data.count);
       };
 
       const handleNotificationList = (data: any) => {
-         console.log("🔔 Notification list received:", data.notifications?.length);
          const mappedNotifications = data.notifications.map((n: any) => ({
             ...n,
             type: n.type || n.data?.type || "system",
@@ -183,27 +177,22 @@ export const useNotification = (): UseNotificationReturn => {
       };
 
       const handleNotificationMarkedRead = (data: any) => {
-         console.log("🔔 Notification marked read:", data.notificationId);
          markNotificationAsRead(data.notificationId);
       };
 
       const handleAllNotificationsMarkedRead = () => {
-         console.log("🔔 All notifications marked read");
          markAllNotificationsAsRead();
       };
 
       const handleNotificationDeleted = (data: any) => {
-         console.log("🔔 Notification deleted:", data.notificationId);
          removeNotification(data.notificationId);
       };
 
       const handleAllNotificationsCleared = () => {
-         console.log("🔔 All notifications cleared");
          clearNotifications();
       };
 
       const handleNotificationError = (error: any) => {
-         console.error("🔔 Notification error:", error);
          setError(error.message || "Notification error occurred");
       };
 
@@ -224,7 +213,6 @@ export const useNotification = (): UseNotificationReturn => {
 
       // Special event for when notification connection is established
       socket.on("notification_connected", () => {
-         console.log("🔔 Notification connection established");
          socket.emit("getUnreadCount");
          socket.emit("getNotifications", { page: 1, limit: 50 });
       });

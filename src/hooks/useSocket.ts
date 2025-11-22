@@ -22,15 +22,15 @@ export const useSocket = (type: "chat" | "notifications") => {
       });
 
       socketRef.current.on("connect", () => {
-         console.log(`✅ ${type} socket connected:`, socketRef.current?.id);
+         console.log(`${type} socket connected:`, socketRef.current?.id);
       });
 
       socketRef.current.on("disconnect", (reason) => {
-         console.log(`❌ ${type} socket disconnected:`, reason);
+         console.log(`${type} socket disconnected:`, reason);
       });
 
       socketRef.current.on("connect_error", (error) => {
-         console.error(`❌ ${type} socket connection error:`, error);
+         console.error(`${type} socket connection error:`, error);
       });
 
       return () => {
