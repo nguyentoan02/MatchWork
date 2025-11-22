@@ -1,24 +1,21 @@
 import { useEffect, useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { io, Socket } from "socket.io-client";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useToast } from "./useToast";
 import { useUser } from "./useUser";
+import { useSocket } from "./useSocket";
 import { notificationApi, type Notification } from "@/api/notification";
 
 interface NotificationData {
    _id: string;
    title: string;
    message: string;
-   type?: "message" | "booking" | "payment" | "system" | "reminder";
    isRead: boolean;
    createdAt: string;
    userId: string;
-   data?: any;
 }
 
 interface UseNotificationReturn {
-   socket: Socket | null;
    isConnected: boolean;
    notifications: NotificationData[];
    unreadCount: number;
@@ -41,14 +38,12 @@ interface UseNotificationReturn {
    isClearingAll: boolean;
 }
 
-const NOTIFICATION_SOCKET_URL = "ws://localhost:3002";
-
 export const useNotification = (): UseNotificationReturn => {
    const { user } = useUser();
    const queryClient = useQueryClient();
    const addToast = useToast();
+   const socket = useSocket("notifications");
 
-   const [socket, setSocket] = useState<Socket | null>(null);
    const [isConnected, setIsConnected] = useState(false);
    const [error, setError] = useState<string | null>(null);
 
@@ -64,14 +59,10 @@ export const useNotification = (): UseNotificationReturn => {
       clearNotifications,
    } = useNotificationStore();
 
-   // Get token from localStorage or your auth store
-   const token = localStorage.getItem("token");
-
    // Fetch notifications query (fallback)
    const {
       data: notificationsData,
       isLoading: isLoadingNotifications,
-      error: notificationsError,
       refetch: refetchNotifications,
    } = useQuery({
       queryKey: ["notifications"],
@@ -130,58 +121,35 @@ export const useNotification = (): UseNotificationReturn => {
       },
    });
 
-   // Socket connection effect
+   // Socket event handlers
    useEffect(() => {
-      if (!token || !user) {
-         return;
-      }
+      if (!socket || !user) return;
 
-      // Create socket connection with multiple fallback methods
-      const newSocket = io(NOTIFICATION_SOCKET_URL, {
-         // Method 1: Auth object (recommended)
-         auth: {
-            token: token,
-         },
-         // Method 2: Query parameter (fallback)
-         query: {
-            token: token,
-         },
-         // Method 3: Headers (fallback)
-         extraHeaders: {
-            Authorization: `Bearer ${token}`,
-         },
-         // Connection options
-         transports: ["websocket", "polling"],
-         timeout: 20000,
-         reconnection: true,
-         reconnectionDelay: 1000,
-         reconnectionAttempts: 5,
-         forceNew: true,
-      });
-
-      // Connection event handlers
-      newSocket.on("connect", () => {
+      // Connection status handlers
+      const handleConnect = () => {
+         console.log("🔔 Notification socket connected");
          setIsConnected(true);
          setError(null);
-      });
+         
+         // Request initial data when connected
+         socket.emit("getUnreadCount");
+         socket.emit("getNotifications", { page: 1, limit: 50 });
+      };
 
-      newSocket.on("notification_connected", () => {
-         // Request initial data
-         newSocket.emit("getUnreadCount");
-         newSocket.emit("getNotifications", { page: 1, limit: 50 });
-      });
-
-      newSocket.on("disconnect", () => {
+      const handleDisconnect = (reason: string) => {
+         console.log("🔔 Notification socket disconnected:", reason);
          setIsConnected(false);
-      });
+      };
 
-      newSocket.on("connect_error", (error) => {
+      const handleConnectError = (error: any) => {
+         console.error("🔔 Notification socket connection error:", error);
          setError(`Connection failed: ${error.message}`);
          setIsConnected(false);
-      });
+      };
 
       // Notification event handlers
-      newSocket.on("newNotification", (data) => {
+      const handleNewNotification = (data: any) => {
+         console.log("🔔 New notification received:", data);
          const notification: Notification = {
             ...data.notification,
             type: data.notification.type || "system",
@@ -193,51 +161,95 @@ export const useNotification = (): UseNotificationReturn => {
          // addToast("info", notification.title || "Thông báo mới", {
          //    description: notification.message,
          // });
-      });
 
-      newSocket.on("unreadCount", (data) => {
+         // Update unread count
+         queryClient.invalidateQueries({
+            queryKey: ["notifications-unread-count"],
+         });
+      };
+
+      const handleUnreadCount = (data: any) => {
+         console.log("🔔 Unread count updated:", data.count);
          setUnreadCount(data.count);
-      });
+      };
 
-      newSocket.on("notificationList", (data) => {
+      const handleNotificationList = (data: any) => {
+         console.log("🔔 Notification list received:", data.notifications?.length);
          const mappedNotifications = data.notifications.map((n: any) => ({
             ...n,
             type: n.type || n.data?.type || "system",
          }));
          setNotifications(mappedNotifications);
-      });
+      };
 
-      newSocket.on("notificationMarkedRead", (data) => {
+      const handleNotificationMarkedRead = (data: any) => {
+         console.log("🔔 Notification marked read:", data.notificationId);
          markNotificationAsRead(data.notificationId);
-      });
+      };
 
-      newSocket.on("allNotificationsMarkedRead", () => {
+      const handleAllNotificationsMarkedRead = () => {
+         console.log("🔔 All notifications marked read");
          markAllNotificationsAsRead();
-      });
+      };
 
-      newSocket.on("notificationDeleted", (data) => {
+      const handleNotificationDeleted = (data: any) => {
+         console.log("🔔 Notification deleted:", data.notificationId);
          removeNotification(data.notificationId);
-      });
+      };
 
-      newSocket.on("allNotificationsCleared", () => {
+      const handleAllNotificationsCleared = () => {
+         console.log("🔔 All notifications cleared");
          clearNotifications();
-      });
+      };
 
-      // Error handlers
-      newSocket.on("notification_error", (error) => {
-         console.error("🚨 Notification error:", error);
+      const handleNotificationError = (error: any) => {
+         console.error("🔔 Notification error:", error);
          setError(error.message || "Notification error occurred");
+      };
+
+      // Register socket event listeners
+      socket.on("connect", handleConnect);
+      socket.on("disconnect", handleDisconnect);
+      socket.on("connect_error", handleConnectError);
+      
+      // Notification events
+      socket.on("newNotification", handleNewNotification);
+      socket.on("unreadCount", handleUnreadCount);
+      socket.on("notificationList", handleNotificationList);
+      socket.on("notificationMarkedRead", handleNotificationMarkedRead);
+      socket.on("allNotificationsMarkedRead", handleAllNotificationsMarkedRead);
+      socket.on("notificationDeleted", handleNotificationDeleted);
+      socket.on("allNotificationsCleared", handleAllNotificationsCleared);
+      socket.on("notification_error", handleNotificationError);
+
+      // Special event for when notification connection is established
+      socket.on("notification_connected", () => {
+         console.log("🔔 Notification connection established");
+         socket.emit("getUnreadCount");
+         socket.emit("getNotifications", { page: 1, limit: 50 });
       });
 
-      setSocket(newSocket);
+      // Check if already connected
+      if (socket.connected) {
+         handleConnect();
+      }
 
       // Cleanup function
       return () => {
-         newSocket.disconnect();
-         setSocket(null);
-         setIsConnected(false);
+         socket.off("connect", handleConnect);
+         socket.off("disconnect", handleDisconnect);
+         socket.off("connect_error", handleConnectError);
+         socket.off("newNotification", handleNewNotification);
+         socket.off("unreadCount", handleUnreadCount);
+         socket.off("notificationList", handleNotificationList);
+         socket.off("notificationMarkedRead", handleNotificationMarkedRead);
+         socket.off("allNotificationsMarkedRead", handleAllNotificationsMarkedRead);
+         socket.off("notificationDeleted", handleNotificationDeleted);
+         socket.off("allNotificationsCleared", handleAllNotificationsCleared);
+         socket.off("notification_error", handleNotificationError);
+         socket.off("notification_connected");
       };
-   }, [token, user]);
+   }, [socket, user, addNotification, markNotificationAsRead, markAllNotificationsAsRead, setNotifications, setUnreadCount, removeNotification, clearNotifications, addToast, queryClient]);
 
    // Update store when API data changes (fallback when socket not connected)
    useEffect(() => {
@@ -317,7 +329,6 @@ export const useNotification = (): UseNotificationReturn => {
    );
 
    return {
-      socket,
       isConnected,
       notifications: storeNotifications,
       unreadCount: storeUnreadCount,

@@ -5,7 +5,7 @@ import { useSocket } from "./useSocket";
 import { useChatStore } from "@/store/useChatStore";
 
 export const useChat = () => {
-   const socket = useSocket();
+   const socket = useSocket("chat");
    const queryClient = useQueryClient();
 
    const {
