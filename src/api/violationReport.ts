@@ -23,14 +23,18 @@ export interface SubmitViolationReportPayload {
 
 export interface ViolationReport {
    _id: string;
-   reporterId: string;
+   reporterId: string | {
+      _id: string;
+      name: string;
+      email: string;
+   };
    tutorId?: string;
    reportedUserId?: string | {
       _id: string;
       name: string;
       email: string;
    };
-   type: ViolationTypeEnum;
+   type: ViolationTypeEnum | "OTHER";
    reason: string;
    evidenceFiles?: string[];
    relatedTeachingRequestId?: string | {
@@ -220,5 +224,93 @@ export const getMyViolationReports = async (
          pages: 1,
       },
    };
+};
+
+/**
+ * Admin: Lấy danh sách tất cả violation reports với filters
+ */
+export const getAdminViolationReports = async (params?: {
+   page?: number;
+   limit?: number;
+   status?: string;
+   type?: string;
+}): Promise<PaginatedViolationReports> => {
+   const response = await apiClient.get("/violationReport", {
+      params: {
+         page: params?.page || 1,
+         limit: params?.limit || 20,
+         ...(params?.status && { status: params.status }),
+         ...(params?.type && { type: params.type }),
+      },
+   });
+
+   // Response structure có thể là:
+   // Option 1: { status, message, code, data: { reports: [...], pagination: {...} } }
+   // Option 2: { status, message, code, data: { data: { reports: [...], pagination: {...} } } }
+   // Option 3: { reports: [...], pagination: {...} } (trực tiếp)
+   const responseData = response.data;
+   
+   // Thử các cấu trúc response khác nhau
+   if (responseData.data?.reports) {
+      // Option 1: response.data.data.reports
+      return {
+         reports: responseData.data.reports ?? [],
+         pagination: responseData.data.pagination ?? {
+            page: params?.page || 1,
+            limit: params?.limit || 20,
+            total: 0,
+            pages: 1,
+         },
+      };
+   } else if (responseData.data?.data?.reports) {
+      // Option 2: response.data.data.data.reports
+      return {
+         reports: responseData.data.data.reports ?? [],
+         pagination: responseData.data.data.pagination ?? {
+            page: params?.page || 1,
+            limit: params?.limit || 20,
+            total: 0,
+            pages: 1,
+         },
+      };
+   } else if (responseData.reports) {
+      // Option 3: response.data.reports (trực tiếp)
+      return {
+         reports: responseData.reports ?? [],
+         pagination: responseData.pagination ?? {
+            page: params?.page || 1,
+            limit: params?.limit || 20,
+            total: 0,
+            pages: 1,
+         },
+      };
+   }
+   
+   // Fallback: trả về empty
+   console.warn("Unexpected response structure:", responseData);
+   return {
+      reports: [],
+      pagination: {
+         page: params?.page || 1,
+         limit: params?.limit || 20,
+         total: 0,
+         pages: 1,
+      },
+   };
+};
+
+/**
+ * Admin: Cập nhật status của violation report
+ */
+export const updateViolationReportStatus = async (
+   reportId: string,
+   status: "RESOLVED" | "REJECTED"
+): Promise<ViolationReport> => {
+   const response = await apiClient.patch(
+      `/violationReport/${reportId}/status`,
+      { status }
+   );
+   // Response structure: { status, message, code, data: { report: {...} } }
+   return response.data.data?.report || response.data.data;
 };
 

@@ -14,6 +14,7 @@ import {
    Package as PackageIcon,
    Users,
    AlertCircle,
+   AlertTriangle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -72,6 +73,11 @@ const managementItems: SidebarItem[] = [
       to: "/admin/disputes",
       label: "Tranh chấp buổi học",
       icon: <AlertCircle className="h-4 w-4" />,
+   },
+   {
+      to: "/admin/violation-reports",
+      label: "Báo cáo vi phạm",
+      icon: <AlertTriangle className="h-4 w-4" />,
    },
 ];
 
