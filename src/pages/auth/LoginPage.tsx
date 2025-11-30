@@ -32,7 +32,7 @@ const LoginPageContent = () => {
 
    type LoginFormInputs = z.infer<typeof loginSchema>;
 
-   const { login, googleLogin, isLoading, isError, error } = useAuth();
+   const { login, googleLogin, isLoading } = useAuth();
 
    const {
       register,
@@ -100,11 +100,7 @@ const LoginPageContent = () => {
                         </p>
                      )}
                   </div>
-                  {isError && (
-                     <p className="text-sm text-red-600">
-                        {error?.message || t("login_failed_generic")}
-                     </p>
-                  )}
+                  {/* removed inline server error display — server errors are shown by toast now */}
                </CardContent>
                <CardFooter className="flex flex-col gap-4">
                   <Button type="submit" className="w-full" disabled={isLoading}>
