@@ -113,7 +113,7 @@ export function TutorProfileView({ tutor, onEdit }: TutorProfileViewProps) {
                                 <div key={index} className="border rounded-lg p-4">
                                     <h4 className="font-medium">{cert.name}</h4>
                                     {cert.description && (
-                                        <p className="text-gray-600 mt-2">{cert.description}</p>
+                                        <p className="text-gray-600 mt-2 whitespace-pre-line break-words">{cert.description}</p>
                                     )}
 
                                     {/* Images */}
