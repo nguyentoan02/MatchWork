@@ -1,6 +1,6 @@
 // components/StatsOverview.tsx
 import { Badge } from "@/components/ui/badge"
-import { getLevelLabelVi, getSubjectLabelVi } from "@/utils/educationDisplay"
+import { getClassTypeLabelVi, getLevelLabelVi, getSubjectLabelVi } from "@/utils/educationDisplay"
 
 interface StatsOverviewProps {
     tutor: any
@@ -20,7 +20,9 @@ export function StatsOverview({ tutor }: StatsOverviewProps) {
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                     <p className="text-2xl font-bold text-orange-600">
-                        {(tutor.classType || []).join(", ")}
+                        {(tutor.classType || [])
+                            .map((type: string) => getClassTypeLabelVi(type))
+                            .join(", ")}
                     </p>
                     <p className="text-sm text-gray-600">Loại lớp học</p>
                 </div>

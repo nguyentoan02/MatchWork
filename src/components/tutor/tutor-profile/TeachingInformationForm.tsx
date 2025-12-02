@@ -82,7 +82,7 @@ export const TeachingInformationForm: React.FC<TeachingInformationFormProps> = (
                                         className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                                     />
                                     <Label htmlFor={type}>
-                                        {type === "ONLINE" ? "Trực tuyến" : "Tại lớp"}
+                                        {type === "ONLINE" ? "Trực tuyến" : "Trực tiếp"}
                                     </Label>
                                 </div>
                             ))}
