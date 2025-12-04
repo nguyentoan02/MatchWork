@@ -12,6 +12,7 @@ import { useState, useMemo, useEffect } from "react";
 import { SUBJECT_VALUES } from "@/enums/subject.enum";
 import { LEVEL_VALUES } from "@/enums/level.enum";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { getLevelLabelVi, getSubjectLabelVi } from "@/utils/educationDisplay";
 
 export function StudentReviewHistory() {
     const toast = useToast();
@@ -268,7 +269,7 @@ export function StudentReviewHistory() {
                                                         className="h-5 w-5"
                                                     />
                                                     <label className="flex-1 cursor-pointer text-base">
-                                                        {subject}
+                                                        {getSubjectLabelVi(subject)}
                                                     </label>
                                                 </div>
                                             ))}
@@ -304,7 +305,7 @@ export function StudentReviewHistory() {
                                                         className="h-5 w-5"
                                                     />
                                                     <label className="flex-1 cursor-pointer text-base">
-                                                        {level}
+                                                        {getLevelLabelVi(level)}
                                                     </label>
                                                 </div>
                                             ))}

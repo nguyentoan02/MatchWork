@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import type { Review } from "@/types/review";
+import { getLevelLabelVi, getSubjectLabelVi } from "@/utils/educationDisplay";
 
 interface ReviewManagementCardProps {
    review: Review;
@@ -78,8 +79,8 @@ export function ReviewManagementCard({ review }: ReviewManagementCardProps) {
                            <Star
                               key={star}
                               className={`h-4 w-4 ${star <= review.rating
-                                    ? "fill-[#FACC15] text-[#FACC15]"
-                                    : "fill-muted text-muted"
+                                 ? "fill-[#FACC15] text-[#FACC15]"
+                                 : "fill-muted text-muted"
                                  }`}
                            />
                         ))}
@@ -109,10 +110,10 @@ export function ReviewManagementCard({ review }: ReviewManagementCardProps) {
                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1.5">
                      <BookOpen className="h-4 w-4" />
-                     <span className="font-medium">{subject}</span>
+                     <span className="font-medium">{getSubjectLabelVi(subject)}</span>
                   </div>
                   <span className="text-muted">•</span>
-                  <span>{level}</span>
+                  <span>{getLevelLabelVi(level)}</span>
                   <span className="text-muted">•</span>
                   <div className="flex items-center gap-1.5">
                      <Calendar className="h-4 w-4" />

@@ -47,8 +47,6 @@ export function TutorReviewSection({ tutorId }: TutorReviewSectionProps) {
       return reviewerId === user?.id;
    });
 
-   // console.log("Eligibility Check:", { hasCompleted, teachingRequestIds });
-
    const handleWriteReview = () => {
       setEditingReview(null);
       setIsModalOpen(true);
@@ -74,7 +72,7 @@ export function TutorReviewSection({ tutorId }: TutorReviewSectionProps) {
             if (!hasCompleted || teachingRequestIds.length === 0) {
                toast(
                   "error",
-                  "Bạn cần hoàn thành ít nhất một cam kết học tập với gia sư này trước khi viết đánh giá."
+                  "Bạn cần hoàn thành ít nhất một yêu cầu học tập với gia sư này trước khi viết đánh giá."
                );
                return;
             }
@@ -87,7 +85,6 @@ export function TutorReviewSection({ tutorId }: TutorReviewSectionProps) {
             toast("success", "Gửi đánh giá thành công!");
          }
 
-         // Refresh data after mutation
          await Promise.all([refetchTutorReviews(), refetchStats()]);
          setIsModalOpen(false);
          setEditingReview(null);
@@ -100,7 +97,6 @@ export function TutorReviewSection({ tutorId }: TutorReviewSectionProps) {
       }
    };
 
-   // Show loading state
    if (isEligibilityLoading) {
       return (
          <div className="py-3">
@@ -148,7 +144,7 @@ export function TutorReviewSection({ tutorId }: TutorReviewSectionProps) {
             {/* Reviews List Section */}
             <div className="space-y-4">
                <h2 className="text-2xl font-bold text-foreground">
-                  Student Reviews
+                  Đánh giá của học viên
                </h2>
                {isTutorReviewsLoading ? (
                   <div className="flex items-center justify-center py-12">

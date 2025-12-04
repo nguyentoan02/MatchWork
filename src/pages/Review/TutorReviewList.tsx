@@ -12,6 +12,7 @@ import { useState, useMemo, useEffect } from "react"
 import { SUBJECT_VALUES } from "@/enums/subject.enum"
 import { LEVEL_VALUES } from "@/enums/level.enum"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { getLevelLabelVi, getSubjectLabelVi } from "@/utils/educationDisplay"
 
 export function ReviewList() {
     const [searchQuery, setSearchQuery] = useState("")
@@ -247,7 +248,7 @@ export function ReviewList() {
                                                         htmlFor={`subject-${subject}`}
                                                         className="flex-1 cursor-pointer text-base"
                                                     >
-                                                        {subject}
+                                                        {getSubjectLabelVi(subject)}
                                                     </label>
                                                 </div>
                                             ))}
@@ -287,7 +288,7 @@ export function ReviewList() {
                                                         htmlFor={`level-${level}`}
                                                         className="flex-1 cursor-pointer text-base"
                                                     >
-                                                        {level}
+                                                        {getLevelLabelVi(level)}
                                                     </label>
                                                 </div>
                                             ))}

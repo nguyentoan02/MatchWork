@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { Review } from "@/types/review"
+import { getLevelLabelVi, getSubjectLabelVi } from "@/utils/educationDisplay"
 
 interface StudentReviewCardProps {
     review: Review
@@ -63,7 +64,7 @@ export function StudentReviewCard({ review, onUpdate }: StudentReviewCardProps) 
                     <h3 className="text-lg font-semibold text-gray-900">{tutorName}</h3>
                     <p className="text-sm text-gray-500">{formatDate(review.createdAt)}</p>
                     <p className="text-sm text-gray-600">
-                        <span className="font-medium">Môn học:</span> {subject} | <span className="font-medium">Trình độ:</span> {level}
+                        <span className="font-medium">Môn học:</span> {getSubjectLabelVi(subject)} | <span className="font-medium">Trình độ:</span> {getLevelLabelVi(level)}
                     </p>
                 </div>
             </div>
