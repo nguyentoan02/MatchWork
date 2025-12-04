@@ -7,6 +7,16 @@ import {
    DialogHeader,
    DialogTitle,
 } from "@/components/ui/dialog";
+import {
+   AlertDialog,
+   AlertDialogAction,
+   AlertDialogCancel,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -54,6 +64,8 @@ export const AdminReportDetailModal = ({
    const [isProcessing, setIsProcessing] = useState(false);
    const [tutorId, setTutorId] = useState<string | null>(null);
    const [isLoadingTutorId, setIsLoadingTutorId] = useState(false);
+   const [showHideTutorConfirm, setShowHideTutorConfirm] = useState(false);
+   const [showRejectConfirm, setShowRejectConfirm] = useState(false);
    const toast = useToast();
 
    const getReporterName = () => {
@@ -115,16 +127,12 @@ export const AdminReportDetailModal = ({
       }
    }, [isOpen, report]);
 
-   const handleHideTutor = async () => {
-      const confirmed = window.confirm(
-         "Bạn có chắc muốn ẩn gia sư này? Hành động này sẽ:\n" +
-            "- Hủy tất cả learning commitments đang active\n" +
-            "- Hủy tất cả sessions chưa học\n" +
-            "- Từ chối tất cả yêu cầu dạy học đang pending"
-      );
+   const handleHideTutorClick = () => {
+      setShowHideTutorConfirm(true);
+   };
 
-      if (!confirmed) return;
-
+   const handleConfirmHideTutor = async () => {
+      setShowHideTutorConfirm(false);
       setIsProcessing(true);
       try {
          // 1. Lấy tutorId từ userId
@@ -159,10 +167,12 @@ export const AdminReportDetailModal = ({
       }
    };
 
-   const handleRejectReport = async () => {
-      const confirmed = window.confirm("Bạn có chắc muốn từ chối báo cáo này?");
-      if (!confirmed) return;
+   const handleRejectReportClick = () => {
+      setShowRejectConfirm(true);
+   };
 
+   const handleConfirmRejectReport = async () => {
+      setShowRejectConfirm(false);
       setIsProcessing(true);
       try {
          await updateViolationReportStatus(report._id, "REJECTED");
@@ -446,7 +456,7 @@ export const AdminReportDetailModal = ({
                   <>
                      <Button
                         variant="destructive"
-                        onClick={handleHideTutor}
+                        onClick={handleHideTutorClick}
                         disabled={isProcessing}
                         className="bg-red-600 hover:bg-red-700"
                      >
@@ -464,7 +474,7 @@ export const AdminReportDetailModal = ({
                      </Button>
                      <Button
                         variant="outline"
-                        onClick={handleRejectReport}
+                        onClick={handleRejectReportClick}
                         disabled={isProcessing}
                      >
                         {isProcessing ? (
@@ -486,6 +496,84 @@ export const AdminReportDetailModal = ({
                </Button>
             </DialogFooter>
          </DialogContent>
+
+         {/* Confirmation Dialog for Hide Tutor */}
+         <AlertDialog open={showHideTutorConfirm} onOpenChange={setShowHideTutorConfirm}>
+            <AlertDialogContent>
+               <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                     <AlertTriangle className="h-5 w-5 text-red-600" />
+                     Xác nhận ẩn gia sư
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="pt-2">
+                     Bạn có chắc chắn muốn ẩn gia sư này? Hành động này sẽ:
+                     <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>Hủy tất cả learning commitments đang hoạt động</li>
+                        <li>Hủy tất cả sessions chưa học</li>
+                        <li>Từ chối tất cả yêu cầu dạy học đang đợi phản hồi</li>
+                     </ul>
+                     <br />
+                     Báo cáo sẽ được đánh dấu là đã xử lý và không được xử lý thêm.
+                  </AlertDialogDescription>
+               </AlertDialogHeader>
+               <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isProcessing}>
+                     Hủy
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                     onClick={handleConfirmHideTutor}
+                     disabled={isProcessing}
+                     className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                     {isProcessing ? (
+                        <>
+                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                           Đang xử lý...
+                        </>
+                     ) : (
+                        "Xác nhận ẩn gia sư"
+                     )}
+                  </AlertDialogAction>
+               </AlertDialogFooter>
+            </AlertDialogContent>
+         </AlertDialog>
+
+         {/* Confirmation Dialog for Reject Report */}
+         <AlertDialog open={showRejectConfirm} onOpenChange={setShowRejectConfirm}>
+            <AlertDialogContent>
+               <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                     <XCircle className="h-5 w-5 text-amber-600" />
+                     Xác nhận từ chối báo cáo
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="pt-2">
+                     Bạn có chắc chắn muốn từ chối báo cáo này?
+                     <br />
+                     <br />
+                     Báo cáo sẽ được đánh dấu là đã từ chối và không được xử lý thêm.
+                  </AlertDialogDescription>
+               </AlertDialogHeader>
+               <AlertDialogFooter>
+                  <AlertDialogCancel disabled={isProcessing}>
+                     Hủy
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                     onClick={handleConfirmRejectReport}
+                     disabled={isProcessing}
+                     className="bg-amber-600 hover:bg-amber-700 text-white"
+                  >
+                     {isProcessing ? (
+                        <>
+                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                           Đang xử lý...
+                        </>
+                     ) : (
+                        "Xác nhận từ chối"
+                     )}
+                  </AlertDialogAction>
+               </AlertDialogFooter>
+            </AlertDialogContent>
+         </AlertDialog>
       </Dialog>
    );
 };
