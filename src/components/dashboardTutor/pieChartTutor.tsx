@@ -7,6 +7,7 @@ import {
    ResponsiveContainer,
    Sector,
 } from "recharts";
+import { Card } from "@/components/ui/card";
 
 type PieDataItem = {
    status: string;
@@ -19,9 +20,15 @@ type PieChartTutorProps = {
    learningCommitments?: PieDataItem[];
 };
 
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
+const COLORS = [
+   "hsl(217 91% 60%)", // primary-like
+   "hsl(152 76% 40%)", // emerald-ish
+   "hsl(25 95% 53%)", // orange
+   "hsl(0 84% 60%)", // red
+   "hsl(270 95% 60%)", // purple
+];
 
-// Custom active shape for money spent pie chart
+// Custom active shape for money spent pie chart (dark-aware stroke/fill)
 const renderActiveShape = (props: any) => {
    const {
       cx,
@@ -48,15 +55,15 @@ const renderActiveShape = (props: any) => {
       <g>
          <path
             d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
-            stroke="#8884d8"
+            stroke="hsl(var(--primary))"
             fill="none"
          />
-         <circle cx={ex} cy={ey} r={4} fill="#8884d8" />
+         <circle cx={ex} cy={ey} r={4} fill="hsl(var(--primary))" />
          <text
             x={ex + (cos >= 0 ? 1 : -1) * 12}
             y={ey}
             textAnchor={textAnchor}
-            fill="#333"
+            fill="hsl(var(--foreground))"
             className="font-semibold"
          >{`${value.toLocaleString()} VNĐ`}</text>
          <Sector
@@ -66,13 +73,13 @@ const renderActiveShape = (props: any) => {
             outerRadius={outerRadius + 10}
             startAngle={startAngle}
             endAngle={endAngle}
-            fill="#8884d8"
+            fill="hsl(var(--primary))"
          />
       </g>
    );
 };
 
-// Custom label component with positioning
+// Custom label with dark-aware text
 const renderCustomLabelPosition = (props: any) => {
    const { cx, cy, midAngle, innerRadius, outerRadius, value, payload } = props;
    const RADIAN = Math.PI / 180;
@@ -85,7 +92,7 @@ const renderCustomLabelPosition = (props: any) => {
       <text
          x={x}
          y={y}
-         fill="white"
+         fill="hsl(var(--foreground))"
          textAnchor={x > cx ? "start" : "end"}
          dominantBaseline="central"
          className="text-xs font-semibold"
@@ -95,7 +102,7 @@ const renderCustomLabelPosition = (props: any) => {
    );
 };
 
-// Add an any-aliased Pie to avoid strict Recharts prop typings
+// Any-aliased Pie to avoid strict Recharts prop typings
 const AnyPie: any = Pie;
 
 export default function PieChartTutor(props: PieChartTutorProps) {
@@ -110,11 +117,22 @@ export default function PieChartTutor(props: PieChartTutorProps) {
       cornerRadius: 8,
    };
 
+   const tooltipStyle = {
+      background: "hsl(var(--popover))",
+      color: "hsl(var(--popover-foreground))",
+      border: "1px solid hsl(var(--border))",
+      boxShadow: "0 8px 24px hsla(0,0%,0%,0.15)",
+      fontSize: 13,
+      zIndex: 1000,
+   };
+
    return (
       <div className="space-y-6">
-         {/* Sessions by Status - Pie Chart with Gap & Rounded Corners */}
-         <div className="bg-white p-6 rounded shadow">
-            <h4 className="font-medium mb-4 text-lg">Sessions by Status</h4>
+         {/* Sessions by Status */}
+         <Card className="p-6 bg-card text-card-foreground border border-border">
+            <h4 className="font-medium mb-4 text-lg text-foreground">
+               Sessions by Status
+            </h4>
             {sessionsByStatus.length > 0 ? (
                <div style={{ width: "100%", height: 400 }}>
                   <ResponsiveContainer>
@@ -124,8 +142,13 @@ export default function PieChartTutor(props: PieChartTutorProps) {
                               `${value} sessions`,
                               "Count",
                            ]}
+                           wrapperStyle={tooltipStyle}
                         />
-                        <Legend />
+                        <Legend
+                           wrapperStyle={{
+                              color: "hsl(var(--foreground))",
+                           }}
+                        />
                         <Pie
                            data={sessionsByStatus}
                            cx="50%"
@@ -135,7 +158,7 @@ export default function PieChartTutor(props: PieChartTutorProps) {
                               `${status}: ${value}`
                            }
                            outerRadius={100}
-                           fill="#8884d8"
+                           fill="hsl(var(--primary))"
                            dataKey="value"
                            nameKey="status"
                            paddingAngle={pieChartConfig.gap}
@@ -152,23 +175,23 @@ export default function PieChartTutor(props: PieChartTutorProps) {
                   </ResponsiveContainer>
                </div>
             ) : (
-               <div className="h-96 flex items-center justify-center text-gray-500">
+               <div className="h-96 flex items-center justify-center text-muted-foreground">
                   No data available
                </div>
             )}
-         </div>
+         </Card>
 
-         {/* Money Spent on Packages - Custom Active Shape */}
-         <div className="bg-white p-6 rounded shadow">
-            <h4 className="font-medium mb-4 text-lg">
+         {/* Money Spent */}
+         <Card className="p-6 bg-card text-card-foreground border border-border">
+            <h4 className="font-medium mb-4 text-lg text-foreground">
                Total Money Spent on Packages
             </h4>
             <div className="flex items-center justify-center">
                <div className="text-center">
-                  <div className="text-5xl font-bold text-blue-600 mb-2">
+                  <div className="text-5xl font-bold text-primary mb-2">
                      {moneySpent.toLocaleString()}
                   </div>
-                  <div className="text-gray-600">VNĐ</div>
+                  <div className="text-muted-foreground">VNĐ</div>
                </div>
             </div>
             {moneySpent > 0 && (
@@ -187,28 +210,29 @@ export default function PieChartTutor(props: PieChartTutorProps) {
                               cy="50%"
                               innerRadius={60}
                               outerRadius={100}
-                              fill="#8884d8"
+                              fill="hsl(var(--primary))"
                               dataKey="value"
                               activeIndex={0}
                               activeShape={renderActiveShape}
                            >
-                              <Cell fill="#3b82f6" />
+                              <Cell fill="hsl(var(--primary))" />
                            </AnyPie>
                            <Tooltip
                               formatter={(value: any) =>
-                                 `${value.toLocaleString()} VNĐ`
+                                 `${Number(value).toLocaleString()} VNĐ`
                               }
+                              wrapperStyle={tooltipStyle}
                            />
                         </PieChart>
                      </ResponsiveContainer>
                   </div>
                </div>
             )}
-         </div>
+         </Card>
 
-         {/* Learning Commitments - Pie Chart with Customized Label */}
-         <div className="bg-white p-6 rounded shadow">
-            <h4 className="font-medium mb-4 text-lg">
+         {/* Learning Commitments */}
+         <Card className="p-6 bg-card text-card-foreground border border-border">
+            <h4 className="font-medium mb-4 text-lg text-foreground">
                Learning Commitments by Status
             </h4>
             {learningCommitments.length > 0 ? (
@@ -220,16 +244,21 @@ export default function PieChartTutor(props: PieChartTutorProps) {
                               `${value} commitments`,
                               "Count",
                            ]}
+                           wrapperStyle={tooltipStyle}
                         />
-                        <Legend />
+                        <Legend
+                           wrapperStyle={{
+                              color: "hsl(var(--foreground))",
+                           }}
+                        />
                         <Pie
                            data={learningCommitments}
                            cx="50%"
                            cy="50%"
-                           labelLine={true}
+                           labelLine
                            label={renderCustomLabelPosition}
                            outerRadius={100}
-                           fill="#8884d8"
+                           fill="hsl(var(--primary))"
                            dataKey="value"
                            nameKey="status"
                            paddingAngle={pieChartConfig.gap}
@@ -246,11 +275,11 @@ export default function PieChartTutor(props: PieChartTutorProps) {
                   </ResponsiveContainer>
                </div>
             ) : (
-               <div className="h-96 flex items-center justify-center text-gray-500">
+               <div className="h-96 flex items-center justify-center text-muted-foreground">
                   No data available
                </div>
             )}
-         </div>
+         </Card>
       </div>
    );
 }

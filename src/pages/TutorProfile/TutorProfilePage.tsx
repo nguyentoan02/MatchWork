@@ -101,17 +101,17 @@ export default function TutorProfile() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-[80vh]">
+            <div className="flex items-center justify-center h-[80vh] bg-background">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <span className="ml-2 text-lg">Loading profile...</span>
+                <span className="ml-2 text-lg text-foreground">Loading profile...</span>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex items-center justify-center h-[80vh]">
-                <p className="text-red-500">Failed to load profile. Please try again.</p>
+            <div className="flex items-center justify-center h-[80vh] bg-background">
+                <p className="text-destructive">Failed to load profile. Please try again.</p>
             </div>
         );
     }
@@ -471,22 +471,26 @@ export default function TutorProfile() {
 
     if (showForm) {
         return (
-            <div className="w-full h-screen bg-gray-50">
+            <div className="w-full min-h-screen bg-background text-foreground">
                 <div className="w-full h-full">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">{tutor ? "Edit Profile" : "Create Tutor Profile"}</h1>
-                            <p className="text-gray-600">
-                                {tutor ? "Update your tutor information" : "Complete the information below to create your profile"}
+                            <h1 className="text-2xl font-bold">
+                                {tutor ? "Edit Profile" : "Create Tutor Profile"}
+                            </h1>
+                            <p className="text-muted-foreground">
+                                {tutor
+                                    ? "Update your tutor information"
+                                    : "Complete the information below to create your profile"}
                             </p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Avatar Section */}
-                        <Card>
+                        <Card className="bg-card text-card-foreground">
                             <CardHeader>
-                                <CardTitle>Profile Picture</CardTitle>
+                                <CardTitle className="text-foreground">Profile Picture</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <ProfileAvatar
@@ -499,9 +503,9 @@ export default function TutorProfile() {
                         </Card>
 
                         {/* Personal Information */}
-                        <Card className="lg:col-span-2">
+                        <Card className="lg:col-span-2 bg-card text-card-foreground">
                             <CardHeader>
-                                <CardTitle>Personal Information *</CardTitle>
+                                <CardTitle className="text-foreground">Personal Information *</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <PersonalInfoForm
@@ -516,18 +520,18 @@ export default function TutorProfile() {
 
                         {/* Teaching Information */}
                         <TeachingInformationForm
-                            formData={formData}
-                            handleFieldChange={handleFieldChange}
-                            handleClassTypeChange={handleClassTypeChange}
-                            clearFieldError={clearFieldError}
-                            hasError={hasError}
-                            getError={getError}
+                           formData={formData}
+                           handleFieldChange={handleFieldChange}
+                           handleClassTypeChange={handleClassTypeChange}
+                           clearFieldError={clearFieldError}
+                           hasError={hasError}
+                           getError={getError}
                         />
 
                         {/* Subjects */}
-                        <Card className="lg:col-span-3">
+                        <Card className="lg:col-span-3 bg-card text-card-foreground">
                             <CardHeader>
-                                <CardTitle>Subjects Teaching *</CardTitle>
+                                <CardTitle className="text-foreground">Subjects Teaching *</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <MultiSelectInput
@@ -542,16 +546,16 @@ export default function TutorProfile() {
                                     labels={SUBJECT_LABELS}
                                     placeholder="Select subjects..."
                                     searchPlaceholder="Search subjects..."
-                                    className={hasError("subjects") ? "border-red-500 rounded-md" : ""}
+                                    className={hasError("subjects") ? "border-destructive rounded-md" : ""}
                                 />
                                 <ValidationError message={getError("subjects")} />
                             </CardContent>
                         </Card>
 
                         {/* Levels */}
-                        <Card className="lg:col-span-3">
+                        <Card className="lg:col-span-3 bg-card text-card-foreground">
                             <CardHeader>
-                                <CardTitle>Levels *</CardTitle>
+                                <CardTitle className="text-foreground">Levels *</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <MultiSelectInput
@@ -566,7 +570,7 @@ export default function TutorProfile() {
                                     labels={LEVEL_LABELS}
                                     placeholder="Select levels..."
                                     searchPlaceholder="Search levels..."
-                                    className={hasError("levels") ? "border-red-500 rounded-md" : ""}
+                                    className={hasError("levels") ? "border-destructive rounded-md" : ""}
                                 />
                                 <ValidationError message={getError("levels")} />
                             </CardContent>
@@ -574,30 +578,28 @@ export default function TutorProfile() {
 
                         {/* Education */}
                         <EducationForm
-                            education={
-                                (formData.education || []).map(e => ({
-                                    degree: e.degree ?? "",
-                                    institution: e.institution ?? "",
-                                    fieldOfStudy: e.fieldOfStudy ?? "",
-                                    startDate: e.startDate ?? "",
-                                    endDate: e.endDate ?? "",
-                                    description: e.description ?? "",
-                                    dateRange: e.dateRange ?? "",
-                                }))
-                            }
-                            addEducation={addEducation}
-                            removeEducation={removeEducation}
-                            handleEducationChange={handleEducationChange}
-                            hasError={hasError}
-                            getError={getError}
-                            getDateDisplayValue={getDateDisplayValue}
+                           education={(formData.education || []).map((e) => ({
+                              degree: e.degree ?? "",
+                              institution: e.institution ?? "",
+                              fieldOfStudy: e.fieldOfStudy ?? "",
+                              startDate: e.startDate ?? "",
+                              endDate: e.endDate ?? "",
+                              description: e.description ?? "",
+                              dateRange: e.dateRange ?? "",
+                           }))}
+                           addEducation={addEducation}
+                           removeEducation={removeEducation}
+                           handleEducationChange={handleEducationChange}
+                           hasError={hasError}
+                           getError={getError}
+                           getDateDisplayValue={getDateDisplayValue}
                         />
 
 
                         {/* Certifications */}
-                        <Card className="lg:col-span-3">
+                        <Card className="lg:col-span-3 bg-card text-card-foreground">
                             <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
+                                <CardTitle className="flex items-center justify-between text-foreground">
                                     Certifications *
                                     <Button onClick={addCertification} size="sm" variant="outline">
                                         <Plus className="w-4 h-4 mr-2" />
@@ -607,223 +609,233 @@ export default function TutorProfile() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {formData.certifications?.map((cert, index) => (
-                                    <div key={index} className="border rounded-lg p-4 space-y-4">
+                                    <div key={index} className="border border-border rounded-lg p-4 space-y-4 bg-muted/40">
                                         <div className="flex justify-between items-start">
-                                            <h4 className="font-medium">Certification {index + 1}</h4>
+                                            <h4 className="font-medium text-foreground">Certification {index + 1}</h4>
                                             <Button onClick={() => removeCertification(index)} size="sm" variant="ghost">
                                                 <X className="w-4 h-4" />
                                             </Button>
                                         </div>
                                         <div className="space-y-4">
                                             <div>
-                                                <Label htmlFor={`certifications.${index}.name`}>Certification Name *</Label>
+                                                <Label htmlFor={`certifications.${index}.name`} className="text-foreground">
+                                                   Certification Name *
+                                                </Label>
                                                 <Input
-                                                    id={`certifications.${index}.name`}
-                                                    name={`certifications.${index}.name`}
-                                                    placeholder="Certification Name"
-                                                    value={cert.name}
-                                                    onChange={(e) => handleCertificationChange(index, "name", e.target.value)}
-                                                    className={hasError(`certifications.${index}.name`) ? "border-red-500" : ""}
+                                                   id={`certifications.${index}.name`}
+                                                   name={`certifications.${index}.name`}
+                                                   placeholder="Certification Name"
+                                                   value={cert.name}
+                                                   onChange={(e) =>
+                                                      handleCertificationChange(index, "name", e.target.value)
+                                                   }
+                                                   className={hasError(`certifications.${index}.name`) ? "border-destructive" : ""}
                                                 />
                                                 <ValidationError message={getError(`certifications.${index}.name`)} />
                                             </div>
                                             <div>
-                                                <Label htmlFor={`certifications.${index}.description`}>Description *</Label>
+                                                <Label htmlFor={`certifications.${index}.description`} className="text-foreground">
+                                                   Description *
+                                                </Label>
                                                 <Textarea
-                                                    id={`certifications.${index}.description`}
-                                                    name={`certifications.${index}.description`}
-                                                    placeholder="Description"
-                                                    value={cert.description || ""}
-                                                    onChange={(e) => handleCertificationChange(index, "description", e.target.value)}
+                                                   id={`certifications.${index}.description`}
+                                                   name={`certifications.${index}.description`}
+                                                   placeholder="Description"
+                                                   value={cert.description || ""}
+                                                   onChange={(e) =>
+                                                      handleCertificationChange(index, "description", e.target.value)
+                                                   }
                                                 />
                                                 <ValidationError message={getError(`certifications.${index}.description`)} />
                                             </div>
 
                                             {/* Certification Images Upload */}
                                             <div>
-                                                <Label>Certification Images</Label>
+                                                <Label className="text-foreground">Certification Images</Label>
                                                 <div className="mt-2">
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        multiple
-                                                        onChange={(e) => handleCertificationImageUpload(index, e.target.files)}
-                                                        className="hidden"
-                                                        id={`certification-images-${index}`}
-                                                    />
-                                                    <label htmlFor={`certification-images-${index}`}>
-                                                        <Button variant="outline" size="sm" asChild>
-                                                            <span>Add Images</span>
-                                                        </Button>
-                                                    </label>
+                                                   <input
+                                                      type="file"
+                                                      accept="image/*"
+                                                      multiple
+                                                      onChange={(e) =>
+                                                         handleCertificationImageUpload(index, e.target.files)
+                                                      }
+                                                      className="hidden"
+                                                      id={`certification-images-${index}`}
+                                                   />
+                                                   <label htmlFor={`certification-images-${index}`}>
+                                                      <Button variant="outline" size="sm" asChild>
+                                                         <span>Add Images</span>
+                                                      </Button>
+                                                   </label>
                                                 </div>
 
                                                 {/* Display selected images */}
                                                 {certificationFiles[index] && certificationFiles[index].length > 0 && (
-                                                    <div className="mt-3">
-                                                        <p className="text-sm text-gray-600 mb-2">Selected images:</p>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {certificationFiles[index].map((file, fileIndex) => (
-                                                                <div key={fileIndex} className="relative">
-                                                                    <img
-                                                                        src={URL.createObjectURL(file)}
-                                                                        alt={file.name}
-                                                                        className="w-16 h-16 object-cover rounded border"
-                                                                    />
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="destructive"
-                                                                        className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
-                                                                        onClick={() => removeCertificationImage(index, fileIndex)}
-                                                                    >
-                                                                        <X className="h-3 w-3" />
-                                                                    </Button>
-                                                                    <p className="text-xs text-gray-500 truncate w-16">
-                                                                        {file.name}
-                                                                    </p>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
+                                                   <div className="mt-3">
+                                                      <p className="text-sm text-muted-foreground mb-2">Selected images:</p>
+                                                      <div className="flex flex-wrap gap-2">
+                                                         {certificationFiles[index].map((file, fileIndex) => (
+                                                            <div key={fileIndex} className="relative">
+                                                               <img
+                                                                  src={URL.createObjectURL(file)}
+                                                                  alt={file.name}
+                                                                  className="w-16 h-16 object-cover rounded border border-border"
+                                                               />
+                                                               <Button
+                                                                  size="sm"
+                                                                  variant="destructive"
+                                                                  className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full"
+                                                                  onClick={() => removeCertificationImage(index, fileIndex)}
+                                                               >
+                                                                  <X className="h-3 w-3" />
+                                                               </Button>
+                                                               <p className="text-xs text-muted-foreground truncate w-16">
+                                                                  {file.name}
+                                                               </p>
+                                                            </div>
+                                                         ))}
+                                                      </div>
+                                                   </div>
                                                 )}
 
                                                 {/* Display existing images from server */}
                                                 {cert.imageUrls && cert.imageUrls.length > 0 && (
-                                                    <div className="mt-3">
-                                                        <p className="text-sm text-gray-600 mb-2">Existing images:</p>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {cert.imageUrls?.map((url, urlIndex) => (
-                                                                <div key={urlIndex} className="relative group">
-                                                                    <img
-                                                                        src={url}
-                                                                        alt={`Certification image ${urlIndex + 1}`}
-                                                                        className="w-16 h-16 object-cover rounded border"
-                                                                    />
-                                                                    <p className="text-xs text-gray-500 truncate w-16">
-                                                                        Image {urlIndex + 1}
-                                                                    </p>
+                                                   <div className="mt-3">
+                                                      <p className="text-sm text-muted-foreground mb-2">Existing images:</p>
+                                                      <div className="flex flex-wrap gap-2">
+                                                         {cert.imageUrls?.map((url, urlIndex) => (
+                                                            <div key={urlIndex} className="relative group">
+                                                               <img
+                                                                  src={url}
+                                                                  alt={`Certification image ${urlIndex + 1}`}
+                                                                  className="w-16 h-16 object-cover rounded border border-border"
+                                                               />
+                                                               <p className="text-xs text-muted-foreground truncate w-16">
+                                                                  Image {urlIndex + 1}
+                                                               </p>
 
-                                                                    {/* Remove button */}
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleRemoveExistingImage(cert, urlIndex, index)}
-                                                                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                                    >
-                                                                        ✕
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                )}                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
+                                                               {/* Remove button */}
+                                                               <button
+                                                                  type="button"
+                                                                  onClick={() =>
+                                                                     handleRemoveExistingImage(cert, urlIndex, index)
+                                                                  }
+                                                                  className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                               >
+                                                                  ✕
+                                                               </button>
+                                                            </div>
+                                                         ))}
+                                                      </div>
+                                                   </div>
+                                                )}
+                                             </div>
+                                          </div>
+                                       </div>
+                                    ))}
+                                 </CardContent>
+                              </Card>
 
-                        {/* Availability */}
-                        < Card className="lg:col-span-3" id="availability-section" >
-                            <CardHeader>
-                                <CardTitle>Availability Schedule *</CardTitle>
-                                <p className="text-sm text-gray-600">Select the days and time slots when you're available to teach</p>
-                            </CardHeader>
-                            <CardContent>
-                                <AvailabilityGrid
-                                    availability={formData.availability || []}
-                                    onAvailabilityChange={updateAvailability}
-                                />
-                                <ValidationError message={getError("availability")} className="mt-4" />
-                            </CardContent>
-                        </ Card>
+                              {/* Availability */}
+                              <Card className="lg:col-span-3 bg-card text-card-foreground" id="availability-section">
+                                 <CardHeader>
+                                    <CardTitle className="text-foreground">Availability Schedule *</CardTitle>
+                                    <p className="text-sm text-muted-foreground">
+                                       Select the days and time slots when you're available to teach
+                                    </p>
+                                 </CardHeader>
+                                 <CardContent>
+                                    <AvailabilityGrid
+                                       availability={formData.availability || []}
+                                       onAvailabilityChange={updateAvailability}
+                                    />
+                                    <ValidationError message={getError("availability")} className="mt-4" />
+                                 </CardContent>
+                              </Card>
 
-                        {/* Address */}
-                        <Card className="lg:col-span-3">
-                            <CardHeader>
-                                <CardTitle>Address *</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {/* City */}
-                                    <div>
-                                        <Label htmlFor="address.city">City *</Label>
-                                        <Select
-                                            value={formData.address?.city || ""}
-                                            onValueChange={(value) => {
+                              {/* Address */}
+                              <Card className="lg:col-span-3 bg-card text-card-foreground">
+                                 <CardHeader>
+                                    <CardTitle className="text-foreground">Address *</CardTitle>
+                                 </CardHeader>
+                                 <CardContent>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                       {/* City */}
+                                       <div>
+                                          <Label htmlFor="address.city" className="text-foreground">City *</Label>
+                                          <Select
+                                             value={formData.address?.city || ""}
+                                             onValueChange={(value) => {
                                                 handleAddressChange("city", value);
                                                 clearFieldError("address.city");
-                                            }}
-                                        >
-                                            <SelectTrigger className={hasError("address.city") ? "border-red-500" : ""}>
+                                             }}
+                                          >
+                                             <SelectTrigger className={hasError("address.city") ? "border-destructive" : ""}>
                                                 <SelectValue placeholder="Select a city" />
-                                            </SelectTrigger>
-                                            <SelectContent>
+                                             </SelectTrigger>
+                                             <SelectContent>
                                                 {CITY_TYPE_VALUES.map((city) => (
-                                                    <SelectItem key={city} value={city}>
-                                                        {city}
-                                                    </SelectItem>
+                                                   <SelectItem key={city} value={city}>
+                                                      {city}
+                                                   </SelectItem>
                                                 ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <ValidationError message={getError("address.city")} />
-                                    </div>
+                                             </SelectContent>
+                                          </Select>
+                                          <ValidationError message={getError("address.city")} />
+                                       </div>
 
-                                    {/* Street */}
-                                    <div>
-                                        <Label htmlFor="address.street">Street Address *</Label>
-                                        <Input
-                                            id="address.street"
-                                            name="address.street"
-                                            value={formData.address?.street || ""}
-                                            onChange={(e) => {
+                                       {/* Street */}
+                                       <div>
+                                          <Label htmlFor="address.street" className="text-foreground">Street Address *</Label>
+                                          <Input
+                                             id="address.street"
+                                             name="address.street"
+                                             value={formData.address?.street || ""}
+                                             onChange={(e) => {
                                                 handleAddressChange("street", e.target.value);
                                                 clearFieldError("address.street");
-                                            }}
-                                            placeholder="Enter street address"
-                                            className={hasError("address.street") ? "border-red-500" : ""}
-                                        />
-                                        <ValidationError message={getError("address.street")} />
+                                             }}
+                                             placeholder="Enter street address"
+                                             className={hasError("address.street") ? "border-destructive" : ""}
+                                          />
+                                          <ValidationError message={getError("address.street")} />
+                                       </div>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                 </CardContent>
+                              </Card>
 
-                        {/* Action Buttons */}
-                        <Card className="lg:col-span-3" >
-                            <CardContent className="pt-6">
-                                <div className="mt-4 flex justify-end space-x-2">
-                                    <Button
-                                        variant="secondary"
-                                        onClick={() => setIsEditing(false)}
-                                        disabled={isCreating || isUpdating}
-                                    >
-                                        Cancel
-                                    </Button>
+                              {/* Action Buttons */}
+                              <Card className="lg:col-span-3 bg-card text-card-foreground">
+                                 <CardContent className="pt-6">
+                                    <div className="mt-4 flex justify-end space-x-2">
+                                       <Button
+                                          variant="secondary"
+                                          onClick={() => setIsEditing(false)}
+                                          disabled={isCreating || isUpdating}
+                                       >
+                                          Cancel
+                                       </Button>
 
-                                    <Button
-                                        onClick={handleSave}
-                                        disabled={isCreating || isUpdating}
-                                    >
-                                        {isCreating || isUpdating ? (
-                                            <span className="flex items-center space-x-2">
+                                       <Button onClick={handleSave} disabled={isCreating || isUpdating}>
+                                          {isCreating || isUpdating ? (
+                                             <span className="flex items-center space-x-2">
                                                 <Loader2 className="h-5 w-5 animate-spin" />
                                                 <span>Saving...</span>
-                                            </span>
-                                        ) : (
-                                            "Save"
-                                        )}
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card >
-                    </div >
-                </div >
-            </div >
-        )
+                                             </span>
+                                          ) : (
+                                             "Save"
+                                          )}
+                                       </Button>
+                                    </div>
+                                 </CardContent>
+                              </Card>
+                           </div>
+                        </div>
+                     </div>
+                  );
     }
 
     // Profile View
-    return (
-        <TutorProfileView tutor={tutorProfile} onEdit={() => setIsEditing(true)} />
-    )
+    return <TutorProfileView tutor={tutorProfile} onEdit={() => setIsEditing(true)} />;
 }
