@@ -824,10 +824,10 @@ export default function TutorProfile() {
                                           {isCreating || isUpdating ? (
                                              <span className="flex items-center space-x-2">
                                                 <Loader2 className="h-5 w-5 animate-spin" />
-                                                <span>Đang lưu...</span>
+                                                <span>Đang Lưu...</span>
                                              </span>
                                           ) : (
-                                             "Lưu"
+                                             "Save"
                                           )}
                                        </Button>
                                     </div>
