@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, X, Loader2 } from "lucide-react"
 import { Tutor } from "@/types/tutorListandDetail"
-import { SUBJECT_LABELS, SUBJECT_VALUES } from "@/enums/subject.enum"
-import { LEVEL_LABELS, LEVEL_VALUES } from '../../enums/level.enum';
+import { SUBJECT_VALUES } from "@/enums/subject.enum"
+import { LEVEL_VALUES } from '../../enums/level.enum';
 import { ProfileAvatar, PersonalInfoForm, AvailabilityGrid, MultiSelectInput, TeachingInformationForm } from "@/components/tutor/tutor-profile"
 import { useTutorFormValidation } from "@/hooks/useTutorFormValidation"
 import { TutorProfileFormData } from "@/validation/tutorProfileSchema"
@@ -531,50 +531,52 @@ export default function TutorProfile() {
 
                         {/* Subjects */}
                         <Card className="lg:col-span-3 bg-card text-card-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-foreground">Subjects Teaching *</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <MultiSelectInput
-                                    wrapperRef={subjectRef}
-                                    value={formData.subjects || []}
-                                    onChange={(val) => {
-                                        setFormData((prev) => ({ ...prev, subjects: val }));
-                                        validateField("subjects", val, !!tutorProfile);
-                                        clearFieldError("subjects");
-                                    }}
-                                    options={SUBJECT_VALUES}
-                                    labels={SUBJECT_LABELS}
-                                    placeholder="Select subjects..."
-                                    searchPlaceholder="Search subjects..."
-                                    className={hasError("subjects") ? "border-destructive rounded-md" : ""}
-                                />
-                                <ValidationError message={getError("subjects")} />
-                            </CardContent>
+                          <CardHeader>
+                            <CardTitle className="text-foreground">Subjects Teaching *</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <MultiSelectInput
+                              wrapperRef={subjectRef}
+                              value={formData.subjects || []}
+                              onChange={(val) => {
+                                setFormData((prev) => ({ ...prev, subjects: val }));
+                                validateField("subjects", val, !!tutorProfile);
+                                clearFieldError("subjects");
+                              }}
+                              options={SUBJECT_VALUES}
+                              // Use Vietnamese subject labels
+                              labels={SUBJECT_LABELS_VI}
+                              placeholder="Select subjects..."
+                              searchPlaceholder="Search subjects..."
+                              className={hasError("subjects") ? "border-destructive rounded-md" : ""}
+                            />
+                            <ValidationError message={getError("subjects")} />
+                          </CardContent>
                         </Card>
 
                         {/* Levels */}
                         <Card className="lg:col-span-3 bg-card text-card-foreground">
-                            <CardHeader>
-                                <CardTitle className="text-foreground">Levels *</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <MultiSelectInput
-                                    wrapperRef={levelsRef}
-                                    value={formData.levels || []}
-                                    onChange={(val) => {
-                                        setFormData((prev) => ({ ...prev, levels: val }));
-                                        validateField("levels", val, !!tutorProfile);
-                                        clearFieldError("levels");
-                                    }}
-                                    options={LEVEL_VALUES}
-                                    labels={LEVEL_LABELS}
-                                    placeholder="Select levels..."
-                                    searchPlaceholder="Search levels..."
-                                    className={hasError("levels") ? "border-destructive rounded-md" : ""}
-                                />
-                                <ValidationError message={getError("levels")} />
-                            </CardContent>
+                          <CardHeader>
+                            <CardTitle className="text-foreground">Levels *</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <MultiSelectInput
+                              wrapperRef={levelsRef}
+                              value={formData.levels || []}
+                              onChange={(val) => {
+                                setFormData((prev) => ({ ...prev, levels: val }));
+                                validateField("levels", val, !!tutorProfile);
+                                clearFieldError("levels");
+                              }}
+                              options={LEVEL_VALUES}
+                              // Use Vietnamese level labels
+                              labels={LEVEL_LABELS_VI}
+                              placeholder="Select levels..."
+                              searchPlaceholder="Search levels..."
+                              className={hasError("levels") ? "border-destructive rounded-md" : ""}
+                            />
+                            <ValidationError message={getError("levels")} />
+                          </CardContent>
                         </Card>
 
                         {/* Học vấn */}
