@@ -36,7 +36,8 @@ jobs:
               cache-to: type=gha,mode=max
               # TRUYỀN BIẾN MÔI TRƯỜNG VITE VÀO QUÁ TRÌNH BUILD DOCKER
               build-args: |
-                 VITE_API_URL=${{ secrets.VITE_API_URL }}
+                 VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+                 VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
    # --- GIAI ĐOẠN 2: DEPLOY LÊN EC2 ---
    deploy:
