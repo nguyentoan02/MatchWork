@@ -16,6 +16,8 @@ ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 COPY package.json package-lock.json ./
 RUN npm install 
 
+# Thêm bước xóa và cài lại để khắc phục bug npm với optional dependencies
+RUN rm -rf node_modules package-lock.json && npm install
 
 # Copy source code và Build (Sẽ thành công trên Debian Slim)
 COPY . .
