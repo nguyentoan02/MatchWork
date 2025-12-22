@@ -215,16 +215,22 @@ export default function ChatPage() {
                         <Avatar className="h-10 w-10 flex-shrink-0">
                            <AvatarImage
                               src={conv.otherUser.avatarUrl}
-                              alt={conv.otherUser.name}
+                              alt={conv.otherUser.name || conv.otherUser.email}
                            />
                            <AvatarFallback>
-                              {conv.otherUser.name.charAt(0)}
+                              {(
+                                 conv.otherUser.name ||
+                                 conv.otherUser.email ||
+                                 "?"
+                              )
+                                 .charAt(0)
+                                 .toUpperCase()}
                            </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                            <div className="flex items-center justify-between gap-2">
                               <p className="font-medium text-sm truncate">
-                                 {conv.otherUser.name}
+                                 {conv.otherUser.name || conv.otherUser.email}
                               </p>
                               {conv.lastMessage && (
                                  <span className="text-xs text-muted-foreground">
@@ -259,15 +265,26 @@ export default function ChatPage() {
                      <Avatar className="h-12 w-12">
                         <AvatarImage
                            src={activeConversation?.otherUser?.avatarUrl}
-                           alt={activeConversation?.otherUser?.name}
+                           alt={
+                              activeConversation?.otherUser?.name ||
+                              activeConversation?.otherUser?.email
+                           }
                         />
                         <AvatarFallback>
-                           {activeConversation?.otherUser?.name?.charAt(0)}
+                           {(
+                              activeConversation?.otherUser?.name ||
+                              activeConversation?.otherUser?.email ||
+                              "?"
+                           )
+                              .charAt(0)
+                              .toUpperCase()}
                         </AvatarFallback>
                      </Avatar>
                      <div>
                         <h2 className="text-base font-semibold text-foreground">
-                           {activeConversation?.otherUser?.name || "Chat"}
+                           {activeConversation?.otherUser?.name ||
+                              activeConversation?.otherUser?.email ||
+                              "Chat"}
                         </h2>
                         <p className="text-xs text-muted-foreground">
                            {activeConversation?.otherUser?.role === "TUTOR"
@@ -306,10 +323,19 @@ export default function ChatPage() {
                                     <Avatar className="h-9 w-9 flex-shrink-0 mt-1">
                                        <AvatarImage
                                           src={msg.sender?.avatarUrl}
-                                          alt={msg.sender?.name}
+                                          alt={
+                                             msg.sender?.name ||
+                                             msg.sender?.email
+                                          }
                                        />
                                        <AvatarFallback>
-                                          {msg.sender?.name?.charAt(0)}
+                                          {(
+                                             msg.sender?.name ||
+                                             msg.sender?.email ||
+                                             "?"
+                                          )
+                                             .charAt(0)
+                                             .toUpperCase()}
                                        </AvatarFallback>
                                     </Avatar>
                                  )}
@@ -339,10 +365,19 @@ export default function ChatPage() {
                                     <Avatar className="h-9 w-9 flex-shrink-0 mt-1">
                                        <AvatarImage
                                           src={msg.sender?.avatarUrl}
-                                          alt={msg.sender?.name}
+                                          alt={
+                                             msg.sender?.name ||
+                                             msg.sender?.email
+                                          }
                                        />
                                        <AvatarFallback>
-                                          {msg.sender?.name?.charAt(0)}
+                                          {(
+                                             msg.sender?.name ||
+                                             msg.sender?.email ||
+                                             "?"
+                                          )
+                                             .charAt(0)
+                                             .toUpperCase()}
                                        </AvatarFallback>
                                     </Avatar>
                                  )}
