@@ -39,6 +39,7 @@ const QuizTimer = ({
 
       if (isSubmitting) {
          setTimeLeft(0);
+         clearInterval(timerIdRef.current!);
          return;
       }
 
