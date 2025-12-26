@@ -165,3 +165,35 @@ export const createBatchSessions = async (payload: {
 
    return response.data?.data || response.data?.metadata || [];
 };
+
+/**
+ * Lấy danh sách các buổi học theo ID của Learning Commitment.
+ * @param commitmentId ID của Learning Commitment
+ */
+export const getSessionsByCommitment = async (
+   commitmentId: string
+): Promise<Session[]> => {
+   const response = await apiClient.get(`/session/commitment/${commitmentId}`);
+   return response.data.metadata ?? response.data.data ?? [];
+};
+
+// New: fake attendance endpoint (backend route: confirm-attendance-fake)
+export const confirmAttendanceFake = async (
+   sessionId: string
+): Promise<Session> => {
+   const response = await apiClient.patch(
+      `/session/${sessionId}/confirm-attendance-fake`
+   );
+   return response.data.metadata;
+};
+
+export const rejectAttendanceFake = async (
+   sessionId: string,
+   payload?: { reason?: string; evidenceUrls?: string[] }
+): Promise<Session> => {
+   const response = await apiClient.patch(
+      `/session/${sessionId}/reject-attendance-fake`,
+      payload
+   );
+   return response.data.metadata;
+};
