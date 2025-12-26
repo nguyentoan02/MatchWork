@@ -7,7 +7,6 @@ import {
    SlotInfo,
 } from "react-big-calendar";
 import moment from "moment";
-import "moment/locale/vi"; // <--- THÊM: Import ngôn ngữ tiếng Việt cho moment
 
 import withDragAndDrop, {
    EventInteractionArgs,
@@ -15,9 +14,13 @@ import withDragAndDrop, {
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 
-import { useMySessions, useUpdateSession } from "@/hooks/useSessions";
+import {
+   useMySessions,
+   useStudentBusySchedules,
+   useUpdateSession,
+} from "@/hooks/useSessions";
 import { useUser } from "@/hooks/useUser";
-import { Session } from "@/types/session";
+import { BSession, Session } from "@/types/session";
 import { Role } from "@/types/user";
 import { SessionStatus } from "@/enums/session.enum";
 
@@ -50,17 +53,30 @@ const messages = {
 };
 
 interface CalendarEvent extends BigCalendarEvent {
-   resource: Session;
+   resource: Session | any;
    start: Date;
    end: Date;
+   isBusy?: boolean;
+   style?: React.CSSProperties;
 }
 
 const DnDCalendar = withDragAndDrop<CalendarEvent>(BigCalendar);
 
 export function SessionCalendar() {
    const { user } = useUser();
-   const { data: sessions, isLoading, isError } = useMySessions();
+   const {
+      data: sessions,
+      isLoading: misLoading,
+      isError: misError,
+   } = useMySessions();
+   const {
+      data: bSessions,
+      isLoading: bisLoading,
+      isError: bisError,
+   } = useStudentBusySchedules();
    const updateSessionMutation = useUpdateSession();
+
+   console.log(bSessions);
 
    const [selectedSession, setSelectedSession] = useState<Session | null>(null);
    const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -69,7 +85,7 @@ export function SessionCalendar() {
       useState<Partial<Session> | null>(null);
    const [defaultDate, setDefaultDate] = useState<Date | undefined>();
 
-   const events: CalendarEvent[] = useMemo(() => {
+   const sessionEvents = useMemo(() => {
       return (sessions ?? []).map((session) => {
          const lc: any = (session as any).learningCommitmentId;
          const studentName =
@@ -111,7 +127,36 @@ export function SessionCalendar() {
       });
    }, [sessions]);
 
+   const busyEvents = useMemo(() => {
+      return bSessions?.data.map((busy: BSession) => ({
+         title: `Học ${busy.learningCommitmentId.student.userId.name} sinh bận`,
+         start: new Date(busy.startTime),
+         end: new Date(busy.endTime),
+         resource: busy,
+         isBusy: true,
+      })) as CalendarEvent[];
+   }, [bSessions]);
+
+   const events: CalendarEvent[] = useMemo(
+      () => [...sessionEvents, ...busyEvents],
+      [sessionEvents, busyEvents]
+   );
+
+   const eventPropGetter = useCallback((event: CalendarEvent) => {
+      if (event.isBusy) {
+         return {
+            style: {
+               backgroundColor: "#1f2937",
+               borderColor: "#111827",
+               opacity: 0.75,
+            },
+         };
+      }
+      return { style: event.style };
+   }, []);
+
    const handleSelectEvent = useCallback((event: CalendarEvent) => {
+      if (event.isBusy) return;
       setSelectedSession(event.resource);
       setIsDetailOpen(true);
    }, []);
@@ -131,7 +176,7 @@ export function SessionCalendar() {
 
    const handleEventDrop = useCallback(
       ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
-         if (user?.role !== Role.TUTOR || !event) return;
+         if (event?.isBusy || user?.role !== Role.TUTOR) return;
          updateSessionMutation.mutate({
             sessionId: event.resource._id,
             payload: {
@@ -145,7 +190,7 @@ export function SessionCalendar() {
 
    const handleEventResize = useCallback(
       ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
-         if (user?.role !== Role.TUTOR || !event) return;
+         if (event?.isBusy || user?.role !== Role.TUTOR) return;
          updateSessionMutation.mutate({
             sessionId: event.resource._id,
             payload: {
@@ -163,7 +208,7 @@ export function SessionCalendar() {
       setIsFormOpen(true);
    };
 
-   if (isLoading) {
+   if (misLoading || bisLoading) {
       return (
          <div className="flex items-center justify-center h-96">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -172,7 +217,7 @@ export function SessionCalendar() {
       );
    }
 
-   if (isError) {
+   if (bisError || misError) {
       return (
          <div className="text-center h-96 text-red-500">
             Lỗi! Không thể tải dữ liệu lịch học. Vui lòng thử lại.
@@ -200,6 +245,13 @@ export function SessionCalendar() {
                onSelectSlot={handleSelectSlot}
                onEventDrop={handleEventDrop}
                onEventResize={handleEventResize}
+               eventPropGetter={eventPropGetter}
+               draggableAccessor={(event) =>
+                  !event.isBusy && user?.role === Role.TUTOR
+               }
+               resizableAccessor={(event) =>
+                  !event.isBusy && user?.role === Role.TUTOR
+               }
                selectable={user?.role === Role.TUTOR}
                resizable={user?.role === Role.TUTOR}
                defaultView="week"

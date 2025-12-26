@@ -10,10 +10,11 @@ import {
    cancelSession,
    rejectAttendance,
    createBatchSessions,
+   busySession,
 } from "@/api/sessions";
 
 import { useToast } from "@/hooks/useToast";
-import { UpsertSessionPayload } from "@/types/session";
+import { BusySession, UpsertSessionPayload } from "@/types/session";
 
 // Query key factory for sessions
 export const sessionKeys = {
@@ -260,3 +261,11 @@ export const useCreateBatchSessions = () => {
       },
    });
 };
+
+
+export const useStudentBusySchedules = () => {
+   return useQuery<BusySession>({
+      queryKey:["STUDENTBUSY"],
+      queryFn: busySession,
+   })
+}

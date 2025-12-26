@@ -1,5 +1,5 @@
 import apiClient from "@/lib/api";
-import { Session, UpsertSessionPayload } from "@/types/session";
+import { BusySession, Session, UpsertSessionPayload } from "@/types/session";
 
 /**
  * Fetches all sessions for the currently authenticated user (tutor or student).
@@ -164,4 +164,9 @@ export const createBatchSessions = async (payload: {
    const response = await apiClient.post("/session/batch", payload);
 
    return response.data?.data || response.data?.metadata || [];
+};
+
+export const busySession = async ():Promise<BusySession> => {
+   const response = await apiClient.get("/session/busy");
+   return response.data;
 };

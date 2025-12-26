@@ -448,27 +448,27 @@ export default function TutorProfile() {
         }))
     }
 
-    const updateAvailability = (dayIndex: number, timeSlot: string, checked: boolean) => {
-        setFormData((prev) => {
-            const availability = [...(prev.availability || [])]
-            const dayAvailability = availability.find((a) => a.dayOfWeek === dayIndex)
+    // const updateAvailability = (dayIndex: number, timeSlot: string, checked: boolean) => {
+    //     setFormData((prev) => {
+    //         const availability = [...(prev.availability || [])]
+    //         const dayAvailability = availability.find((a) => a.dayOfWeek === dayIndex)
 
-            if (dayAvailability) {
-                if (checked) {
-                    dayAvailability.slots = [...(dayAvailability.slots ?? []), timeSlot as any]
-                } else {
-                    dayAvailability.slots = (dayAvailability.slots ?? []).filter((slot) => slot !== timeSlot)
-                }
-                if (dayAvailability.slots.length === 0) {
-                    availability.splice(availability.indexOf(dayAvailability), 1)
-                }
-            } else if (checked) {
-                availability.push({ dayOfWeek: dayIndex, slots: [timeSlot as any] })
-            }
+    //         if (dayAvailability) {
+    //             if (checked) {
+    //                 dayAvailability.slots = [...(dayAvailability.slots ?? []), timeSlot as any]
+    //             } else {
+    //                 dayAvailability.slots = (dayAvailability.slots ?? []).filter((slot) => slot !== timeSlot)
+    //             }
+    //             if (dayAvailability.slots.length === 0) {
+    //                 availability.splice(availability.indexOf(dayAvailability), 1)
+    //             }
+    //         } else if (checked) {
+    //             availability.push({ dayOfWeek: dayIndex, slots: [timeSlot as any] })
+    //         }
 
-            return { ...prev, availability }
-        })
-    }
+    //         return { ...prev, availability }
+    //     })
+    // }
 
     if (showForm) {
         return (
@@ -740,7 +740,7 @@ export default function TutorProfile() {
                             </CardContent>
                         </Card>
 
-                        {/* Availability */}
+                        {/* Availability
                         <Card className="lg:col-span-3 bg-card text-card-foreground" id="availability-section">
                             <CardHeader>
                                 <CardTitle className="text-foreground">Lịch Rảnh *</CardTitle>
@@ -755,7 +755,7 @@ export default function TutorProfile() {
                                 />
                                 <ValidationError message={getError("availability")} className="mt-4" />
                             </CardContent>
-                        </Card>
+                        </Card> */}
 
                         {/* Address */}
                         <Card className="lg:col-span-3 bg-card text-card-foreground">
