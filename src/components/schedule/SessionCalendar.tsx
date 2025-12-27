@@ -85,6 +85,31 @@ export function SessionCalendar() {
       useState<Partial<Session> | null>(null);
    const [defaultDate, setDefaultDate] = useState<Date | undefined>();
 
+   const STUDENT_COLOR_PALETTE = [
+      "#2563eb",
+      "#f97316",
+      "#10b981",
+      "#8b5cf6",
+      "#ef4444",
+      "#14b8a6",
+      "#f59e0b",
+      "#ec4899",
+   ];
+
+   const getStudentColor = useCallback(
+      (studentId: string) => {
+         if (!studentId) return STUDENT_COLOR_PALETTE[0];
+         let hash = 0;
+         for (let i = 0; i < studentId.length; i++) {
+            hash = (hash << 5) - hash + studentId.charCodeAt(i);
+            hash |= 0;
+         }
+         const idx = Math.abs(hash) % STUDENT_COLOR_PALETTE.length;
+         return STUDENT_COLOR_PALETTE[idx];
+      },
+      [STUDENT_COLOR_PALETTE]
+   );
+
    const sessionEvents = useMemo(() => {
       return (sessions ?? []).map((session) => {
          const lc: any = (session as any).learningCommitmentId;
@@ -117,6 +142,28 @@ export function SessionCalendar() {
                style = { backgroundColor: "#3b82f6", borderColor: "#2563eb" }; // Xanh dương - mặc định
          }
 
+         const studentId =
+            (lc?.student?._id as string) ||
+            (lc?.studentId as string) ||
+            (lc?.student?.userId?._id as string) ||
+            (lc?.student?.userId?.email as string) ||
+            session._id;
+
+         const tutorId =
+            (lc?.tutor?._id as string) ||
+            (lc?.tutorId as string) ||
+            (lc?.tutor?.userId?._id as string) ||
+            (lc?.tutor?.userId?.email as string);
+
+         const colorKey =
+            user?.role === Role.TUTOR ? studentId : tutorId || studentId;
+         const baseColor = getStudentColor(colorKey);
+         style = {
+            backgroundColor: baseColor,
+            borderColor: baseColor,
+            color: "#fff",
+         };
+
          return {
             title: `${subject} — ${studentName}`,
             start: new Date(session.startTime),
@@ -128,13 +175,15 @@ export function SessionCalendar() {
    }, [sessions]);
 
    const busyEvents = useMemo(() => {
-      return bSessions?.data.map((busy: BSession) => ({
-         title: `Học ${busy.learningCommitmentId.student.userId.name} sinh bận`,
-         start: new Date(busy.startTime),
-         end: new Date(busy.endTime),
-         resource: busy,
-         isBusy: true,
-      })) as CalendarEvent[];
+      return (
+         (bSessions?.data.map((busy: BSession) => ({
+            title: `Học ${busy.learningCommitmentId.student.userId.name} sinh bận`,
+            start: new Date(busy.startTime),
+            end: new Date(busy.endTime),
+            resource: busy,
+            isBusy: true,
+         })) as CalendarEvent[]) || []
+      );
    }, [bSessions]);
 
    const events: CalendarEvent[] = useMemo(
