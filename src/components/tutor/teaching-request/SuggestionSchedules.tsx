@@ -1,0 +1,477 @@
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import withDragAndDrop, {
+   EventInteractionArgs,
+} from "react-big-calendar/lib/addons/dragAndDrop";
+import {
+   Calendar as BigCalendar,
+   Event as BigCalendarEvent,
+   momentLocalizer,
+} from "react-big-calendar";
+import moment from "moment";
+import {
+   Dialog,
+   DialogContent,
+   DialogHeader,
+   DialogTitle,
+   DialogDescription,
+   DialogFooter,
+} from "../../ui/dialog";
+import { BookOpen } from "lucide-react";
+import { Badge } from "../../ui/badge";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useUser } from "@/hooks/useUser";
+import { Role } from "@/enums/role.enum";
+import { useCalendarEventStore } from "@/store/useCalendarEventStore";
+import { Session } from "@/types/session";
+import { Button } from "../../ui/button";
+import { Checkbox } from "../../ui/checkbox";
+import { Input } from "../../ui/input";
+
+type Props = {
+   onClose: () => void;
+   isOpen: boolean;
+};
+interface CalendarEvent extends BigCalendarEvent {
+   resource: Session | any;
+   start: Date;
+   end: Date;
+   isBusy?: boolean;
+   style?: React.CSSProperties;
+}
+
+moment.locale("vi");
+const localizer = momentLocalizer(moment);
+const DnDCalendar = withDragAndDrop<CalendarEvent>(BigCalendar);
+
+function SuggestionSchedules({ isOpen, onClose }: Props) {
+   const { user } = useUser();
+   const {
+      events,
+      setEvents,
+      addEvent,
+      updateEventTime,
+      setChange,
+      getEvents,
+   } = useCalendarEventStore();
+   const initializedRef = useRef(false);
+
+   // bulk modal state
+   const [showBulkModal, setShowBulkModal] = useState(false);
+   const [startDateTime, setStartDateTime] = useState(
+      moment().startOf("week").add(1, "day").format("YYYY-MM-DD")
+   );
+   const [startTime] = useState("09:00");
+   const [endTime] = useState("11:00");
+   const [repeatMode, setRepeatMode] = useState<"count" | "until">("count");
+   const [totalSessions, setTotalSessions] = useState(5);
+   const [untilDate, setUntilDate] = useState(
+      moment().add(3, "week").format("YYYY-MM-DD")
+   );
+   const [weekdays, setWeekdays] = useState<number[]>([1, 3]); // 1=Mon ... 6=Sat, 0=Sun
+   const [weekdayTimes, setWeekdayTimes] = useState<
+      Record<number, { start: string; end: string }>
+   >({
+      1: { start: "09:00", end: "11:00" },
+      3: { start: "14:00", end: "16:00" },
+   });
+
+   const toggleWeekday = (day: number) => {
+      setWeekdays((prev) => {
+         const next = prev.includes(day)
+            ? prev.filter((d) => d !== day)
+            : [...prev, day];
+         if (!weekdayTimes[day]) {
+            setWeekdayTimes((t) => ({
+               ...t,
+               [day]: { start: startTime, end: endTime },
+            }));
+         }
+         return next;
+      });
+   };
+
+   const updateWeekdayTime = (
+      day: number,
+      field: "start" | "end",
+      value: string
+   ) => {
+      setWeekdayTimes((t) => ({
+         ...t,
+         [day]: {
+            ...(t[day] ?? { start: startTime, end: endTime }),
+            [field]: value,
+         },
+      }));
+   };
+
+   const handleBulkCreate = () => {
+      if (weekdays.length === 0) return;
+      const baseDate = moment(startDateTime, "YYYY-MM-DD");
+      if (!baseDate.isValid()) return;
+
+      let created = 0;
+      const maxIterations = 200;
+      let cursor = baseDate.clone().startOf("week");
+      const endLimit =
+         repeatMode === "until"
+            ? moment(untilDate, "YYYY-MM-DD").endOf("day")
+            : baseDate.clone().add(52, "week");
+
+      for (let i = 0; i < maxIterations; i++) {
+         for (const day of weekdays.sort()) {
+            const times = weekdayTimes[day];
+            const startStr = times?.start ?? startTime;
+            const endStr = times?.end ?? endTime;
+
+            const startMomentOfDay = moment(startStr, "HH:mm");
+            const endMomentOfDay = moment(endStr, "HH:mm");
+            if (!startMomentOfDay.isValid() || !endMomentOfDay.isValid())
+               continue;
+            if (endMomentOfDay.isSameOrBefore(startMomentOfDay)) continue;
+
+            const eventStart = cursor.clone().day(day);
+            if (eventStart.isBefore(baseDate)) continue;
+
+            eventStart
+               .hour(startMomentOfDay.hour())
+               .minute(startMomentOfDay.minute())
+               .second(0);
+            const eventEnd = eventStart
+               .clone()
+               .hour(endMomentOfDay.hour())
+               .minute(endMomentOfDay.minute())
+               .second(0);
+
+            const newId = `slot-${eventStart.valueOf()}-${day}`;
+            addEvent({
+               title: "Buổi mới",
+               start: eventStart.toDate(),
+               end: eventEnd.toDate(),
+               resource: { _id: newId },
+            });
+
+            created += 1;
+            if (repeatMode === "count" && created >= totalSessions) {
+               setShowBulkModal(false);
+               return;
+            }
+            if (repeatMode === "until" && eventStart.isAfter(endLimit)) {
+               setShowBulkModal(false);
+               return;
+            }
+         }
+         cursor.add(1, "week");
+         if (repeatMode === "until" && cursor.isAfter(endLimit)) break;
+      }
+      setShowBulkModal(false);
+   };
+
+   const seedEvents = useMemo(() => [], []);
+
+   useEffect(() => {
+      if (!initializedRef.current) {
+         setEvents(seedEvents);
+         initializedRef.current = true;
+      }
+   }, [setEvents, seedEvents]);
+
+   const getDayOfWeek = (value: Date | string) => moment(value).day();
+
+   const handleEventDrop = useCallback(
+      ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
+         if (event?.isBusy || user?.role !== Role.TUTOR) return;
+         const payload = {
+            sessionId: event.resource._id,
+            startTime: (start as Date).toISOString(),
+            endTime: (end as Date).toISOString(),
+            dayOfWeek: getDayOfWeek(start as Date),
+         };
+         updateEventTime(event.resource._id, start as Date, end as Date);
+         console.log("Drop success", payload);
+         setChange({ type: "drop", ...payload });
+      },
+      [user, updateEventTime, setChange]
+   );
+
+   const handleEventResize = useCallback(
+      ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
+         if (event?.isBusy || user?.role !== Role.TUTOR) return;
+         const payload = {
+            sessionId: event.resource._id,
+            startTime: (start as Date).toISOString(),
+            endTime: (end as Date).toISOString(),
+            dayOfWeek: getDayOfWeek(start as Date),
+         };
+         updateEventTime(event.resource._id, start as Date, end as Date);
+         console.log("Resize success", payload);
+         setChange({ type: "resize", ...payload });
+      },
+      [user, updateEventTime, setChange]
+   );
+
+   const handleSelectEvent = useCallback(
+      (event: CalendarEvent) => {
+         const payload = {
+            sessionId: event.resource?._id,
+            startTime: (event.start as Date).toISOString(),
+            endTime: (event.end as Date).toISOString(),
+            dayOfWeek: getDayOfWeek(event.start as Date),
+         };
+         console.log("Select event", payload);
+         setChange({ type: "selectEvent", ...payload });
+      },
+      [setChange]
+   );
+
+   const handleSelectSlot = useCallback(
+      ({ start, end }: { start: Date; end: Date }) => {
+         if (user?.role !== Role.TUTOR) return;
+         const newId = `slot-${Date.now()}`;
+         const newEvent = {
+            title: "Buổi mới",
+            start: start as Date,
+            end: end as Date,
+            resource: { _id: newId },
+         };
+         addEvent(newEvent);
+         const payload = {
+            sessionId: newId,
+            startTime: (start as Date).toISOString(),
+            endTime: (end as Date).toISOString(),
+            dayOfWeek: getDayOfWeek(start as Date),
+         };
+         console.log("Create slot", payload);
+         setChange({ type: "selectSlot", ...payload });
+      },
+      [addEvent, setChange, user?.role]
+   );
+
+   const messages = {
+      allDay: "Cả ngày",
+      previous: "Trước",
+      next: "Sau",
+      today: "Hôm nay",
+      month: "Tháng",
+      week: "Tuần",
+      day: "Ngày",
+      agenda: "Lịch biểu",
+      date: "Ngày",
+      time: "Thời gian",
+      event: "Sự kiện",
+      noEventsInRange: "Không có sự kiện nào trong khoảng thời gian này.",
+      work_week: "Tuần làm việc",
+      showMore: (total: number) => `+${total} sự kiện khác`,
+   };
+
+   return (
+      <>
+         <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="max-w-6xl w-[95vw] h-[80vh] p-0 sm:p-6 flex flex-col gap-4">
+               <DialogHeader className="px-6 pt-6">
+                  <DialogTitle className="flex items-center justify-between">
+                     <div className="flex items-center gap-2">
+                        <BookOpen className="h-5 w-5" />
+                        Lịch gợi ý
+                     </div>
+                     <div className="flex items-center gap-3">
+                        <Badge variant="secondary" className="px-3">
+                           Tuần này
+                        </Badge>
+                        <Button
+                           size="sm"
+                           variant="outline"
+                           onClick={() => setShowBulkModal(true)}
+                        >
+                           Tạo nhiều buổi
+                        </Button>
+                        <Button
+                           size="sm"
+                           variant="outline"
+                           onClick={() => {
+                              console.log(
+                                 getEvents().map((e) => ({
+                                    ...e,
+                                    dayOfWeek: getDayOfWeek(e.start),
+                                 }))
+                              );
+                           }}
+                        >
+                           Log state
+                        </Button>
+                     </div>
+                  </DialogTitle>
+               </DialogHeader>
+
+               <div className="flex-1 min-h-0 px-4 sm:px-6 pb-6">
+                  <DnDCalendar
+                     events={events}
+                     localizer={localizer}
+                     culture="vi"
+                     messages={messages}
+                     onEventDrop={handleEventDrop}
+                     onEventResize={handleEventResize}
+                     onSelectEvent={handleSelectEvent}
+                     onSelectSlot={handleSelectSlot}
+                     draggableAccessor={(event) =>
+                        !event.isBusy && user?.role === Role.TUTOR
+                     }
+                     resizableAccessor={(event) =>
+                        !event.isBusy && user?.role === Role.TUTOR
+                     }
+                     selectable={user?.role === Role.TUTOR}
+                     resizable={user?.role === Role.TUTOR}
+                     defaultView="week"
+                     startAccessor="start"
+                     endAccessor="end"
+                     titleAccessor="title"
+                     style={{ height: "100%" }}
+                  />
+               </div>
+            </DialogContent>
+         </Dialog>
+
+         <Dialog open={showBulkModal} onOpenChange={setShowBulkModal}>
+            <DialogContent className="max-w-5xl">
+               <DialogHeader>
+                  <DialogTitle>Tạo nhiều buổi học</DialogTitle>
+                  <DialogDescription>
+                     Chọn ngày bắt đầu, giờ bắt đầu và giờ kết thúc cho mỗi
+                     buổi.
+                  </DialogDescription>
+               </DialogHeader>
+
+               <div className="space-y-4">
+                  <div className="space-y-2">
+                     <label className="text-sm font-medium">Ngày bắt đầu</label>
+                     <Input
+                        type="date"
+                        value={startDateTime}
+                        onChange={(e) => setStartDateTime(e.target.value)}
+                     />
+                  </div>
+
+                  <div className="space-y-2">
+                     <label className="text-sm font-medium">Lặp theo thứ</label>
+                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        {[0, 1, 2, 3, 4, 5, 6].map((d) => {
+                           const times = weekdayTimes[d] ?? {
+                              start: startTime,
+                              end: endTime,
+                           };
+                           return (
+                              <div
+                                 key={d}
+                                 className="border rounded px-3 py-2 space-y-2"
+                              >
+                                 <label className="flex items-center gap-2">
+                                    <Checkbox
+                                       checked={weekdays.includes(d)}
+                                       onCheckedChange={() => toggleWeekday(d)}
+                                    />
+                                    {moment().day(d).format("ddd")}
+                                 </label>
+                                 {weekdays.includes(d) && (
+                                    <div className="grid grid-cols-2 gap-2">
+                                       <Input
+                                          type="time"
+                                          value={times.start}
+                                          onChange={(e) =>
+                                             updateWeekdayTime(
+                                                d,
+                                                "start",
+                                                e.target.value
+                                             )
+                                          }
+                                          className="w-full text-sm"
+                                       />
+                                       <Input
+                                          type="time"
+                                          value={times.end}
+                                          onChange={(e) =>
+                                             updateWeekdayTime(
+                                                d,
+                                                "end",
+                                                e.target.value
+                                             )
+                                          }
+                                          className="w-full text-sm"
+                                       />
+                                    </div>
+                                 )}
+                              </div>
+                           );
+                        })}
+                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                     <label className="text-sm font-medium">Kiểu lặp</label>
+                     <div className="flex gap-4 text-sm">
+                        <label className="flex items-center gap-2">
+                           <input
+                              type="radio"
+                              name="repeatMode"
+                              value="count"
+                              checked={repeatMode === "count"}
+                              onChange={() => setRepeatMode("count")}
+                           />
+                           Theo số buổi
+                        </label>
+                        <label className="flex items-center gap-2">
+                           <input
+                              type="radio"
+                              name="repeatMode"
+                              value="until"
+                              checked={repeatMode === "until"}
+                              onChange={() => setRepeatMode("until")}
+                           />
+                           Theo ngày kết thúc
+                        </label>
+                     </div>
+                  </div>
+
+                  {repeatMode === "count" ? (
+                     <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                           Tổng số buổi
+                        </label>
+                        <Input
+                           type="number"
+                           min={1}
+                           value={totalSessions}
+                           onChange={(e) =>
+                              setTotalSessions(Number(e.target.value))
+                           }
+                        />
+                     </div>
+                  ) : (
+                     <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                           Ngày kết thúc
+                        </label>
+                        <Input
+                           type="date"
+                           value={untilDate}
+                           onChange={(e) => setUntilDate(e.target.value)}
+                        />
+                     </div>
+                  )}
+               </div>
+
+               <DialogFooter className="gap-2">
+                  <Button
+                     variant="outline"
+                     onClick={() => setShowBulkModal(false)}
+                  >
+                     Hủy
+                  </Button>
+                  <Button onClick={handleBulkCreate}>Tạo</Button>
+               </DialogFooter>
+            </DialogContent>
+         </Dialog>
+      </>
+   );
+}
+
+export default SuggestionSchedules;

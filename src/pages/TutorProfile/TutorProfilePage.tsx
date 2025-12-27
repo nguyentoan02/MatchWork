@@ -8,7 +8,7 @@ import { Plus, X, Loader2 } from "lucide-react"
 import { Tutor } from "@/types/tutorListandDetail"
 import { SUBJECT_VALUES } from "@/enums/subject.enum"
 import { LEVEL_VALUES } from '../../enums/level.enum';
-import { ProfileAvatar, PersonalInfoForm, AvailabilityGrid, MultiSelectInput, TeachingInformationForm } from "@/components/tutor/tutor-profile"
+import { ProfileAvatar, PersonalInfoForm, MultiSelectInput, TeachingInformationForm } from "@/components/tutor/tutor-profile"
 import { useTutorFormValidation } from "@/hooks/useTutorFormValidation"
 import { TutorProfileFormData } from "@/validation/tutorProfileSchema"
 import { ValidationError } from "@/components/tutor/tutor-profile/ValidationError"
