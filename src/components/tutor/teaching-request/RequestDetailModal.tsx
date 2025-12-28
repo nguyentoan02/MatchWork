@@ -47,6 +47,8 @@ export const RequestDetailModal = ({
    const respond = useRespondToRequest();
    const navigate = useNavigate();
 
+   console.log(request)
+
    const [isShowSuggest, setIsShowSuggest] = useState(false);
 
    if (!request) return null;
@@ -135,6 +137,7 @@ export const RequestDetailModal = ({
    return (
       <>
          <SuggestionSchedules
+            TRId={request._id}
             isOpen={isShowSuggest}
             onClose={() => setIsShowSuggest(false)}
          />

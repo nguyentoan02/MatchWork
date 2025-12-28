@@ -1,11 +1,11 @@
 import { create } from "zustand";
+import { SSchedulesBody } from "../types/suggestionSchedules";
 
 export interface CalendarEventItem {
-   title?: string;
    start: Date;
    end: Date;
-   resource: { _id: string };
    isBusy?: boolean;
+   title?: string;
 }
 
 type CalendarEventChangeType = "drop" | "resize" | "selectEvent" | "selectSlot";
@@ -15,35 +15,64 @@ interface CalendarEventChange {
    sessionId?: string;
    startTime: string;
    endTime: string;
-   dayOfWeek?: number;
 }
 
 interface CalendarEventState {
    events: CalendarEventItem[];
+   title: string;
+   teachingRequestId: string;
    lastChange?: CalendarEventChange;
    setEvents: (events: CalendarEventItem[]) => void;
    addEvent: (event: CalendarEventItem) => void;
-   updateEventTime: (sessionId: string, start: Date, end: Date) => void;
+   updateEventTime: (start: Date, end: Date) => void;
    setChange: (change: CalendarEventChange) => void;
-   getEvents: () => CalendarEventItem[];
+   getEvents: () => SSchedulesBody;
+   setTitle: (title: string) => void;
+   getTitle: () => string;
+   setTeachingRequestId: (tlId: string) => void;
    reset: () => void;
 }
 
 export const useCalendarEventStore = create<CalendarEventState>((set, get) => ({
    events: [],
+   title: "lịch đề xuất",
+   teachingRequestId: "",
    lastChange: undefined,
-   setEvents: (events) => set({ events }),
+   setEvents: (events) =>
+      set((state) => ({
+         events: events.map((evt) => ({ ...evt, title: state.title })),
+      })),
    addEvent: (event) =>
       set((state) => ({
-         events: [...state.events, event],
+         events: [...state.events, { ...event, title: state.title }],
       })),
-   updateEventTime: (sessionId, start, end) =>
+   updateEventTime: (start, end) =>
       set((state) => ({
-         events: state.events.map((evt) =>
-            evt.resource?._id === sessionId ? { ...evt, start, end } : evt
-         ),
+         events: state.events.map((evt) => {
+            return { ...evt, start, end };
+         }),
       })),
    setChange: (change) => set({ lastChange: change }),
-   getEvents: () => get().events,
+   setTeachingRequestId: (teachingRequestId) => set({ teachingRequestId }),
+   getEvents: () => {
+      const currentEvent = get().events;
+      const payload = {
+         TRId: get().teachingRequestId,
+         title: get().title,
+         schedules: [
+            ...currentEvent.map((e) => {
+               return { start: e.start, end: e.end };
+            }),
+         ],
+      };
+      return payload;
+   },
+   setTitle: (title) => {
+      set((state) => ({
+         title,
+         events: state.events.map((evt) => ({ ...evt, title })),
+      }));
+   },
+   getTitle: () => get().title,
    reset: () => set({ lastChange: undefined }),
 }));

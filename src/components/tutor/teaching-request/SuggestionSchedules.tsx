@@ -23,17 +23,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUser } from "@/hooks/useUser";
 import { Role } from "@/enums/role.enum";
 import { useCalendarEventStore } from "@/store/useCalendarEventStore";
-import { Session } from "@/types/session";
 import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
 import { Input } from "../../ui/input";
+import { useSSchedules } from "@/hooks/useSSchedules";
 
 type Props = {
    onClose: () => void;
    isOpen: boolean;
+   TRId: string;
 };
 interface CalendarEvent extends BigCalendarEvent {
-   resource: Session | any;
    start: Date;
    end: Date;
    isBusy?: boolean;
@@ -44,7 +44,7 @@ moment.locale("vi");
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop<CalendarEvent>(BigCalendar);
 
-function SuggestionSchedules({ isOpen, onClose }: Props) {
+function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    const { user } = useUser();
    const {
       events,
@@ -53,7 +53,11 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
       updateEventTime,
       setChange,
       getEvents,
+      setTitle,
+      setTeachingRequestId,
+      getTitle,
    } = useCalendarEventStore();
+   const { createSSchedules, fetchSSchedules } = useSSchedules(TRId);
    const initializedRef = useRef(false);
 
    // bulk modal state
@@ -68,13 +72,30 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
    const [untilDate, setUntilDate] = useState(
       moment().add(3, "week").format("YYYY-MM-DD")
    );
-   const [weekdays, setWeekdays] = useState<number[]>([1, 3]); // 1=Mon ... 6=Sat, 0=Sun
+   const [weekdays, setWeekdays] = useState<number[]>([1, 3]);
    const [weekdayTimes, setWeekdayTimes] = useState<
       Record<number, { start: string; end: string }>
    >({
       1: { start: "09:00", end: "11:00" },
       3: { start: "14:00", end: "16:00" },
    });
+
+   useEffect(() => {
+      const res = fetchSSchedules.data?.data;
+      if (!res) return;
+
+      // đồng bộ title + TRId vào store
+      setTitle(res.title || "lịch đề xuất");
+      setTeachingRequestId(res.teachingRequestId || TRId);
+
+      // gán các event trả về vào calendar
+      setEvents(
+         (res.schedules || []).map((s) => ({
+            start: new Date(s.start),
+            end: new Date(s.end),
+         }))
+      );
+   }, [fetchSSchedules.data, setEvents, setTeachingRequestId, setTitle, TRId]);
 
    const toggleWeekday = (day: number) => {
       setWeekdays((prev) => {
@@ -118,7 +139,9 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
             ? moment(untilDate, "YYYY-MM-DD").endOf("day")
             : baseDate.clone().add(52, "week");
 
-      for (let i = 0; i < maxIterations; i++) {
+      let stop = false;
+
+      for (let i = 0; i < maxIterations && !stop; i++) {
          for (const day of weekdays.sort()) {
             const times = weekdayTimes[day];
             const startStr = times?.start ?? startTime;
@@ -143,28 +166,30 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
                .minute(endMomentOfDay.minute())
                .second(0);
 
-            const newId = `slot-${eventStart.valueOf()}-${day}`;
             addEvent({
-               title: "Buổi mới",
                start: eventStart.toDate(),
                end: eventEnd.toDate(),
-               resource: { _id: newId },
             });
 
             created += 1;
             if (repeatMode === "count" && created >= totalSessions) {
-               setShowBulkModal(false);
-               return;
+               stop = true;
+               break;
             }
             if (repeatMode === "until" && eventStart.isAfter(endLimit)) {
-               setShowBulkModal(false);
-               return;
+               stop = true;
+               break;
             }
          }
          cursor.add(1, "week");
          if (repeatMode === "until" && cursor.isAfter(endLimit)) break;
       }
+
+      setTeachingRequestId(TRId);
+
       setShowBulkModal(false);
+
+      console.log(getEvents());
    };
 
    const seedEvents = useMemo(() => [], []);
@@ -176,8 +201,6 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
       }
    }, [setEvents, seedEvents]);
 
-   const getDayOfWeek = (value: Date | string) => moment(value).day();
-
    const handleEventDrop = useCallback(
       ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
          if (event?.isBusy || user?.role !== Role.TUTOR) return;
@@ -185,9 +208,8 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
             sessionId: event.resource._id,
             startTime: (start as Date).toISOString(),
             endTime: (end as Date).toISOString(),
-            dayOfWeek: getDayOfWeek(start as Date),
          };
-         updateEventTime(event.resource._id, start as Date, end as Date);
+         updateEventTime(start as Date, end as Date);
          console.log("Drop success", payload);
          setChange({ type: "drop", ...payload });
       },
@@ -201,9 +223,8 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
             sessionId: event.resource._id,
             startTime: (start as Date).toISOString(),
             endTime: (end as Date).toISOString(),
-            dayOfWeek: getDayOfWeek(start as Date),
          };
-         updateEventTime(event.resource._id, start as Date, end as Date);
+         updateEventTime(start as Date, end as Date);
          console.log("Resize success", payload);
          setChange({ type: "resize", ...payload });
       },
@@ -216,7 +237,6 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
             sessionId: event.resource?._id,
             startTime: (event.start as Date).toISOString(),
             endTime: (event.end as Date).toISOString(),
-            dayOfWeek: getDayOfWeek(event.start as Date),
          };
          console.log("Select event", payload);
          setChange({ type: "selectEvent", ...payload });
@@ -239,7 +259,6 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
             sessionId: newId,
             startTime: (start as Date).toISOString(),
             endTime: (end as Date).toISOString(),
-            dayOfWeek: getDayOfWeek(start as Date),
          };
          console.log("Create slot", payload);
          setChange({ type: "selectSlot", ...payload });
@@ -263,6 +282,42 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
       work_week: "Tuần làm việc",
       showMore: (total: number) => `+${total} sự kiện khác`,
    };
+
+   if (fetchSSchedules.isLoading) {
+      return (
+         <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="max-w-md">
+               <DialogHeader>
+                  <DialogTitle>Lịch gợi ý</DialogTitle>
+                  <DialogDescription>Đang tải lịch gợi ý...</DialogDescription>
+               </DialogHeader>
+            </DialogContent>
+         </Dialog>
+      );
+   }
+
+   if (fetchSSchedules.isError) {
+      return (
+         <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="max-w-md">
+               <DialogHeader>
+                  <DialogTitle>Lịch gợi ý</DialogTitle>
+                  <DialogDescription>
+                     Tải lịch gợi ý thất bại. Vui lòng thử lại.
+                  </DialogDescription>
+               </DialogHeader>
+               <DialogFooter>
+                  <Button
+                     variant="outline"
+                     onClick={() => fetchSSchedules.refetch()}
+                  >
+                     Thử lại
+                  </Button>
+               </DialogFooter>
+            </DialogContent>
+         </Dialog>
+      );
+   }
 
    return (
       <>
@@ -289,15 +344,19 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
                            size="sm"
                            variant="outline"
                            onClick={() => {
-                              console.log(
-                                 getEvents().map((e) => ({
-                                    ...e,
-                                    dayOfWeek: getDayOfWeek(e.start),
-                                 }))
-                              );
+                              console.log(getEvents());
                            }}
                         >
                            Log state
+                        </Button>
+                        <Button
+                           size="sm"
+                           variant="outline"
+                           onClick={() => {
+                              createSSchedules.mutate(getEvents());
+                           }}
+                        >
+                           Lưu lịch đề xuất
                         </Button>
                      </div>
                   </DialogTitle>
@@ -342,13 +401,27 @@ function SuggestionSchedules({ isOpen, onClose }: Props) {
                </DialogHeader>
 
                <div className="space-y-4">
-                  <div className="space-y-2">
-                     <label className="text-sm font-medium">Ngày bắt đầu</label>
-                     <Input
-                        type="date"
-                        value={startDateTime}
-                        onChange={(e) => setStartDateTime(e.target.value)}
-                     />
+                  <div className="grid grid-cols-2 gap-5">
+                     <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                           Ngày bắt đầu
+                        </label>
+                        <Input
+                           type="date"
+                           value={startDateTime}
+                           onChange={(e) => setStartDateTime(e.target.value)}
+                        />
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                           mô tả lịch
+                        </label>
+                        <Input
+                           type="text"
+                           value={getTitle()}
+                           onChange={(e) => setTitle(e.target.value)}
+                        />
+                     </div>
                   </div>
 
                   <div className="space-y-2">
