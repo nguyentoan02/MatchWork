@@ -3,7 +3,9 @@ import {
    getTutors,
    getTutorById,
    searchTutors,
+   getRecommendedTutors,
 } from "@/api/tutorListAndDetail";
+
 import type { TutorsApiResponse, Tutor } from "@/types/tutorListandDetail";
 
 interface UseSearchTutorsOptions {
@@ -29,7 +31,7 @@ interface UseSearchTutorsOptions {
 }
 
 export const useSearchTutors = (
-filters: UseSearchTutorsOptions = {},
+   filters: UseSearchTutorsOptions = {}
    // p0: { enabled: any }
 ) => {
    return useQuery<TutorsApiResponse>({
@@ -62,3 +64,18 @@ export const useTutorDetail = (id?: string | null) => {
       staleTime: 1000 * 60 * 5,
    });
 };
+
+/**
+ * Hook để lấy danh sách tutor được AI gợi ý.
+ * - enabled: false để không auto-fetch; dùng refetch() khi người dùng bấm nút.
+ */
+export const useRecommendedTutors = (enabled = false) => {
+   return useQuery<TutorsApiResponse>({
+      queryKey: ["recommendedTutors"],
+      queryFn: () => getRecommendedTutors(),
+      enabled,
+      staleTime: 1000 * 60 * 5,
+   });
+};
+
+export default useRecommendedTutors;

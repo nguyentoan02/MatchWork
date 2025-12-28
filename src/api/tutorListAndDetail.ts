@@ -76,7 +76,14 @@ export const getTutorById = async (id: string): Promise<Tutor> => {
    return candidate?.data ?? candidate;
 };
 
+export const getRecommendedTutors = async (): Promise<TutorsApiResponse> => {
+   const response = await apiClient.get("/recommendationTutor/");
+   const payload = response.data?.data ?? response.data;
+   return payload?.data ? payload : payload;
+};
+
 export default {
    getTutors,
    getTutorById,
+   getRecommendedTutors,
 };
