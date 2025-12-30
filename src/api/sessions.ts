@@ -1,5 +1,5 @@
 import apiClient from "@/lib/api";
-import { Session, UpsertSessionPayload } from "@/types/session";
+import { BusySession, Session, UpsertSessionPayload } from "@/types/session";
 
 /**
  * Fetches all sessions for the currently authenticated user (tutor or student).
@@ -164,4 +164,45 @@ export const createBatchSessions = async (payload: {
    const response = await apiClient.post("/session/batch", payload);
 
    return response.data?.data || response.data?.metadata || [];
+};
+
+export const busySession = async ():Promise<BusySession> => {
+   const response = await apiClient.get("/session/busy");
+   // Backend trả về sessions trong metadata, nhưng type BusySession expects data
+   // Map metadata to data để phù hợp với type
+   return {
+      ...response.data,
+      data: response.data.metadata || response.data.data || [],
+   };
+}
+/**
+ * Lấy danh sách các buổi học theo ID của Learning Commitment.
+ * @param commitmentId ID của Learning Commitment
+ */
+export const getSessionsByCommitment = async (
+   commitmentId: string
+): Promise<Session[]> => {
+   const response = await apiClient.get(`/session/commitment/${commitmentId}`);
+   return response.data.metadata ?? response.data.data ?? [];
+};
+
+// New: fake attendance endpoint (backend route: confirm-attendance-fake)
+export const confirmAttendanceFake = async (
+   sessionId: string
+): Promise<Session> => {
+   const response = await apiClient.patch(
+      `/session/${sessionId}/confirm-attendance-fake`
+   );
+   return response.data.metadata;
+};
+
+export const rejectAttendanceFake = async (
+   sessionId: string,
+   payload?: { reason?: string; evidenceUrls?: string[] }
+): Promise<Session> => {
+   const response = await apiClient.patch(
+      `/session/${sessionId}/reject-attendance-fake`,
+      payload
+   );
+   return response.data.metadata;
 };
