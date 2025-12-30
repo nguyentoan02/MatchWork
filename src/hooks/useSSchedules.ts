@@ -10,8 +10,8 @@ export const useSSchedules = (TRid: string) => {
          addToast("success", "tạo thành công");
          console.log(res);
       },
-      onError: (err) => {
-         addToast("error", "some thing went wrong");
+      onError: (err: any) => {
+         addToast("error", err.response.data.message || "không thể lưu lịch đề xuất");
          console.log(err);
       },
    });

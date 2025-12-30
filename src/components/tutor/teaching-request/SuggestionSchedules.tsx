@@ -27,6 +27,8 @@ import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
 import { Input } from "../../ui/input";
 import { useSSchedules } from "@/hooks/useSSchedules";
+import { useStudentBusySchedules } from "@/hooks/useSessions";
+import { BSession, Session } from "@/types/session";
 
 type Props = {
    onClose: () => void;
@@ -36,6 +38,7 @@ type Props = {
 interface CalendarEvent extends BigCalendarEvent {
    start: Date;
    end: Date;
+   resource: Session | any;
    isBusy?: boolean;
    style?: React.CSSProperties;
 }
@@ -43,6 +46,9 @@ interface CalendarEvent extends BigCalendarEvent {
 moment.locale("vi");
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop<CalendarEvent>(BigCalendar);
+
+const createLocalId = () =>
+   `local-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    const { user } = useUser();
@@ -56,6 +62,8 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       setTitle,
       setTeachingRequestId,
       getTitle,
+      reset,
+      removeEvent,
    } = useCalendarEventStore();
    const { createSSchedules, fetchSSchedules } = useSSchedules(TRId);
    const initializedRef = useRef(false);
@@ -63,7 +71,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    // bulk modal state
    const [showBulkModal, setShowBulkModal] = useState(false);
    const [startDateTime, setStartDateTime] = useState(
-      moment().startOf("week").add(1, "day").format("YYYY-MM-DD")
+      moment().startOf("day").format("YYYY-MM-DD")
    );
    const [startTime] = useState("09:00");
    const [endTime] = useState("11:00");
@@ -80,7 +88,14 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       3: { start: "14:00", end: "16:00" },
    });
 
+   const {
+      data: bSessions,
+      isLoading: bisLoading,
+      isError: bisError,
+   } = useStudentBusySchedules();
+
    useEffect(() => {
+      reset()
       const res = fetchSSchedules.data?.data;
       if (!res) return;
 
@@ -88,14 +103,34 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       setTitle(res.title || "lịch đề xuất");
       setTeachingRequestId(res.teachingRequestId || TRId);
 
-      // gán các event trả về vào calendar
+      // gán các event trả về vào calendar (kèm id để drag/drop & delete)
       setEvents(
          (res.schedules || []).map((s) => ({
             start: new Date(s.start),
             end: new Date(s.end),
+            resource: {
+               _id: (s as any)?._id ?? (s as any)?.id ?? createLocalId(),
+            },
          }))
       );
    }, [fetchSSchedules.data, setEvents, setTeachingRequestId, setTitle, TRId]);
+
+   const busyEvents = useMemo(() => {
+      return (
+         (bSessions?.data.map((busy: BSession) => ({
+            title: `Học ${busy.learningCommitmentId.student.userId.name} sinh bận`,
+            start: new Date(busy.startTime),
+            end: new Date(busy.endTime),
+            resource: busy,
+            isBusy: true,
+         })) as CalendarEvent[]) || []
+      );
+   }, [bSessions]);
+
+   const calendarEvents = useMemo(
+      () => [...busyEvents, ...events],
+      [busyEvents, events]
+   );
 
    const toggleWeekday = (day: number) => {
       setWeekdays((prev) => {
@@ -169,6 +204,8 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
             addEvent({
                start: eventStart.toDate(),
                end: eventEnd.toDate(),
+               resource: { _id: createLocalId() },
+               title: getTitle(),
             });
 
             created += 1;
@@ -204,12 +241,17 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    const handleEventDrop = useCallback(
       ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
          if (event?.isBusy || user?.role !== Role.TUTOR) return;
+         const eventId =
+            (event.resource as any)?._id ??
+            (event as any)?._id ??
+            (event as any)?.id;
+         if (!eventId) return;
          const payload = {
-            sessionId: event.resource._id,
+            sessionId: eventId,
             startTime: (start as Date).toISOString(),
             endTime: (end as Date).toISOString(),
          };
-         updateEventTime(start as Date, end as Date);
+         updateEventTime(eventId, start as Date, end as Date);
          console.log("Drop success", payload);
          setChange({ type: "drop", ...payload });
       },
@@ -219,12 +261,17 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    const handleEventResize = useCallback(
       ({ event, start, end }: EventInteractionArgs<CalendarEvent>) => {
          if (event?.isBusy || user?.role !== Role.TUTOR) return;
+         const eventId =
+            (event.resource as any)?._id ??
+            (event as any)?._id ??
+            (event as any)?.id;
+         if (!eventId) return;
          const payload = {
-            sessionId: event.resource._id,
+            sessionId: eventId,
             startTime: (start as Date).toISOString(),
             endTime: (end as Date).toISOString(),
          };
-         updateEventTime(start as Date, end as Date);
+         updateEventTime(eventId, start as Date, end as Date);
          console.log("Resize success", payload);
          setChange({ type: "resize", ...payload });
       },
@@ -234,14 +281,28 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    const handleSelectEvent = useCallback(
       (event: CalendarEvent) => {
          const payload = {
-            sessionId: event.resource?._id,
+            sessionId:
+               (event.resource as any)?._id ??
+               (event as any)?._id ??
+               (event as any)?.id,
             startTime: (event.start as Date).toISOString(),
             endTime: (event.end as Date).toISOString(),
          };
+         if (!payload.sessionId) return;
+
+         // chỉ tutor mới được xóa và không áp dụng cho busy event
+         if (!event.isBusy && user?.role === Role.TUTOR) {
+            const ok = window.confirm("Bạn có chắc muốn xóa buổi này?");
+            if (!ok) return;
+            removeEvent(payload.sessionId);
+            setChange({ type: "delete", ...payload });
+            return;
+         }
+
          console.log("Select event", payload);
          setChange({ type: "selectEvent", ...payload });
       },
-      [setChange]
+      [user, removeEvent, setChange]
    );
 
    const handleSelectSlot = useCallback(
@@ -283,7 +344,20 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       showMore: (total: number) => `+${total} sự kiện khác`,
    };
 
-   if (fetchSSchedules.isLoading) {
+   const eventPropGetter = useCallback((event: CalendarEvent) => {
+      if (event.isBusy) {
+         return {
+            style: {
+               backgroundColor: "#1f2937",
+               borderColor: "#111827",
+               opacity: 0.75,
+            },
+         };
+      }
+      return { style: event.style };
+   }, []);
+
+   if (fetchSSchedules.isLoading || bisLoading) {
       return (
          <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
@@ -296,7 +370,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       );
    }
 
-   if (fetchSSchedules.isError) {
+   if (fetchSSchedules.isError || bisError) {
       return (
          <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-md">
@@ -364,7 +438,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
 
                <div className="flex-1 min-h-0 px-4 sm:px-6 pb-6">
                   <DnDCalendar
-                     events={events}
+                     events={calendarEvents}
                      localizer={localizer}
                      culture="vi"
                      messages={messages}
@@ -372,6 +446,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                      onEventResize={handleEventResize}
                      onSelectEvent={handleSelectEvent}
                      onSelectSlot={handleSelectSlot}
+                     eventPropGetter={eventPropGetter}
                      draggableAccessor={(event) =>
                         !event.isBusy && user?.role === Role.TUTOR
                      }
