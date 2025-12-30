@@ -21,6 +21,7 @@ import { Clock, BookOpen, BookMarked, Flag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import SuggestionSchedules from "@/components/tutor/teaching-request/SuggestionSchedules";
+import { SuggestionScheduleResponse } from "@/components/student/SuggestionScheduleResponse";
 
 interface RequestDetailModalProps {
    request: TeachingRequest | null;
@@ -50,6 +51,7 @@ export const RequestDetailModal = ({
    console.log(request)
 
    const [isShowSuggest, setIsShowSuggest] = useState(false);
+   const [isShowStudentResponse, setIsShowStudentResponse] = useState(false);
 
    if (!request) return null;
 
@@ -141,6 +143,13 @@ export const RequestDetailModal = ({
             isOpen={isShowSuggest}
             onClose={() => setIsShowSuggest(false)}
          />
+         {user?.role === "STUDENT" && (
+            <SuggestionScheduleResponse
+               teachingRequestId={request._id}
+               isOpen={isShowStudentResponse}
+               onClose={() => setIsShowStudentResponse(false)}
+            />
+         )}
          <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-2xl">
                <DialogHeader>
@@ -266,9 +275,17 @@ export const RequestDetailModal = ({
                   <Button variant="outline" onClick={onClose}>
                      Đóng
                   </Button>
-                  <Button onClick={() => setIsShowSuggest(true)}>
-                     lên lịch học
-                  </Button>
+                  {user?.role === "TUTOR" && (
+                     <Button onClick={() => setIsShowSuggest(true)}>
+                        lên lịch học
+                     </Button>
+                  )}
+                  {user?.role === "STUDENT" &&
+                     request.status === TeachingRequestStatus.ACCEPTED && (
+                        <Button onClick={() => setIsShowStudentResponse(true)}>
+                           Xem lịch đề xuất
+                        </Button>
+                     )}
                </DialogFooter>
             </DialogContent>
          </Dialog>

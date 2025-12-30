@@ -23,6 +23,8 @@ import { useUser } from "@/hooks/useUser";
 import { BSession, Session } from "@/types/session";
 import { Role } from "@/types/user";
 import { SessionStatus } from "@/enums/session.enum";
+import { getMyPendingSuggestions, TutorPendingSuggestion } from "@/api/suggestionSchedules";
+import { useQuery } from "@tanstack/react-query";
 
 import { SessionFormDialog } from "./SessionFormDialog";
 import { SessionDetailDialog } from "./SessionDetailDialog";
@@ -57,6 +59,7 @@ interface CalendarEvent extends BigCalendarEvent {
    start: Date;
    end: Date;
    isBusy?: boolean;
+   isPendingSuggestion?: boolean;
    style?: React.CSSProperties;
 }
 
@@ -75,6 +78,14 @@ export function SessionCalendar() {
       isError: bisError,
    } = useStudentBusySchedules();
    const updateSessionMutation = useUpdateSession();
+   
+   // Lấy tất cả suggestion schedules đang pending của gia sư
+   const { data: pendingSuggestions } = useQuery({
+      queryKey: ["TUTOR_PENDING_SUGGESTIONS"],
+      queryFn: getMyPendingSuggestions,
+      enabled: user?.role === Role.TUTOR,
+      staleTime: 1000 * 60 * 2, // 2 minutes
+   });
 
    console.log(bSessions);
 
@@ -175,20 +186,66 @@ export function SessionCalendar() {
    }, [sessions]);
 
    const busyEvents = useMemo(() => {
-      return (
-         (bSessions?.data.map((busy: BSession) => ({
-            title: `Học ${busy.learningCommitmentId.student.userId.name} sinh bận`,
+      if (!bSessions?.data) return [];
+      
+      return bSessions.data.map((busy: BSession) => {
+         // Nếu là gia sư: hiển thị tên học sinh với gia sư khác
+         // Nếu là học sinh: hiển thị tên gia sư với học sinh khác
+         let title = "Bận";
+         
+         if (user?.role === Role.TUTOR) {
+            // Gia sư xem: học sinh đang học với gia sư khác
+            const studentName = busy.learningCommitmentId?.student?.userId?.name || "Học sinh";
+            const otherTutorName = busy.learningCommitmentId?.tutor?.userId?.name || "Gia sư khác";
+            title = `${studentName} bận (${otherTutorName})`;
+         } else if (user?.role === Role.STUDENT) {
+            // Học sinh xem: gia sư đang dạy học sinh khác
+            const tutorName = busy.learningCommitmentId?.tutor?.userId?.name || "Gia sư";
+            const otherStudentName = busy.learningCommitmentId?.student?.userId?.name || "Học sinh khác";
+            title = `${tutorName} bận (${otherStudentName})`;
+         }
+         
+         return {
+            title,
             start: new Date(busy.startTime),
             end: new Date(busy.endTime),
             resource: busy,
             isBusy: true,
-         })) as CalendarEvent[]) || []
-      );
-   }, [bSessions]);
+         };
+      }) as CalendarEvent[];
+   }, [bSessions, user?.role]);
+
+   // Tạo events từ pending suggestions của gia sư
+   const pendingSuggestionEvents = useMemo(() => {
+      if (!pendingSuggestions || user?.role !== Role.TUTOR) return [];
+
+      return pendingSuggestions.flatMap((suggestion: TutorPendingSuggestion) => {
+         if (!suggestion.schedules || suggestion.schedules.length === 0) return [];
+         
+         const studentName = suggestion.student?.name || "Học sinh";
+         const subject = suggestion.subject
+            ? getSubjectLabelVi(suggestion.subject)
+            : suggestion.title || "Lịch đề xuất";
+
+         return suggestion.schedules.map((schedule) => ({
+            title: `${subject} — ${studentName} (Chờ phản hồi)`,
+            start: new Date(schedule.start),
+            end: new Date(schedule.end),
+            isPendingSuggestion: true,
+            resource: suggestion,
+            style: {
+               backgroundColor: "#3b82f6", // Blue for pending suggestions
+               borderColor: "#2563eb",
+               color: "#fff",
+               opacity: 0.8,
+            },
+         })) as CalendarEvent[];
+      });
+   }, [pendingSuggestions, user?.role]);
 
    const events: CalendarEvent[] = useMemo(
-      () => [...sessionEvents, ...busyEvents],
-      [sessionEvents, busyEvents]
+      () => [...sessionEvents, ...busyEvents, ...pendingSuggestionEvents],
+      [sessionEvents, busyEvents, pendingSuggestionEvents]
    );
 
    const eventPropGetter = useCallback((event: CalendarEvent) => {
@@ -200,6 +257,10 @@ export function SessionCalendar() {
                opacity: 0.75,
             },
          };
+      }
+      // Nếu event đã có style (từ pending suggestions), sử dụng style đó
+      if (event.style) {
+         return { style: event.style };
       }
       return { style: event.style };
    }, []);
@@ -296,10 +357,14 @@ export function SessionCalendar() {
                onEventResize={handleEventResize}
                eventPropGetter={eventPropGetter}
                draggableAccessor={(event) =>
-                  !event.isBusy && user?.role === Role.TUTOR
+                  !event.isBusy &&
+                  !event.isPendingSuggestion &&
+                  user?.role === Role.TUTOR
                }
                resizableAccessor={(event) =>
-                  !event.isBusy && user?.role === Role.TUTOR
+                  !event.isBusy &&
+                  !event.isPendingSuggestion &&
+                  user?.role === Role.TUTOR
                }
                selectable={user?.role === Role.TUTOR}
                resizable={user?.role === Role.TUTOR}

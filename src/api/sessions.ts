@@ -168,7 +168,12 @@ export const createBatchSessions = async (payload: {
 
 export const busySession = async ():Promise<BusySession> => {
    const response = await apiClient.get("/session/busy");
-   return response.data;
+   // Backend trả về sessions trong metadata, nhưng type BusySession expects data
+   // Map metadata to data để phù hợp với type
+   return {
+      ...response.data,
+      data: response.data.metadata || response.data.data || [],
+   };
 }
 /**
  * Lấy danh sách các buổi học theo ID của Learning Commitment.

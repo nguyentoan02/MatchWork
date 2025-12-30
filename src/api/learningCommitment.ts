@@ -30,10 +30,10 @@ export const learningCommitmentApi = {
       additionalSessions: number,
       amount: number
    ): Promise<{ paymentLink: string }> => {
-      const response = await apiClient.post(
-         `/learningCommitment/${id}/topup`,
-         { additionalSessions, amount }
-      );
+      const response = await apiClient.post(`/learningCommitment/${id}/topup`, {
+         additionalSessions,
+         amount,
+      });
       return response.data.data;
    },
 
