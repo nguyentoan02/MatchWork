@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 import { TutorCard } from "@/components/tutor/tutor-search/TutorCard";
 import { TutorSuggestion } from "@/types/Tutor";
 
@@ -17,7 +18,13 @@ const AIrecommendation = ({ tutor }: AIRecommendationProps) => {
                Gợi ý từ AI
             </h3>
             <p className="text-sm text-muted-foreground">
-               Chưa có gợi ý gia sư nào.
+               Chưa có gợi ý gia sư nào. Hãy tạo hoặc cập nhật hồ sơ{" "}
+               <Link
+                  to="/student/student-profile"
+                  className="text-primary underline hover:text-primary/80"
+               >
+                  tại đây
+               </Link>
             </p>
          </section>
       );
