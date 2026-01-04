@@ -332,13 +332,15 @@ function RequestCard({
             >
                Xem chi tiết <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
-            <Button
-               onClick={() => onOpenSchedule(r._id)}
-               variant="outline"
-               className="w-full text-primary border-primary hover:bg-primary/10 transition-all"
-            >
-               Đề xuất lịch học
-            </Button>
+            {r.status !== TeachingRequestStatus.REJECTED && (
+               <Button
+                  onClick={() => onOpenSchedule(r._id)}
+                  variant="outline"
+                  className="w-full text-primary border-primary hover:bg-primary/10 transition-all"
+               >
+                  Đề xuất lịch học
+               </Button>
+            )}
          </CardFooter>
       </Card>
    );
