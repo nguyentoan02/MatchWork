@@ -123,7 +123,7 @@ export const LearningCommitmentCard = ({ commitment }: Props) => {
       isStudentOwner &&
       commitment.status === "pending_agreement";
 
-   const canRequestCancel = commitment.status === "active";
+   const canRequestCancel = isTutorRole && commitment.status === "active";
    const canRespondCancel =
       commitment.status === "cancellation_pending" &&
       ((isStudentRole &&
