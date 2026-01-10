@@ -90,5 +90,16 @@ export interface TutorSuggestion {
       experienceYears: number;
       hourlyRate: number;
       bio: string;
+      classType?: string[] | string;
+      availability?: Array<{
+         dayOfWeek?: number;
+         day?: number;
+         slots?: string[];
+         timeSlots?: string[];
+      }>;
+      ratings?: {
+         average: number;
+         totalReviews: number;
+      };
    };
 }

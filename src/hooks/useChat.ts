@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { chatApi, type Message } from "@/api/chat";
 import { useSocket } from "./useSocket";
 import { useChatStore } from "@/store/useChatStore";
@@ -181,19 +181,35 @@ export const useChat = () => {
    ]);
 
    const sendMessage = useCallback(
-      (content: string) => {
-         if (!socket || !activeConversationId || !content.trim()) {
+      (content: string, imageUrls?: string[]) => {
+         if (!socket || !activeConversationId) {
             console.warn("❌ Cannot send message");
+            return;
+         }
+
+         // Phải có ít nhất content hoặc imageUrls
+         if (!content.trim() && (!imageUrls || imageUrls.length === 0)) {
+            console.warn("❌ Message must contain text or image");
             return;
          }
 
          socket.emit("sendMessage", {
             chatId: activeConversationId,
-            content: content.trim(),
+            content: content.trim() || undefined,
+            imageUrls:
+               imageUrls && imageUrls.length > 0 ? imageUrls : undefined,
          });
       },
       [socket, activeConversationId]
    );
+
+   // Upload nhiều ảnh mutation
+   const uploadImagesMutation = useMutation({
+      mutationFn: (files: File[]) => chatApi.uploadChatImages(files),
+      onError: (error) => {
+         console.error("Upload images error:", error);
+      },
+   });
 
    // When user opens a conversation, mark all messages as read for that chat
    useEffect(() => {
@@ -230,5 +246,7 @@ export const useChat = () => {
       sendingMessage: false,
       searchConversations,
       currentUserId,
+      uploadImages: uploadImagesMutation.mutateAsync,
+      uploadingImages: uploadImagesMutation.isPending,
    };
 };
