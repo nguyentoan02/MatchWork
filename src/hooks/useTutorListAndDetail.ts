@@ -67,11 +67,51 @@ export const useTutorDetail = (id?: string | null) => {
 };
 
 export const useTutorSuggestionList = () => {
-   const { isAuthenticated } = useUser();
+   const { isAuthenticated, user } = useUser();
 
    return useQuery<SuggestionResponse>({
       queryKey: ["suggestion_tutor"],
-      queryFn: () => getSuggestion(),
-      enabled: !!isAuthenticated,
+      queryFn: async () => {
+         try {
+            return await getSuggestion();
+         } catch (error: any) {
+            // Nếu lỗi 404 (chưa có gợi ý), trả về empty response thay vì throw error
+            if (error?.response?.status === 404) {
+               return {
+                  message: "Chưa có gợi ý",
+                  code: 404,
+                  status: "success",
+                  data: {
+                     recommendedTutors: [],
+                  },
+               } as unknown as SuggestionResponse;
+            }
+            throw error;
+         }
+      },
+      // Chỉ fetch khi đã đăng nhập VÀ là STUDENT
+      enabled: isAuthenticated && user?.role === "STUDENT",
+      // Tự động refetch mỗi 3 giây khi chưa có data
+      refetchInterval: (query) => {
+         const data = query.state.data;
+
+         // Nếu chưa có gợi ý hoặc data null/empty, refetch mỗi 3s
+         if (
+            !data ||
+            !data.data ||
+            !Array.isArray(data.data.recommendedTutors) ||
+            data.data.recommendedTutors.length === 0
+         ) {
+            return 3000; // 3 seconds
+         }
+         // Nếu đã có gợi ý, dừng polling
+         return false;
+      },
+      // Tiếp tục refetch ngay cả khi tab không active
+      refetchIntervalInBackground: true,
+      // Không retry khi gặp lỗi
+      retry: false,
+      // Đặt staleTime = 0 để luôn refetch khi cần
+      staleTime: 0,
    });
 };

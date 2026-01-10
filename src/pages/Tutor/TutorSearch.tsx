@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useTutorSuggestionList } from "../../hooks/useTutorListAndDetail";
 import AIrecommendation from "./AIrecommendation";
 import { TutorSuggestion } from "@/types/Tutor";
+import { useFetchStudentProfile } from "@/hooks/useStudentProfile";
+import { useUser } from "@/hooks/useUser";
 
 export type FiltersType = {
    searchQuery: string;
@@ -91,29 +93,22 @@ export default function TutorSearch() {
       setFilteredTutors([]);
    };
 
-   const { data, isLoading, isError } = useTutorSuggestionList();
+   const { isAuthenticated, user } = useUser();
 
-   const sData = Array.isArray(data?.data.recommendedTutors)
-      ? data.data.recommendedTutors as unknown as TutorSuggestion[]
+   // Chỉ gọi API khi là student đã đăng nhập (đã được xử lý trong hook)
+   const { data: suggestionData, isLoading: isSuggestionLoading } =
+      useTutorSuggestionList();
+   const { data: studentProfile } = useFetchStudentProfile();
+
+   // Safely extract recommendations
+   const sData: TutorSuggestion[] = Array.isArray(
+      suggestionData?.data?.recommendedTutors
+   )
+      ? (suggestionData.data.recommendedTutors as unknown as TutorSuggestion[])
       : [];
 
-   if (isLoading) {
-      return (
-         <div className="container mx-auto px-4 py-6">
-            <p className="text-muted-foreground">Đang tải gợi ý gia sư...</p>
-         </div>
-      );
-   }
-
-   if (isError) {
-      return (
-         <div className="container mx-auto px-4 py-6">
-            <p className="text-red-500">
-               Không thể tải gợi ý gia sư. Vui lòng thử lại sau.
-            </p>
-         </div>
-      );
-   }
+   const hasProfile = !!studentProfile;
+   const isStudent = user?.role === "STUDENT";
 
    return (
       <div className="container mx-auto px-4 py-6">
@@ -129,10 +124,17 @@ export default function TutorSearch() {
             onFilterChange={handleFilterChange}
             onApplyFilters={handleApplyFilters}
             onClearFilters={handleClearFilters}
-            tutors={[]} // optional if not needed
+            tutors={[]}
          />
 
-         <AIrecommendation tutor={sData || []} />
+         {/* Luôn hiển thị AI Recommendation, logic bên trong sẽ xử lý các trường hợp */}
+         <AIrecommendation
+            tutor={sData}
+            isLoading={isSuggestionLoading && isStudent && hasProfile}
+            hasProfile={hasProfile}
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent}
+         />
 
          {/* Show AI search insights if available */}
          {aiSearchResults && isUsingAIResults && (
@@ -163,7 +165,6 @@ export default function TutorSearch() {
             </div>
          )}
 
-         {/* Pass either AI results or regular filters */}
          <TutorListPage
             filters={isUsingAIResults ? null : appliedFilters}
             aiTutors={isUsingAIResults ? filteredTutors : null}
