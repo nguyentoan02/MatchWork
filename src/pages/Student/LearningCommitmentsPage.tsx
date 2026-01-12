@@ -15,7 +15,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 type CommitmentStatus =
    | "all"
-   | "pending_agreement"
    | "active"
    | "completed"
    | "cancelled"
@@ -26,7 +25,6 @@ type CommitmentStatus =
 const STATUS_TABS: { label: string; value: CommitmentStatus; color: string }[] =
    [
       { label: "Tất Cả", value: "all", color: "slate" },
-      { label: "Chờ Xác Nhận", value: "pending_agreement", color: "amber" },
       { label: "Đang Hoạt Động", value: "active", color: "emerald" },
       { label: "Hoàn Thành", value: "completed", color: "blue" },
       {
@@ -51,7 +49,11 @@ export const LearningCommitmentsPage = () => {
       error,
    } = useLearningCommitments(page, 9);
 
-   const commitments = paginatedData?.items;
+   // Lọc bỏ pending_agreement
+   const commitments = paginatedData?.items?.filter(
+      (commitment) => commitment.status !== "pending_agreement"
+   );
+
    const totalPages = paginatedData?.pages ?? 1;
 
    const filteredCommitments =

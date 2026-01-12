@@ -202,7 +202,7 @@ export function SessionCalendar() {
             title = `${studentName} bận với gia sư khác`;
          } else if (user?.role === Role.STUDENT) {
             const tutorName = busy.tutor?.name || "Gia sư";
-            const otherStudentName = busy.student?.name || "Học sinh khác";
+            const otherStudentName = "Học sinh khác";
             title = `${tutorName} bận (${otherStudentName})`;
          }
 
