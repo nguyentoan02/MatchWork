@@ -220,7 +220,9 @@ export const SessionFormDialog = ({
       setExpandedDays(newExpanded);
    };
 
-   const getTimeForDay = (dayValue: number) => {
+   const getTimeForDay = (
+      dayValue: number,
+   ): { startTime: Date; endTime: Date } => {
       const customTimes = form.watch("customTimes") || {};
       const dayKey = `day_${dayValue}`;
 
@@ -228,15 +230,13 @@ export const SessionFormDialog = ({
          return customTimes[dayKey];
       }
 
-      // Đảm bảo luôn trả về Date thay vì undefined
-      const defaultStart = form.watch("startTime") || new Date();
-      const defaultEnd =
-         form.watch("endTime") ||
-         new Date(new Date().getTime() + 60 * 60 * 1000);
+      // Đảm bả luôn trả về Date thay vì undefined
+      const defaultStart = form.watch("startTime");
+      const defaultEnd = form.watch("endTime");
 
       return {
-         startTime: defaultStart,
-         endTime: defaultEnd,
+         startTime: defaultStart || new Date(),
+         endTime: defaultEnd || new Date(new Date().getTime() + 60 * 60 * 1000),
       };
    };
 
