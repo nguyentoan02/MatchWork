@@ -2,7 +2,7 @@ name: Frontend Production Deployment (Traefik + Nginx)
 
 on:
    push:
-      branches: ["staging"]
+      branches: ["main"]
 
 # Thiết lập môi trường mặc định cho toàn bộ Job để lấy Secret  
 env:
