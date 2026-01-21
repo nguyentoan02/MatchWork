@@ -16,6 +16,7 @@ import {
    XCircle,
    Clock,
    CreditCard,
+   MapPin,
 } from "lucide-react";
 import moment from "moment";
 import { useSSchedules } from "@/hooks/useSSchedules";
@@ -401,6 +402,29 @@ export const SuggestionScheduleResponse = ({
                      </div>
                   )}
 
+                  {/* Location - hiển thị location chung nếu tất cả buổi có cùng location */}
+                  {(() => {
+                     const firstScheduleLocation = suggestion.schedules?.[0] ? (suggestion.schedules[0] as any).location : null;
+                     const allSchedulesHaveSameLocation = suggestion.schedules?.every(
+                        (schedule) => (schedule as any).location === firstScheduleLocation
+                     );
+                     const commonLocation = suggestion.location || (allSchedulesHaveSameLocation && firstScheduleLocation) || null;
+                     
+                     return commonLocation ? (
+                        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                           <div className="flex items-center gap-2 mb-1">
+                              <MapPin className="h-4 w-4 text-green-700 dark:text-green-300" />
+                              <p className="text-sm font-medium text-green-700 dark:text-green-300">
+                                 Địa điểm/Liên kết học trực tuyến:
+                              </p>
+                           </div>
+                           <p className="text-sm text-green-600 dark:text-green-400">
+                              {commonLocation}
+                           </p>
+                        </div>
+                     ) : null;
+                  })()}
+
                   {/* Tabs cho danh sách và lịch */}
                   <Tabs defaultValue="list" className="w-full">
                      <TabsList className="grid w-full grid-cols-2">
@@ -424,16 +448,17 @@ export const SuggestionScheduleResponse = ({
                                     const duration =
                                        (end.getTime() - start.getTime()) /
                                        (1000 * 60);
+                                    const scheduleLocation = (schedule as any).location || suggestion?.location;
                                     return (
                                        <div
                                           key={index}
                                           className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                                        >
-                                          <div className="flex items-center gap-3">
+                                          <div className="flex items-center gap-3 flex-1">
                                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
                                                 {index + 1}
                                              </div>
-                                             <div>
+                                             <div className="flex-1">
                                                 <p className="font-medium">
                                                    {getVietnameseDayName(start)}
                                                    ,{" "}
@@ -449,6 +474,12 @@ export const SuggestionScheduleResponse = ({
                                                    {moment(end).format("HH:mm")}{" "}
                                                    ({duration} phút)
                                                 </p>
+                                                {scheduleLocation && (
+                                                   <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                                                      <MapPin className="h-3 w-3" />
+                                                      <span>{scheduleLocation}</span>
+                                                   </div>
+                                                )}
                                              </div>
                                           </div>
                                        </div>

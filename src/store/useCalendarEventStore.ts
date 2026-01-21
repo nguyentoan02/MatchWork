@@ -28,6 +28,7 @@ interface CalendarEventState {
    events: CalendarEventItem[];
    title: string;
    proposedTotalPrice: number;
+   location: string;
    teachingRequestId: string;
    lastChange?: CalendarEventChange;
    setEvents: (events: CalendarEventItem[]) => void;
@@ -40,6 +41,8 @@ interface CalendarEventState {
    getTitle: () => string;
    setProposedTotalPrice: (price: number) => void;
    getProposedTotalPrice: () => number;
+   setLocation: (location: string) => void;
+   getLocation: () => string;
    setTeachingRequestId: (tlId: string) => void;
    reset: () => void;
 }
@@ -48,6 +51,7 @@ export const useCalendarEventStore = create<CalendarEventState>((set, get) => ({
    events: [],
    title: "lịch đề xuất",
    proposedTotalPrice: 0,
+   location: "",
    teachingRequestId: "",
    lastChange: undefined,
    setEvents: (events) =>
@@ -74,13 +78,19 @@ export const useCalendarEventStore = create<CalendarEventState>((set, get) => ({
    setTeachingRequestId: (teachingRequestId) => set({ teachingRequestId }),
    getEvents: () => {
       const currentEvent = get().events;
+      const location = get().location;
       const payload = {
          TRId: get().teachingRequestId,
          title: get().title,
          proposedTotalPrice: get().proposedTotalPrice,
+         location: location,
          schedules: [
             ...currentEvent.map((e) => {
-               return { start: e.start, end: e.end };
+               return { 
+                  start: e.start, 
+                  end: e.end,
+                  location: location || undefined
+               };
             }),
          ],
       };
@@ -95,5 +105,7 @@ export const useCalendarEventStore = create<CalendarEventState>((set, get) => ({
    getTitle: () => get().title,
    setProposedTotalPrice: (price) => set({ proposedTotalPrice: price }),
    getProposedTotalPrice: () => get().proposedTotalPrice,
+   setLocation: (location) => set({ location }),
+   getLocation: () => get().location,
    reset: () => set({ lastChange: undefined }),
 }));
