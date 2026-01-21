@@ -24,6 +24,7 @@ import {
    CheckCircle,
    XCircle,
    Clock,
+   MapPin,
 } from "lucide-react";
 import { Badge } from "../../ui/badge";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -70,6 +71,8 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       getTitle,
       setProposedTotalPrice,
       getProposedTotalPrice,
+      setLocation,
+      getLocation,
       removeEvent,
    } = useCalendarEventStore();
    const { createSSchedules, fetchSSchedules, updateSSchedules } =
@@ -88,14 +91,14 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    // Tính ngày tối thiểu (ngày mai) để chỉ cho phép chọn ngày lớn hơn hôm nay
    const minDate = moment().add(1, "day").format("YYYY-MM-DD");
    const [startDateTime, setStartDateTime] = useState(
-      moment().add(1, "day").format("YYYY-MM-DD")
+      moment().add(1, "day").format("YYYY-MM-DD"),
    );
    const [startTime] = useState("09:00");
    const [endTime] = useState("11:00");
    const [repeatMode, setRepeatMode] = useState<"count" | "until">("count");
    const [totalSessions, setTotalSessions] = useState(5);
    const [untilDate, setUntilDate] = useState(
-      moment().add(3, "week").format("YYYY-MM-DD")
+      moment().add(3, "week").format("YYYY-MM-DD"),
    );
    const [weekdays, setWeekdays] = useState<number[]>([1, 3]);
    const [weekdayTimes, setWeekdayTimes] = useState<
@@ -141,6 +144,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          setTitle("lịch đề xuất");
          setTeachingRequestId(TRId);
          setProposedTotalPrice(0);
+         setLocation("");
          setIsEditMode(false);
          return;
       }
@@ -152,6 +156,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          setTitle("lịch đề xuất");
          setTeachingRequestId(TRId);
          setProposedTotalPrice(0);
+         setLocation("");
          setIsEditMode(false);
          return;
       }
@@ -163,6 +168,9 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          setTeachingRequestId(res.teachingRequestId || TRId);
          if (res.proposedTotalPrice) {
             setProposedTotalPrice(res.proposedTotalPrice);
+         }
+         if (res.location) {
+            setLocation(res.location);
          }
 
          // gán các event trả về vào calendar
@@ -176,7 +184,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                      (s as any).id ||
                      `loaded-${index}-${Date.now()}`,
                },
-            }))
+            })),
          );
       } else {
          // Nếu người dùng chưa chủ động muốn xem, để trống để tạo mới
@@ -184,6 +192,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          setTitle("lịch đề xuất");
          setTeachingRequestId(TRId);
          setProposedTotalPrice(0);
+         setLocation("");
       }
       setSelectedEventId(null);
    }, [
@@ -244,7 +253,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       return tutorSessions
          .filter(
             (session) =>
-               session.status === "SCHEDULED" || session.status === "CONFIRMED"
+               session.status === "SCHEDULED" || session.status === "CONFIRMED",
          )
          .map((session) => {
             const lc: any = (session as any).learningCommitmentId;
@@ -335,7 +344,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
 
    // Hàm validate lịch học
    const validateSchedules = (
-      schedules: Array<{ start: Date; end: Date }>
+      schedules: Array<{ start: Date; end: Date }>,
    ): string | null => {
       if (schedules.length === 0) {
          return "Vui lòng thêm ít nhất một buổi học";
@@ -379,6 +388,12 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          return;
       }
 
+      // Validate location
+      if (!eventsData.location || eventsData.location.trim() === "") {
+         addToast("error", "Vui lòng nhập địa điểm/liên kết học trực tuyến");
+         return;
+      }
+
       // Validate ngày bắt đầu
       const validationError = validateSchedules(eventsData.schedules);
       if (validationError) {
@@ -396,7 +411,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                setIsEditMode(false);
                fetchSSchedules.refetch();
             },
-         }
+         },
       );
    };
 
@@ -418,7 +433,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
    const updateWeekdayTime = (
       day: number,
       field: "start" | "end",
-      value: string
+      value: string,
    ) => {
       setWeekdayTimes((t) => ({
          ...t,
@@ -534,7 +549,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          const updatedEvents = events.map((ev) =>
             ev.resource?._id === eventId
                ? { ...ev, start: start as Date, end: end as Date }
-               : ev
+               : ev,
          );
          setEvents(updatedEvents);
          setChange({
@@ -544,7 +559,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
             endTime: (end as Date).toISOString(),
          });
       },
-      [user, isViewMode, setEvents, setChange, events]
+      [user, isViewMode, setEvents, setChange, events],
    );
 
    const handleEventResize = useCallback(
@@ -560,7 +575,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          const updatedEvents = events.map((ev) =>
             ev.resource?._id === eventId
                ? { ...ev, start: start as Date, end: end as Date }
-               : ev
+               : ev,
          );
          setEvents(updatedEvents);
          setChange({
@@ -570,7 +585,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
             endTime: (end as Date).toISOString(),
          });
       },
-      [user, isViewMode, setEvents, setChange, events]
+      [user, isViewMode, setEvents, setChange, events],
    );
 
    // NEW: Open edit time modal for existing event
@@ -629,7 +644,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
       const updatedEvents = events.map((ev) =>
          ev.resource?._id === editingEventId
             ? { ...ev, start: newStart, end: newEnd }
-            : ev
+            : ev,
       );
 
       setEvents(updatedEvents);
@@ -666,7 +681,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
          // NEW: Open edit modal immediately when selecting event
          handleOpenEditTimeModal(event);
       },
-      [isViewMode, user?.role, setChange]
+      [isViewMode, user?.role, setChange],
    );
 
    const handleSelectSlot = useCallback(
@@ -688,7 +703,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
             endTime: (end as Date).toISOString(),
          });
       },
-      [addEvent, setChange, user?.role, isViewMode]
+      [addEvent, setChange, user?.role, isViewMode],
    );
 
    const eventPropGetter = useCallback(
@@ -719,7 +734,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
             },
          };
       },
-      [selectedEventId, isViewMode]
+      [selectedEventId, isViewMode],
    );
 
    const messages = {
@@ -831,6 +846,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                     setEvents([]);
                                     setTitle("lịch đề xuất");
                                     setProposedTotalPrice(0);
+                                    setLocation("");
                                     setIsEditMode(false);
                                     setIsCreatingNew(true);
                                     isCreatingNewRef.current = true;
@@ -854,7 +870,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                  value={getProposedTotalPrice() || ""}
                                  onChange={(e) =>
                                     setProposedTotalPrice(
-                                       Number(e.target.value) || 0
+                                       Number(e.target.value) || 0,
                                     )
                                  }
                                  className="w-32 h-9"
@@ -869,7 +885,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                               <span className="text-sm font-medium">
                                  Giá đề xuất:{" "}
                                  {suggestion.proposedTotalPrice.toLocaleString(
-                                    "vi-VN"
+                                    "vi-VN",
                                  )}{" "}
                                  VNĐ
                               </span>
@@ -891,6 +907,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                     setEvents([]);
                                     setTitle("lịch đề xuất");
                                     setProposedTotalPrice(0);
+                                    setLocation("");
                                     isCreatingNewRef.current = true;
                                     setIsCreatingNew(true);
                                     setSelectedEventId(null);
@@ -926,23 +943,26 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                     setIsEditMode(false);
                                     if (suggestion) {
                                        setTitle(
-                                          suggestion.title || "lịch đề xuất"
+                                          suggestion.title || "lịch đề xuất",
                                        );
                                        setTeachingRequestId(
-                                          suggestion.teachingRequestId || TRId
+                                          suggestion.teachingRequestId || TRId,
                                        );
                                        if (suggestion.proposedTotalPrice) {
                                           setProposedTotalPrice(
-                                             suggestion.proposedTotalPrice
+                                             suggestion.proposedTotalPrice,
                                           );
+                                       }
+                                       if (suggestion.location) {
+                                          setLocation(suggestion.location);
                                        }
                                        setEvents(
                                           (suggestion.schedules || []).map(
                                              (s: any) => ({
                                                 start: new Date(s.start),
                                                 end: new Date(s.end),
-                                             })
-                                          )
+                                             }),
+                                          ),
                                        );
                                     }
                                  }}
@@ -971,7 +991,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                  if (events.schedules.length === 0) {
                                     addToast(
                                        "error",
-                                       "Vui lòng thêm ít nhất một buổi học"
+                                       "Vui lòng thêm ít nhất một buổi học",
                                     );
                                     return;
                                  }
@@ -983,14 +1003,23 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                  ) {
                                     addToast(
                                        "error",
-                                       "Vui lòng nhập giá đề xuất hợp lệ"
+                                       "Vui lòng nhập giá đề xuất hợp lệ",
+                                    );
+                                    return;
+                                 }
+
+                                 // Validate location
+                                 if (!events.location || events.location.trim() === "") {
+                                    addToast(
+                                       "error",
+                                       "Vui lòng nhập địa điểm/liên kết học trực tuyến",
                                     );
                                     return;
                                  }
 
                                  // Validate ngày bắt đầu
                                  const validationError = validateSchedules(
-                                    events.schedules
+                                    events.schedules,
                                  );
                                  if (validationError) {
                                     addToast("error", validationError);
@@ -1028,6 +1057,35 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                </DialogHeader>
 
                <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 pb-6 overflow-hidden">
+                  {/* Location input field */}
+                  {!isViewMode ? (
+                     <div className="mb-4 space-y-2 flex-shrink-0">
+                        <label className="text-sm font-medium flex items-center gap-2">
+                           <MapPin className="h-4 w-4" />
+                           Địa điểm/Liên kết học trực tuyến
+                           <span className="text-red-500">*</span>
+                        </label>
+                        <Input
+                           value={getLocation() || ""}
+                           onChange={(e) => setLocation(e.target.value)}
+                           placeholder="Google Meet / Zoom / Địa chỉ..."
+                           className="w-full"
+                           required
+                        />
+                     </div>
+                  ) : suggestion?.location ? (
+                     <div className="mb-4 space-y-2 flex-shrink-0">
+                        <label className="text-sm font-medium flex items-center gap-2">
+                           <MapPin className="h-4 w-4" />
+                           Địa điểm/Liên kết học trực tuyến
+                        </label>
+                        <div className="flex items-center gap-2 p-2 border rounded-md bg-muted/50">
+                           <MapPin className="h-4 w-4 text-muted-foreground" />
+                           <span className="text-sm">{suggestion.location}</span>
+                        </div>
+                     </div>
+                  ) : null}
+
                   {/* Legend cho các loại events */}
                   <div className="mb-4 flex flex-wrap gap-4 text-sm bg-muted/50 p-3 rounded-lg flex-shrink-0">
                      <div className="flex items-center gap-2">
@@ -1103,13 +1161,13 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                            onChange={(e) => {
                               const selectedDate = moment(
                                  e.target.value,
-                                 "YYYY-MM-DD"
+                                 "YYYY-MM-DD",
                               );
                               const today = moment().startOf("day");
                               if (selectedDate.isSameOrBefore(today)) {
                                  addToast(
                                     "error",
-                                    "Ngày bắt đầu phải lớn hơn ngày hiện tại"
+                                    "Ngày bắt đầu phải lớn hơn ngày hiện tại",
                                  );
                                  return;
                               }
@@ -1164,7 +1222,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                                 updateWeekdayTime(
                                                    d,
                                                    "start",
-                                                   e.target.value
+                                                   e.target.value,
                                                 )
                                              }
                                              className="flex-1 text-xs h-7 px-1.5 min-w-0"
@@ -1177,7 +1235,7 @@ function SuggestionSchedules({ isOpen, onClose, TRId }: Props) {
                                                 updateWeekdayTime(
                                                    d,
                                                    "end",
-                                                   e.target.value
+                                                   e.target.value,
                                                 )
                                              }
                                              className="flex-1 text-xs h-7 px-1.5 min-w-0"

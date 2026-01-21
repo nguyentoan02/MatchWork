@@ -4,9 +4,11 @@ export interface SSchedulesBody {
    title: string;
    TRId: string;
    proposedTotalPrice: number; // Giá tổng đề xuất của gia sư
+   location: string; // Bắt buộc
    schedules: {
       start: Date;
       end: Date;
+      location?: string;
    }[];
 }
 
@@ -17,9 +19,11 @@ export interface SSchedulesResponse extends BaseAPIResponse {
       teachingRequestId: string;
       title: string;
       proposedTotalPrice: number; // Giá tổng đề xuất của gia sư
+      location?: string;
       schedules: {
          start: Date;
          end: Date;
+         location?: string;
       }[];
       status?: "PENDING" | "REJECTED" | "ACCEPTED";
       studentResponse?: {
