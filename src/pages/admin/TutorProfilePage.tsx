@@ -575,7 +575,7 @@ const TutorProfilePage: React.FC = () => {
                 </h3>
                 <div 
                   className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
-                  dangerouslySetInnerHTML={renderHTML(tutorProfile.bio)}
+                  dangerouslySetInnerHTML={{ __html: tutorProfile.bio }}
                 />
               </div>
             )}
